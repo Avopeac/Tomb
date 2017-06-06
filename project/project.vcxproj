@@ -100,8 +100,10 @@
     <ClCompile Include="..\src\TOMB_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\TOMB_memory.h" />
     <ClInclude Include="..\src\TOMB_config.h" />
     <ClInclude Include="..\src\TOMB_defines.h" />
+    <ClInclude Include="..\src\TOMB_file.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

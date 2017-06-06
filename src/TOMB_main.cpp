@@ -6,6 +6,7 @@
 
 #include "TOMB_config.h"
 #include "TOMB_defines.h"
+#include "TOMB_memory.h"
 
 static void TOMB_LogOutputFunction(void * pUserData, Sint32 category, SDL_LogPriority priority, const char * pMessage)
 {
@@ -57,13 +58,13 @@ Sint32 TOMB_CreateGraphicsWindow(TOMB_Config * pConfig, SDL_Window ** ppWindow, 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
-	SDL_GL_SetSwapInterval(pConfig->VerticalSync);
+	SDL_GL_SetSwapInterval(pConfig->verticalSync);
 
-	*ppWindow = SDL_CreateWindow(pConfig->WindowTitle,
+	*ppWindow = SDL_CreateWindow(pConfig->pWindowTitle,
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		pConfig->WindowWidth,
-		pConfig->WindowHeight,
+		pConfig->windowWidth,
+		pConfig->windowHeight,
 		SDL_WINDOW_OPENGL |
 		SDL_WINDOW_RESIZABLE);
 
@@ -105,19 +106,12 @@ Sint32 TOMB_CreateGraphicsWindow(TOMB_Config * pConfig, SDL_Window ** ppWindow, 
 		status = TOMB_FAILURE;
 	}
 
-	// Quit SDL subsystems if all else fails
-
-	if (status == TOMB_FAILURE)
-	{
-		SDL_Quit();
-	}
-
 	return status;
 }
 
 double TOMB_GetSeconds()
 {
-	static Uint64 frequency = SDL_GetPerformanceFrequency();
+	TOMB_STATIC Uint64 frequency = SDL_GetPerformanceFrequency();
 	return (double)SDL_GetPerformanceCounter() / frequency;
 }
 
@@ -128,6 +122,14 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 	SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	SDL_LogSetOutputFunction(TOMB_LogOutputFunction, 0);
 
+	TOMB_BuddyAllocator buddyAllocator;
+	if (TOMB_MemoryInitializeAllocator(&buddyAllocator, TOMB_GIGABYTES_TO_BYTES(1)) != TOMB_SUCCESS)
+	{
+		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Could not allocate memory.");
+		SDL_Quit();
+		return TOMB_FAILURE;
+	}
+
 	// Load config
 
 	TOMB_Config config;
@@ -135,6 +137,7 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 	if (TOMB_ConfigLoadFile(&config, pConfigPath) != TOMB_SUCCESS)
 	{
 		SDL_LogCritical(SDL_LOG_CATEGORY_INPUT, "Could not load config file, aborting.");
+		SDL_Quit();
 		return TOMB_FAILURE;
 	}
 
@@ -145,6 +148,7 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 	if (TOMB_CreateGraphicsWindow(&config, &pWindow, &context) != TOMB_SUCCESS)
 	{
 		SDL_LogCritical(SDL_LOG_CATEGORY_RENDER, "Could not create game window, aborting.");
+		SDL_Quit();
 		return TOMB_FAILURE;
 	}
 

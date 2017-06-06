@@ -21,6 +21,12 @@
     <ClInclude Include="..\src\TOMB_defines.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\TOMB_file.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TOMB_memory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\TOMB_main.cpp">

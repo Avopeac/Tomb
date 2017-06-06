@@ -6,18 +6,18 @@
 
 struct TOMB_Config
 {
-	Sint8 VerticalSync;
-	Uint16 WindowWidth;
-	Uint16 WindowHeight;
-	const char * WindowTitle;
+	Sint8 verticalSync;
+	Uint16 windowWidth;
+	Uint16 windowHeight;
+	const char * pWindowTitle;
 };
 
-Sint32 TOMB_ConfigLoadFile(TOMB_Config * config, const char * configPath) {
+Sint32 TOMB_ConfigLoadFile(TOMB_Config * pConfig, const char * pConfigPath) {
 
-	config->VerticalSync = 1;
-	config->WindowWidth = 512;
-	config->WindowHeight = 512;
-	config->WindowTitle = "Tomb";
+	pConfig->verticalSync = 1;
+	pConfig->windowWidth = 512;
+	pConfig->windowHeight = 512;
+	pConfig->pWindowTitle = "Tomb";
 
 	return TOMB_SUCCESS;
 }
