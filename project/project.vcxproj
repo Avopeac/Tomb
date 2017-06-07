@@ -100,6 +100,7 @@
     <ClCompile Include="..\src\TOMB_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\TOMB_graphics.h" />
     <ClInclude Include="..\src\TOMB_memory.h" />
     <ClInclude Include="..\src\TOMB_config.h" />
     <ClInclude Include="..\src\TOMB_defines.h" />

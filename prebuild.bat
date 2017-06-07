@@ -1,5 +1,6 @@
+echo off
 mkdir build\assets
 cd build\assets
-xcopy /e /y /d /f /l W:\Tomb\assets .
+xcopy /e /y /d /f /l ..\..\..\assets .
 cd ..
-xcopy /e /y W:\Tomb\bin .
+xcopy /e /y ..\..\bin .

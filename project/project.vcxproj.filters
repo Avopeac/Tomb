@@ -27,6 +27,9 @@
     <ClInclude Include="..\src\TOMB_memory.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\TOMB_graphics.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\TOMB_main.cpp">

@@ -7,6 +7,7 @@
 #include "TOMB_config.h"
 #include "TOMB_defines.h"
 #include "TOMB_memory.h"
+#include "TOMB_graphics.h"
 
 static void TOMB_LogOutputFunction(void * pUserData, Sint32 category, SDL_LogPriority priority, const char * pMessage)
 {
@@ -118,12 +119,14 @@ double TOMB_GetSeconds()
 Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 {
 	// Initialization
-
+	
 	SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	SDL_LogSetOutputFunction(TOMB_LogOutputFunction, 0);
 
 	TOMB_BuddyAllocator buddyAllocator;
-	if (TOMB_MemoryInitializeAllocator(&buddyAllocator, TOMB_GIGABYTES_TO_BYTES(1)) != TOMB_SUCCESS)
+	if (TOMB_MemoryInitializeAllocator(&buddyAllocator, 
+			TOMB_GIGABYTES_TO_BYTES(1),
+			TOMB_KILOBYTES_TO_BYTES(1)) != TOMB_SUCCESS)
 	{
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Could not allocate memory.");
 		SDL_Quit();
@@ -152,6 +155,9 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 		return TOMB_FAILURE;
 	}
 
+	TOMB_GraphicsBase graphicsBase;
+	TOMB_GraphicsBaseInitialize(&graphicsBase);
+
 	// Main loop
 
 	bool running = true;
@@ -172,7 +178,9 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 			}
 		}
 
-		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+		float red = 0.5f + 0.5f * (float)glm::sin(currentTime);
+
+		glClearColor(red, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_GL_SwapWindow(pWindow);

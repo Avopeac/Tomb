@@ -22,6 +22,7 @@ struct TOMB_BuddyAllocator
 {
 	Uint8 type = TOMB_BUDDY_ALLOCATOR;
 	Uint64 size = 0;
+	Uint64 leafSize = 0;
 	Uint32 levels = 0;
 	void * pMemory = 0;
 	void * pFreeBlocks[TOMB_BUDDY_ALLOCATOR_MAX_LEVELS];
@@ -49,24 +50,50 @@ TOMB_INTERNAL Uint32 HighestBit(Uint64 number)
 		++bitCount;
 	}
 
-	return ++bitCount;
+	return bitCount;
 }
 
-Sint32 TOMB_MemoryInitializeAllocator(TOMB_BuddyAllocator * pAllocator, Uint64 size)
+Sint32 TOMB_MemoryInitializeAllocator(TOMB_BuddyAllocator * pAllocator, Uint64 requestedSize, Uint64 requestedLeafSize)
 {
+
+	Uint64 actualSize = 1ULL << HighestBit(requestedSize);
+	Uint64 actualLeafSize = 1ULL << HighestBit(requestedLeafSize);
+
 	SDL_assert(pAllocator);
 
-	pAllocator->pMemory = SDL_malloc(size);
+	pAllocator->pMemory = SDL_malloc(actualSize);
 
 	if (!pAllocator->pMemory)
 	{
 		return TOMB_FAILURE;
 	}
 
-	pAllocator->size = size;
-	pAllocator->levels = HighestBit(size);
+	pAllocator->size = actualSize;
+	pAllocator->leafSize = actualLeafSize;
+	pAllocator->levels = HighestBit(actualSize / actualLeafSize);
+
+	SDL_assert(pAllocator->levels <= TOMB_BUDDY_ALLOCATOR_MAX_LEVELS);
+
+	SDL_memset(pAllocator->pFreeBlocks, 0, TOMB_BUDDY_ALLOCATOR_MAX_LEVELS - 1);
+
+	pAllocator->pFreeBlocks[0] = pAllocator->pMemory;
 
 	return TOMB_SUCCESS;
+}
+
+TOMB_INTERNAL void TOMB_BuddySplit(TOMB_BuddyAllocator * pAllocator, Uint32 level)
+{
+	
+}
+
+TOMB_INTERNAL void TOMB_BuddyMerge(TOMB_BuddyAllocator * pAllocator, Uint32 level)
+{
+
+}
+
+TOMB_MemoryAllocation TOMB_MemoryAlloc(TOMB_BuddyAllocator * pAllocator, Uint64 requestedSize) 
+{
+	return TOMB_MemoryAllocation();
 }
 
 Sint32 TOMB_MemoryDestroyAllocator(TOMB_BuddyAllocator * pAllocator)
