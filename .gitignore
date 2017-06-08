@@ -1,3 +1,6 @@
+# Folders
+project/build/
+
 # Prerequisites
 *.d
 
@@ -30,3 +33,9 @@
 *.exe
 *.out
 *.app
+
+# Project
+*.ilk
+*.pdb
+*.db
+*.opendb
