@@ -123,21 +123,29 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 	SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	SDL_LogSetOutputFunction(TOMB_LogOutputFunction, 0);
 
-	TOMB_BuddyAllocator buddyAllocator;
-	if (TOMB_MemoryInitializeAllocator(&buddyAllocator, 
-			TOMB_GIGABYTES_TO_BYTES(1),
-			TOMB_KILOBYTES_TO_BYTES(1)) != TOMB_SUCCESS)
+	TOMB_Memory memory;
+	memory.PersistentStorageSize = TOMB_GIGABYTES_TO_BYTES(1);
+	memory.TransientStorageSize = TOMB_MEGABYTES_TO_BYTES(512);
+	memory.pPersistentStorage = SDL_malloc(memory.PersistentStorageSize);
+	memory.pTransientStorage = SDL_malloc(memory.TransientStorageSize);
+
+	if (!memory.pPersistentStorage || !memory.pTransientStorage)
 	{
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Could not allocate memory.");
 		SDL_Quit();
 		return TOMB_FAILURE;
 	}
 
+	TOMB_MemoryArena inputArena;
+	TOMB_MemoryArenaInitialize(&inputArena, 
+		(Uint8 *)memory.pTransientStorage,
+		TOMB_MEGABYTES_TO_BYTES(10));
+
 	// Load config
 
 	TOMB_Config config;
-	const char * pConfigPath = "assets/config.txt";
-	if (TOMB_ConfigLoadFile(&config, pConfigPath) != TOMB_SUCCESS)
+	const char * pConfigPath = "assets/config.json";
+	if (TOMB_ConfigLoadFile(&inputArena, &config, pConfigPath) != TOMB_SUCCESS)
 	{
 		SDL_LogCritical(SDL_LOG_CATEGORY_INPUT, "Could not load config file, aborting.");
 		SDL_Quit();
