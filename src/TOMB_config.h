@@ -1,8 +1,6 @@
 #pragma once
 
-//#include "jsmn/jsmn.h"
-
-#include "jsmn.h"
+#include "jsmn/jsmn.h"
 
 #include "SDL.h"
 
@@ -10,52 +8,47 @@
 #include "TOMB_file.h"
 #include "TOMB_memory.h"
 
+#define TOMB_CONFIG_TITLE_MAX_LENGTH 128
+
 struct TOMB_Config
 {
 	Sint8 verticalSync;
 	Uint16 windowWidth;
 	Uint16 windowHeight;
-	const char * pWindowTitle;
+	char pWindowTitle[TOMB_CONFIG_TITLE_MAX_LENGTH];
 };
-
-static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
-	if (tok->type == JSMN_STRING && (int)SDL_strlen(s) == tok->end - tok->start &&
-		SDL_strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
-		return 0;
-	}
-	return -1;
-}
 
 Sint32 TOMB_ConfigLoadFile(TOMB_MemoryArena * pArena, TOMB_Config * pConfig, const char * pConfigPath) {
 
-	Sint64 size;
-	const char * pContent = TOMB_ReadTextFile(pArena, pConfigPath, &size);
 
-	jsmn_parser jsonParser;
-	jsmn_init(&jsonParser);
-	jsmntok_t jsonTokens[128];
-	int status = jsmn_parse(&jsonParser, pContent, size, jsonTokens, sizeof(jsonTokens) / sizeof(jsonTokens[0]));
-	if (status < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_INPUT, "Failed to parse JSON file %s.", pConfigPath);
-		return TOMB_FAILURE;
-	}
+	TOMB_Json config = TOMB_JsonReadFile(pArena, pConfigPath);
 
-	for (int i = 1; i < status; ++i) {
+	double jsonNumber;
 
-		if (jsoneq(pContent, &jsonTokens[i], "vsync") == 0) {
-			pConfig->verticalSync = SDL_strtol(pContent + jsonTokens[i + 1].start, nullptr, 10);
+	// First one is the JSON object which is not of interest
+	for (int i = 1; i < config.jsonTokenCount; ++i)
+	{
+		if (TOMB_JsonTokenEquals(&config, i, "vsync"))
+		{
+			TOMB_JsonGetNumberToken(&config, i + 1, &jsonNumber);
+			pConfig->verticalSync = (Sint8)jsonNumber;
 			++i;
 		}
-		else if (jsoneq(pContent, &jsonTokens[i], "width") == 0) {
-			pConfig->windowWidth = SDL_strtol(pContent + jsonTokens[i + 1].start, nullptr, 10);
+		else if (TOMB_JsonTokenEquals(&config, i, "width"))
+		{
+			TOMB_JsonGetNumberToken(&config, i + 1, &jsonNumber);
+			pConfig->windowWidth = (Uint16)jsonNumber;
 			++i;
 		}
-		else if (jsoneq(pContent, &jsonTokens[i], "height") == 0) {
-			pConfig->windowHeight = SDL_strtol(pContent + jsonTokens[i + 1].start, nullptr, 10);
+		else if (TOMB_JsonTokenEquals(&config, i, "height"))
+		{
+			TOMB_JsonGetNumberToken(&config, i + 1, &jsonNumber);
+			pConfig->windowHeight = (Uint16)jsonNumber;
 			++i;
 		}
-		else if (jsoneq(pContent, &jsonTokens[i], "title") == 0) {
-			pConfig->pWindowTitle = SDL_strdup(pContent + jsonTokens[i + 1].end - jsonTokens[i + 1].start);
+		else if (TOMB_JsonTokenEquals(&config, i, "title"))
+		{
+			TOMB_JsonGetStringToken(&config, i + 1, pConfig->pWindowTitle, TOMB_CONFIG_TITLE_MAX_LENGTH);
 			++i;
 		}
 	}

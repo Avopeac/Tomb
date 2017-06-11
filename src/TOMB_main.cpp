@@ -7,6 +7,7 @@
 #include "TOMB_config.h"
 #include "TOMB_defines.h"
 #include "TOMB_memory.h"
+#include "TOMB_shader.h"
 #include "TOMB_graphics.h"
 
 static void TOMB_LogOutputFunction(void * pUserData, Sint32 category, SDL_LogPriority priority, const char * pMessage)
@@ -152,6 +153,8 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 		return TOMB_FAILURE;
 	}
 
+	TOMB_MemoryArenaFree(&inputArena, inputArena.Occupied);
+
 	// Create window
 
 	SDL_Window * pWindow = 0;
@@ -162,6 +165,13 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 		SDL_Quit();
 		return TOMB_FAILURE;
 	}
+
+	TOMB_ShaderProgram vertexShaderProgram;
+	TOMB_ShaderProgram fragmentShaderProgram;
+	const char * pVertexShaderProgramPath = "assets/shaders/default.vert";
+	const char * pFragmentShaderProgramPath = "assets/shaders/default.frag";
+	TOMB_ShaderProgramCompileFromFile(&inputArena, &vertexShaderProgram, pVertexShaderProgramPath, GL_VERTEX_SHADER);
+	TOMB_ShaderProgramCompileFromFile(&inputArena, &fragmentShaderProgram, pFragmentShaderProgramPath, GL_FRAGMENT_SHADER);
 
 	TOMB_GraphicsBase graphicsBase;
 	TOMB_GraphicsBaseInitialize(&graphicsBase);
