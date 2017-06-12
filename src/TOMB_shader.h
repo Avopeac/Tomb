@@ -7,12 +7,8 @@
 
 struct TOMB_ShaderProgram
 {
+	GLenum flag;
 	GLuint shaderProgramId;
-};
-
-struct TOMB_ProgramPipeline
-{
-	GLuint programPipelineId;
 };
 
 Uint32 TOMB_ShaderProgramCompileFromFile(TOMB_MemoryArena * pArena, TOMB_ShaderProgram * pShader, const char * pPath, GLenum shaderProgramType)
@@ -25,26 +21,27 @@ Uint32 TOMB_ShaderProgramCompileFromFile(TOMB_MemoryArena * pArena, TOMB_ShaderP
 	}
 
 	pShader->shaderProgramId = glCreateShaderProgramv(shaderProgramType, 1, &pSource);
-	if (!glIsProgram(pShader->shaderProgramId))
+
+	GLint linkStatus;
+	glGetProgramiv(pShader->shaderProgramId, GL_LINK_STATUS, &linkStatus);
+	if (linkStatus == GL_FALSE) 
 	{
-		GLenum error = glGetError();
-		if (error != GL_NO_ERROR)
+		GLint infoLogLength;
+		glGetProgramiv(pShader->shaderProgramId, GL_INFO_LOG_LENGTH, &infoLogLength);
+		if (infoLogLength > 0)
 		{
-			const GLubyte * pError = glewGetErrorString(glGetError());
-			SDL_LogError(SDL_LOG_CATEGORY_RENDER,
-				"GL got the following error on creating shader program: %s.", 
-				pError);
+			GLchar * log = (GLchar *)TOMB_MemoryArenaReserve(pArena, (Uint64)infoLogLength);
+			glGetProgramInfoLog(pShader->shaderProgramId, infoLogLength, 0, log);
+
+			printf("%s\n", log);
+
+			//SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "Could not link shader, log shows: %s.",
+				//(const char *)log);
+
 		}
-
-		GLsizei logLength;
-		GLchar log[512];
-		glGetProgramInfoLog(pShader->shaderProgramId, 512, &logLength, log);
-		SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "Could not load shader from %s, log shows %s.", pPath, log);
-
-		return TOMB_FAILURE;
-	
 	}
 
+	pShader->flag = shaderProgramType;
 
 	return TOMB_SUCCESS;
 }

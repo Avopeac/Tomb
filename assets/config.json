@@ -1,6 +1,6 @@
 { 
 	"vsync" : 1,
-	"width" : 1024,
-	"height" : 768,
+	"width" : 128,
+	"height" : 128,
 	"title" : "Tomb"
 } 

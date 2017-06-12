@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 
 #include "SDL.h"
 
@@ -173,8 +173,11 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 	TOMB_ShaderProgramCompileFromFile(&inputArena, &vertexShaderProgram, pVertexShaderProgramPath, GL_VERTEX_SHADER);
 	TOMB_ShaderProgramCompileFromFile(&inputArena, &fragmentShaderProgram, pFragmentShaderProgramPath, GL_FRAGMENT_SHADER);
 
+	
 	TOMB_GraphicsBase graphicsBase;
 	TOMB_GraphicsBaseInitialize(&graphicsBase);
+	TOMB_GraphicsBaseSetPipelineStage(&graphicsBase, &vertexShaderProgram);
+	TOMB_GraphicsBaseSetPipelineStage(&graphicsBase, &fragmentShaderProgram);
 
 	// Main loop
 
@@ -200,6 +203,7 @@ Sint32 TOMB_Main(Sint32 numArguments, char * pArguments[])
 
 		glClearColor(red, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		TOMB_GraphicsBaseDrawQuad(&graphicsBase);
 
 		SDL_GL_SwapWindow(pWindow);
 	}
