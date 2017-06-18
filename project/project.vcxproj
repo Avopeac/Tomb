@@ -97,15 +97,24 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TOMB_main.cpp" />
+    <ClCompile Include="..\src\config.cpp" />
+    <ClCompile Include="..\src\file.cpp" />
+    <ClCompile Include="..\src\graphics.cpp" />
+    <ClCompile Include="..\src\json.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\shader.cpp" />
+    <ClCompile Include="..\src\spritebatch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\TOMB_graphics.h" />
-    <ClInclude Include="..\src\TOMB_memory.h" />
-    <ClInclude Include="..\src\TOMB_config.h" />
-    <ClInclude Include="..\src\TOMB_defines.h" />
-    <ClInclude Include="..\src\TOMB_file.h" />
-    <ClInclude Include="..\src\TOMB_shader.h" />
+    <ClInclude Include="..\src\config.h" />
+    <ClInclude Include="..\src\disposable.h" />
+    <ClInclude Include="..\src\graphics.h" />
+    <ClInclude Include="..\src\json.h" />
+    <ClInclude Include="..\src\logger.h" />
+    <ClInclude Include="..\src\file.h" />
+    <ClInclude Include="..\src\shader.h" />
+    <ClInclude Include="..\src\spritebatch.h" />
+    <ClInclude Include="..\src\timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

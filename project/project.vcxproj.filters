@@ -13,30 +13,72 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Base">
+      <UniqueIdentifier>{ac8ddbba-b68a-4861-a94c-34383da48a91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{2b8133dc-a1bf-4fdd-96c4-083d74b12fc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{1407ec9d-54d0-456a-83bf-583f3a6ec45b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debug">
+      <UniqueIdentifier>{d6ba17f4-49f3-4f29-bd73-6a96a01ff496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{2b277b33-6079-44fe-b874-330213c62a2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\TOMB_config.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\disposable.h">
+      <Filter>Source Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\TOMB_defines.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\spritebatch.h">
+      <Filter>Source Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\TOMB_file.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\file.h">
+      <Filter>Source Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\TOMB_memory.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\json.h">
+      <Filter>Source Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\TOMB_graphics.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\config.h">
+      <Filter>Source Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\TOMB_shader.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\logger.h">
+      <Filter>Source Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shader.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\timing.h">
+      <Filter>Source Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TOMB_main.cpp">
+    <ClCompile Include="..\src\main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\spritebatch.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\config.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\json.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\file.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shader.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
