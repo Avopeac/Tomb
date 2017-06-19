@@ -17,17 +17,9 @@ GraphicsBase::~GraphicsBase()
 void GraphicsBase::Initialize(const input::Config & config)
 {
 	// Create window with these attributes
-
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 	SDL_GL_SetSwapInterval(config.GetVerticalSync());
 
 	window_ = SDL_CreateWindow(config.GetWindowTitle().c_str(),
@@ -130,6 +122,11 @@ void GraphicsBase::SetPipelineStages(Program program)
 	}
 
 	glUseProgramStages(pipeline_, flags, program.id);
+}
+
+void graphics::GraphicsBase::BindPipeline()
+{
+	glBindProgramPipeline(pipeline_);
 }
 
 void GraphicsBase::BindVertexArray()

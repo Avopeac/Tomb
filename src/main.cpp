@@ -33,9 +33,9 @@ Sint32 main(Sint32 argc, char * argv[])
 	auto smiley_texture = texture_cache.GetTextureFromPath("assets/textures/smiley.png");
 
 	graphics::Sampler sampler;
-	sampler.SetFiltering(graphics::MagnificationFiltering::Linear, 
+	sampler.SetFiltering(graphics::MagnificationFiltering::Nearest, 
 		graphics::MinificationFiltering::Linear);
-	
+	sampler.SetWrap(graphics::Wrapping::Repeat, graphics::Wrapping::ClampToEdge);
 
 	auto vert_prog = program_cache.GetProgramByName("assets/shaders/default.vert");
 	auto frag_prog = program_cache.GetProgramByName("assets/shaders/default.frag");
@@ -65,15 +65,16 @@ Sint32 main(Sint32 argc, char * argv[])
 
 		glClearColor(red, 1.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		sampler.Bind(0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, smiley_texture.id);
-		glProgramUniform1i(frag_prog.id, glGetUniformLocation(frag_prog.id, "u_texture"), 0);
 	
+		// TODO: Fix this
+		glProgramUniform1i(frag_prog.id, glGetUniformLocation(frag_prog.id, "u_texture"), 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, smiley_texture.id);
+		sampler.Bind(1);
 		graphics_base.DrawQuad();
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
+	
 	}
 
 	graphics_base.Free();

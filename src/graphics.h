@@ -48,6 +48,8 @@ namespace graphics
 
 		void SetPipelineStages(Program program);
 
+		void BindPipeline();
+
 		void BindVertexArray();
 
 		void DrawQuad();
