@@ -2,10 +2,8 @@
 
 #include <string>
 
-#include "jsmn/jsmn.h"
-
 #include "file.h"
-#include "memory.h"
+#include "third_party/jsmn.h"
 
 namespace input
 {

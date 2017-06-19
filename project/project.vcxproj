@@ -67,7 +67,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>jsmn.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
@@ -89,7 +89,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>jsmn.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -104,6 +104,8 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\spritebatch.cpp" />
+    <ClCompile Include="..\src\texture.cpp" />
+    <ClCompile Include="..\src\third_party\jsmn.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\config.h" />
@@ -114,6 +116,8 @@
     <ClInclude Include="..\src\file.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\spritebatch.h" />
+    <ClInclude Include="..\src\texture.h" />
+    <ClInclude Include="..\src\third_party\jsmn.h" />
     <ClInclude Include="..\src\timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

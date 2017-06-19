@@ -4,10 +4,6 @@
 
 #include "SDL.h"
 
-#include "jsmn/jsmn.h"
-
-#include "memory.h"
-
 namespace input
 {
 	class FileReader
