@@ -1,5 +1,7 @@
 #include "shader.h"
 
+#include <functional>
+
 #include "file.h"
 
 
@@ -16,10 +18,11 @@ ProgramCache::~ProgramCache()
 void ProgramCache::CompileFromFile(GLenum program_type, const std::string &path)
 {
 	input::FileReader reader;
-	std::string source = reader.ReadTextFile(path);;
+	std::string source = reader.ReadTextFile(path);
+	const char * source_ptr = source.c_str();
 
 	Program program;
-	program.id = glCreateShaderProgramv(program_type, 1, (const GLchar * const *)source.c_str());
+	program.id = glCreateShaderProgramv(program_type, 1, &source_ptr);
 
 	GLint link_status;
 	glGetProgramiv(program.id, GL_LINK_STATUS, &link_status);
@@ -38,16 +41,16 @@ void ProgramCache::CompileFromFile(GLenum program_type, const std::string &path)
 	}
 
 	program.flag = program_type;
+
+	programs_.insert({ std::hash<std::string>{}(path), program });
 }
 
 Program & ProgramCache::GetProgramByName(const std::string & name)
 {
-	// TODO: insert return statement here
-	return Program();
+	return programs_[std::hash<std::string>{}(name)];
 }
 
 Program & ProgramCache::GetProgramByHash(size_t hash)
 {
-	// TODO: insert return statement here
-	return Program();
+	return programs_[hash];
 }

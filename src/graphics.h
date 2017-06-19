@@ -35,10 +35,7 @@ namespace graphics
 		SDL_Window * window_;
 		SDL_GLContext context_;
 
-		GLuint vao_;
-		GLuint vbo_;
-		GLuint ebo_;
-
+		GLuint vao_, vbo_, ebo_;
 		GLuint pipeline_;
 
 	public:
