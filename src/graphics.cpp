@@ -23,12 +23,11 @@ void GraphicsBase::Initialize(const input::Config & config)
 	SDL_GL_SetSwapInterval(config.GetVerticalSync());
 
 	window_ = SDL_CreateWindow(config.GetWindowTitle().c_str(),
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
 		config.GetWindowWidth(),
 		config.GetWindowHeight(),
-		SDL_WINDOW_OPENGL |
-		SDL_WINDOW_RESIZABLE);
+		SDL_WINDOW_OPENGL);
 
 	if (!window_)
 	{
@@ -68,6 +67,11 @@ void GraphicsBase::Initialize(const input::Config & config)
 		SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Could not load GL extensions.");
 	}
 
+	glDisable(GL_DEPTH_TEST);
+	glDepthFunc(GL_NEVER);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Generate GL objects
 
 	glGenVertexArrays(1, &vao_);
@@ -104,6 +108,11 @@ void GraphicsBase::Initialize(const input::Config & config)
 	glBindProgramPipeline(pipeline_);
 
 	Log();
+
+	projection_ = glm::ortho(0.0f, (float)config.GetWindowWidth(), 
+		0.0f, (float)config.GetWindowHeight());
+	view_ = glm::mat4(1);
+	view_projection_ = projection_ * view_;
 }
 
 void GraphicsBase::SetPipelineStages(Program program)

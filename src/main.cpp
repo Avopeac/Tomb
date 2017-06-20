@@ -33,9 +33,10 @@ Sint32 main(Sint32 argc, char * argv[])
 	auto smiley_texture = texture_cache.GetTextureFromPath("assets/textures/smiley.png");
 
 	graphics::Sampler sampler;
-	sampler.SetFiltering(graphics::MagnificationFiltering::Nearest, 
-		graphics::MinificationFiltering::Linear);
-	sampler.SetWrap(graphics::Wrapping::Repeat, graphics::Wrapping::ClampToEdge);
+	sampler.SetFiltering(graphics::MagnificationFiltering::Linear, 
+		graphics::MinificationFiltering::NearestMipmapNearest);
+	sampler.SetWrap(graphics::Wrapping::ClampToEdge, 
+		graphics::Wrapping::ClampToEdge);
 
 	auto vert_prog = program_cache.GetProgramByName("assets/shaders/default.vert");
 	auto frag_prog = program_cache.GetProgramByName("assets/shaders/default.frag");
@@ -68,6 +69,9 @@ Sint32 main(Sint32 argc, char * argv[])
 	
 		// TODO: Fix this
 		glProgramUniform1i(frag_prog.id, glGetUniformLocation(frag_prog.id, "u_texture"), 1);
+		/*glProgramUniformMatrix4fv(vert_prog.id, glGetUniformLocation(vert_prog.id, "u_proj"), 1,
+			GL_FALSE, glm::value_ptr(graphics_base.GetProjection()));*/
+		
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, smiley_texture.id);
 		sampler.Bind(1);

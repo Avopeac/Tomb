@@ -3,6 +3,8 @@
 #include "SDL.h"
 
 #include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #include "file.h"
 #include "shader.h"
@@ -38,6 +40,10 @@ namespace graphics
 		GLuint vao_, vbo_, ebo_;
 		GLuint pipeline_;
 
+		glm::mat4 projection_;
+		glm::mat4 view_;
+		glm::mat4 view_projection_;
+
 	public:
 
 		GraphicsBase();
@@ -58,6 +64,13 @@ namespace graphics
 		virtual void Free() override;
 
 		inline SDL_Window * GetWindow() const { return window_; }
+
+		inline glm::mat4 GetProjection() const { return projection_; }
+
+		inline glm::mat4 GetView() const { return view_; }
+
+		inline glm::mat4 GetViewProjection() const { view_projection_; }
+
 
 	private:
 
