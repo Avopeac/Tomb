@@ -1,11 +1,15 @@
 #include "SDL.h"
 #include "SDL_image.h"
 
+#include "glm/gtc/random.hpp"
+
 #include "shader.h"
 #include "graphics.h"
 #include "texture.h"
 #include "logger.h"
 #include "timing.h"
+
+#include "sprite_renderer.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -43,6 +47,22 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	graphics_base.SetPipelineStages(vert_prog);
 	graphics_base.SetPipelineStages(frag_prog);
+
+	auto &renderer = graphics::SpriteRenderer::Get();
+	for (int i = 0; i < 2000; ++i)
+	{
+		size_t layer = glm::linearRand(0, 10);
+		size_t texture = glm::linearRand(0, 500);
+		size_t animation = glm::linearRand(0, 25);
+
+		graphics::Sprite sprite(glm::mat4(1));
+		sprite.SetLayer(layer);
+		sprite.SetTexture(texture);
+		sprite.SetAnimation(animation);
+		renderer.Push(sprite);
+	}
+	
+	renderer.Process();
 
 	// Main loop
 	bool running = true;
