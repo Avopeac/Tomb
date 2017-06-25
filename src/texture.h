@@ -6,6 +6,7 @@
 #include "SDL.h"
 
 #include "GL/glew.h"
+#include "disposable.h"
 
 namespace graphics
 {
@@ -42,6 +43,7 @@ namespace graphics
 	class Sampler
 	{
 		Uint32 unit_;
+
 		GLuint id_;
 
 	public:

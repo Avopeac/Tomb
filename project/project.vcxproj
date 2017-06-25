@@ -115,9 +115,9 @@
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\file.h" />
+    <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\sprite.h" />
     <ClInclude Include="..\src\sprite_renderer.h" />
-    <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\texture.h" />
     <ClInclude Include="..\src\third_party\jsmn.h" />
     <ClInclude Include="..\src\timing.h" />

@@ -7,7 +7,8 @@
 
 namespace debug
 {
-	static void LogOutputFunction(void * user_data, Sint32 category, SDL_LogPriority priority, const char * message)
+
+	static void Log(SDL_LogPriority priority, Sint32 category, const char * message)
 	{
 		std::string priority_string;
 
@@ -38,7 +39,7 @@ namespace debug
 		default: { category_string = "UNDEFINED"; } break;
 		}
 
-		std::cout << "LOG-" << priority_string << "-" << category_string << ":" << message << "\n";
+		std::cout << "LOG-" << priority_string << "-" << category_string << ":" << message << std::endl;
 	}
 }
 

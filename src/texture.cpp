@@ -85,17 +85,15 @@ void TextureCache::CreateFromFile(const std::string & path)
 	SDL_Surface * converted_surface = SDL_ConvertSurface(surface, &pixel_format, 0);
 
 	Texture texture;
-	glGenTextures(1, &texture.id);
-	glBindTexture(GL_TEXTURE_2D, texture.id);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, converted_surface->w, converted_surface->h, 0,
+	glCreateTextures(GL_TEXTURE_2D, 1, &texture.id);
+	glTextureStorage2D(texture.id, 1, internalFormat, converted_surface->w, converted_surface->h);
+	glTextureSubImage2D(texture.id, 0, 0, 0, converted_surface->w, converted_surface->h, 
 		GL_RGBA, GL_UNSIGNED_BYTE, converted_surface->pixels);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glTextureParameteri(texture.id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(texture.id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(texture.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(texture.id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glGenerateTextureMipmap(texture.id);
 
 	SDL_FreeSurface(surface);
 	SDL_FreeRW(rw);

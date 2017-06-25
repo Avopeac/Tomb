@@ -11,6 +11,7 @@ namespace graphics
 	{
 		GLenum flag;
 		GLuint id;
+		size_t hash;
 	};
 
 	class ProgramCache
@@ -24,11 +25,30 @@ namespace graphics
 
 		~ProgramCache();
 
-		void CompileFromFile(GLenum programType, const std::string &path);
+		Program CompileFromFile(GLenum programType, const std::string &path);
 
-		Program &GetProgramByName(const std::string &name);
+		const Program &GetProgramByName(const std::string &name);
 
-		Program &GetProgramByHash(size_t hash);
+		const Program &GetProgramByHash(size_t hash);
+
+	};
+
+	class ProgramPipeline
+	{
+
+		GLuint id_;
+
+	public:
+
+		ProgramPipeline();
+
+		~ProgramPipeline();
+
+		void Bind();
+
+		void Unbind();
+
+		void SetStages(const Program &program);
 
 	};
 

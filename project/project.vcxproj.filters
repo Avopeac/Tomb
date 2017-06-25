@@ -1,105 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Source Files\Base">
-      <UniqueIdentifier>{ac8ddbba-b68a-4861-a94c-34383da48a91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graphics">
-      <UniqueIdentifier>{2b8133dc-a1bf-4fdd-96c4-083d74b12fc7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Input">
-      <UniqueIdentifier>{1407ec9d-54d0-456a-83bf-583f3a6ec45b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Debug">
-      <UniqueIdentifier>{d6ba17f4-49f3-4f29-bd73-6a96a01ff496}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Util">
-      <UniqueIdentifier>{2b277b33-6079-44fe-b874-330213c62a2e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Third Party">
-      <UniqueIdentifier>{30c60319-dc63-468b-bbe2-ae7c749d1e75}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\disposable.h">
-      <Filter>Source Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\file.h">
-      <Filter>Source Files\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\json.h">
-      <Filter>Source Files\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\config.h">
-      <Filter>Source Files\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\logger.h">
-      <Filter>Source Files\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\graphics.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shader.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\timing.h">
-      <Filter>Source Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\texture.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\third_party\jsmn.h">
-      <Filter>Source Files\Third Party</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sprite_renderer.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sprite.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\config.cpp">
-      <Filter>Source Files\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\json.cpp">
-      <Filter>Source Files\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\file.cpp">
-      <Filter>Source Files\Input</Filter>
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\graphics.cpp">
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shader.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\graphics.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\texture.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\third_party\jsmn.c">
-      <Filter>Source Files\Third Party</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\sprite_renderer.cpp">
-      <Filter>Source Files\Graphics</Filter>
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\sprite.cpp">
-      <Filter>Source Files\Graphics</Filter>
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\sprite_renderer.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\texture.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\third_party\jsmn.c">
+      <Filter>Source\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\config.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\file.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\json.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\graphics.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sprite.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sprite_renderer.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\texture.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\third_party\jsmn.h">
+      <Filter>Source\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\logger.h">
+      <Filter>Source\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\timing.h">
+      <Filter>Source\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\disposable.h">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\config.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\file.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\json.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4c5b273e-b907-4e3a-ae00-b2b4fbdf1ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty">
+      <UniqueIdentifier>{482cdddc-f69c-4b89-90a4-7ef6391eaad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics">
+      <UniqueIdentifier>{b02f3524-5cd6-4c4e-a37d-5e89feb964a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Debug">
+      <UniqueIdentifier>{f8eb5e70-9dee-40d7-abb4-06a676a546b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Util">
+      <UniqueIdentifier>{1f25a6cb-0f35-4a9e-94c1-bba352bdc86d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Base">
+      <UniqueIdentifier>{4d25895c-3069-4c3e-bf0a-ad2a52ff45d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{b385a5bc-9f10-4f1c-919b-04931e0fc178}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

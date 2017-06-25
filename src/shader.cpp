@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "file.h"
-
+#include "logger.h"
 
 using namespace graphics;
 
@@ -15,7 +15,7 @@ ProgramCache::~ProgramCache()
 {
 }
 
-void ProgramCache::CompileFromFile(GLenum program_type, const std::string &path)
+Program ProgramCache::CompileFromFile(GLenum program_type, const std::string &path)
 {
 	input::FileReader reader;
 	std::string source = reader.ReadTextFile(path);
@@ -34,23 +34,60 @@ void ProgramCache::CompileFromFile(GLenum program_type, const std::string &path)
 		{
 			GLchar log[512];
 			glGetProgramInfoLog(program.id, info_log_length, 0, log);
-
-			SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "Could not link shader, log shows: %s.", (const char *) log);
-
+			debug::Log(SDL_LOG_PRIORITY_WARN, SDL_LOG_CATEGORY_RENDER, (const char *)log);
 		}
 	}
 
 	program.flag = program_type;
+	program.hash = std::hash<std::string>{}(path);
+	programs_.insert({ program.hash, program });
 
-	programs_.insert({ std::hash<std::string>{}(path), program });
+	return program;
 }
 
-Program & ProgramCache::GetProgramByName(const std::string & name)
+const Program & ProgramCache::GetProgramByName(const std::string & name)
 {
 	return programs_[std::hash<std::string>{}(name)];
 }
 
-Program & ProgramCache::GetProgramByHash(size_t hash)
+const Program & ProgramCache::GetProgramByHash(size_t hash)
 {
 	return programs_[hash];
+}
+
+graphics::ProgramPipeline::ProgramPipeline()
+{
+	glCreateProgramPipelines(1, &id_);
+}
+
+graphics::ProgramPipeline::~ProgramPipeline()
+{
+	glDeleteProgramPipelines(1, &id_);
+}
+
+void graphics::ProgramPipeline::Bind()
+{
+	glBindProgramPipeline(id_);
+}
+
+void graphics::ProgramPipeline::Unbind()
+{
+	glBindProgramPipeline(0);
+}
+
+void graphics::ProgramPipeline::SetStages(const Program & program)
+{
+	GLbitfield flags;
+	switch (program.flag)
+	{
+	case GL_VERTEX_SHADER: { flags = GL_VERTEX_SHADER_BIT; } break;
+	case GL_FRAGMENT_SHADER: { flags = GL_FRAGMENT_SHADER_BIT; } break;
+	case GL_GEOMETRY_SHADER: { flags = GL_GEOMETRY_SHADER_BIT; } break;
+	case GL_TESS_CONTROL_SHADER: { flags = GL_TESS_CONTROL_SHADER_BIT; } break;
+	case GL_TESS_EVALUATION_SHADER_BIT: { flags = GL_TESS_EVALUATION_SHADER_BIT; } break;
+	case GL_COMPUTE_SHADER_BIT: { flags = GL_COMPUTE_SHADER_BIT; } break;
+	default: SDL_assert(false);
+	}
+
+	glUseProgramStages(id_, flags, program.id);
 }

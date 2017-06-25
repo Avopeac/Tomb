@@ -2,25 +2,63 @@
 
 #include <vector>
 
-#include <set>
+#include <unordered_map>
 
+#include "graphics.h"
 #include "sprite.h"
+#include "shader.h"
+#include "texture.h"
 
 namespace graphics
 {
 
+	struct SpriteBatchInstance
+	{
+		glm::mat4 transform = glm::mat4(1);
+		Uint32 layer = 0;
+		Uint32 animation = 0;
+	};
+
+	struct SpriteBatch
+	{
+		size_t texture_hash = 0;
+		size_t blend_hash = 0;
+		size_t sampler_hash = 0;
+
+		std::vector<SpriteBatchInstance> instances;
+	};
+
 	class SpriteRenderer
 	{
 
-		std::vector<Sprite> sprites_;
+		size_t instances_per_batch_;
 
-		std::set<size_t> unique_textures_;
+		GLuint vertex_array_;
 
-		std::set<size_t> unique_animations_;
+		GLuint vertex_buffer_;
 
-		std::vector<std::vector<Sprite>> batches_;
+		GLuint element_buffer_;
+
+		GLuint instance_buffer_;
+
+		Program vertex_program_;
+
+		Program fragment_program_;
+
+		ProgramPipeline pipeline_;
+
+		ProgramCache & program_cache_;
+
+		GraphicsBase & graphics_base_;
+
+		TextureCache & texture_cache_;
+
+		std::vector<SpriteBatch> sprite_batches_;
 
 	public:
+
+		SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
+			TextureCache & texture_cache);
 
 		~SpriteRenderer();
 
@@ -32,21 +70,9 @@ namespace graphics
 
 		SpriteRenderer &operator=(SpriteRenderer &&) = delete;
 
-		static SpriteRenderer &Get()
-		{
-			static SpriteRenderer instance;
-			return instance;
-		}
-
-		void Push(const Sprite &sprite);
-
-		void Process();
+		void Push(const Sprite & sprite, size_t blend_hash, size_t sampler_hash);
 
 		void Draw();
-
-	private:
-
-		SpriteRenderer();
 
 	};
 }

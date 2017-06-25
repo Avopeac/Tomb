@@ -1,6 +1,7 @@
 #include "json.h"
 
 #include "file.h"
+#include "logger.h"
 
 using namespace input;
 
@@ -40,7 +41,7 @@ void JsonReader::ReadJsonFile(const std::string & path)
 
 	if (num_tokens < 0)
 	{
-		SDL_LogError(SDL_LOG_CATEGORY_INPUT, "Failed to parse JSON file %s.", path.c_str());
+		debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_INPUT, "Failed to parse JSON file.");
 	}
 
 	// Reset token position

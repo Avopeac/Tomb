@@ -47,7 +47,7 @@ namespace graphics
 
 		inline void SetAnimation(size_t animation_hash) { animation_hash_ = animation_hash; }
 
-		inline void SetTranform(const glm::mat4 &transform) { transform_ = transform; }
+		inline void SetTransform(const glm::mat4 &transform) { transform_ = transform; }
 
 		inline size_t GetLayer() const { return layer_; }
 
