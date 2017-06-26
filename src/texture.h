@@ -61,11 +61,9 @@ namespace graphics
 
 		~TextureCache();
 
-		Texture &CreateFromFile(size_t &hash, const std::string &path);
+		Texture &GetFromFile(size_t &hash, const std::string &path);
 
-		Texture &GetTextureFromPath(const std::string &path);
-
-		Texture &GetTextureFromHash(size_t hash);
+		Texture &GetFromHash(size_t hash);
 
 	};
 }

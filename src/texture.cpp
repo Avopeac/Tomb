@@ -109,19 +109,14 @@ TextureCache::~TextureCache()
 	}
 }
 
-Texture & TextureCache::GetTextureFromPath(const std::string & path)
-{
-	return textures_[std::hash<std::string>{}(path)];
-}
-
-Texture & TextureCache::GetTextureFromHash(size_t hash)
+Texture & TextureCache::GetFromHash(size_t hash)
 {
 	SDL_assert(textures_.find(hash) != textures_.end());
 
 	return textures_[hash];
 }
 
-Texture &TextureCache::CreateFromFile(size_t &hash, const std::string & path)
+Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path)
 {
 
 	hash = std::hash<std::string>{}(path);
@@ -133,5 +128,6 @@ Texture &TextureCache::CreateFromFile(size_t &hash, const std::string & path)
 		textures_.insert({ hash, std::move(texture) });
 	}
 
-	return GetTextureFromHash(hash);
+	return textures_[hash];
+
 }

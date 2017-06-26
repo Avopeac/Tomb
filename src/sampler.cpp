@@ -2,7 +2,8 @@
 
 using namespace graphics;
 
-Sampler::Sampler()
+Sampler::Sampler() :
+	unit_(0), id_(0)
 {
 	glCreateSamplers(1, &id_);
 }

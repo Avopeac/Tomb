@@ -107,6 +107,7 @@ void SpriteRenderer::Push(const Sprite & sprite, size_t blend_hash,
 		SpriteBatch new_sprite_batch;
 		new_sprite_batch.texture_hash = texture_hash;
 		new_sprite_batch.blend_hash = blend_hash;
+		new_sprite_batch.sampler_hash = sampler_hash;
 		new_sprite_batch.instances.push_back(new_instance);
 		sprite_batches_.push_back(new_sprite_batch);
 	}
@@ -141,8 +142,7 @@ void SpriteRenderer::Draw()
 			return a.layer < b.layer;
 		});
 
-		// TODO: Fix crash
-		//sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
+		sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
 
 		texture_cache_.GetTextureFromHash(batch.texture_hash).Bind(0);
 
