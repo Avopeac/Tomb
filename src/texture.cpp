@@ -7,50 +7,39 @@
 
 using namespace graphics;
 
-Sampler::Sampler()
+Texture::Texture()
 {
-	glGenSamplers(1, &id_);
+	glCreateTextures(GL_TEXTURE_2D, 1, &id_);
 }
 
-Sampler::~Sampler()
+Texture::~Texture()
 {
-	glDeleteSamplers(1, &id_);
 }
 
-void Sampler::SetFiltering(MagnificationFiltering mag, MinificationFiltering min)
+Texture::Texture(Texture &&other)
 {
-	glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(min));
-	glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(mag));
+	if (&other != this)
+	{
+		id_ = other.id_;
+		unit_ = other.unit_;
+		other.id_ = 0;
+		other.unit_ = 0;
+	}
 }
 
-void Sampler::SetWrap(Wrapping s, Wrapping t)
+void Texture::Bind(GLuint unit)
 {
-	glSamplerParameteri(id_, GL_TEXTURE_WRAP_S, static_cast<GLint>(s));
-	glSamplerParameteri(id_, GL_TEXTURE_WRAP_T, static_cast<GLint>(t));
-}
-
-void Sampler::Bind(Uint32 unit) 
-{
+	glBindTextureUnit(unit, id_);
 	unit_ = unit;
-	glBindSamplers(unit_, 1, &id_);
 }
 
-void Sampler::Unbind()
+void Texture::Unbind()
 {
-	glBindSamplers(unit_, 0, 0);
+	glBindTextureUnit(unit_, id_);
 }
 
-TextureCache::TextureCache()
+void Texture::Create(const std::string & path, bool mips)
 {
-}
-
-TextureCache::~TextureCache()
-{
-}
-
-void TextureCache::CreateFromFile(const std::string & path)
-{
-
 	SDL_RWops * rw = SDL_RWFromFile(path.c_str(), "rb");
 
 	SDL_Surface * surface = IMG_LoadPNG_RW(rw);
@@ -75,30 +64,49 @@ void TextureCache::CreateFromFile(const std::string & path)
 	#endif
 
 	GLint internalFormat;
-	if (pixel_format.BytesPerPixel == 3) {
+	if (pixel_format.BytesPerPixel == 3)
+	{
 		internalFormat = GL_RGB8;
 	}
-	else if (pixel_format.BytesPerPixel == 4) {
+	else if (pixel_format.BytesPerPixel == 4)
+	{
 		internalFormat = GL_RGBA8;
 	}
 
 	SDL_Surface * converted_surface = SDL_ConvertSurface(surface, &pixel_format, 0);
 
-	Texture texture;
-	glCreateTextures(GL_TEXTURE_2D, 1, &texture.id);
-	glTextureStorage2D(texture.id, 1, internalFormat, converted_surface->w, converted_surface->h);
-	glTextureSubImage2D(texture.id, 0, 0, 0, converted_surface->w, converted_surface->h, 
+	glTextureStorage2D(id_, 1, internalFormat, converted_surface->w, converted_surface->h);
+	glTextureSubImage2D(id_, 0, 0, 0, converted_surface->w, converted_surface->h,
 		GL_RGBA, GL_UNSIGNED_BYTE, converted_surface->pixels);
-	glTextureParameteri(texture.id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(texture.id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(texture.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(texture.id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glGenerateTextureMipmap(texture.id);
+	glTextureParameteri(id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(id_, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(id_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(id_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	if (mips) 
+	{
+		glGenerateTextureMipmap(id_);
+	}
 
 	SDL_FreeSurface(surface);
 	SDL_FreeRW(rw);
+}
 
-	textures_.insert({ std::hash<std::string>{}(path), texture });
+void Texture::Free()
+{
+	glDeleteTextures(1, &id_);
+}
+
+TextureCache::TextureCache()
+{
+}
+
+TextureCache::~TextureCache()
+{
+	for (auto &texture : textures_)
+	{
+		texture.second.Free();
+	}
 }
 
 Texture & TextureCache::GetTextureFromPath(const std::string & path)
@@ -108,5 +116,22 @@ Texture & TextureCache::GetTextureFromPath(const std::string & path)
 
 Texture & TextureCache::GetTextureFromHash(size_t hash)
 {
+	SDL_assert(textures_.find(hash) != textures_.end());
+
 	return textures_[hash];
+}
+
+Texture &TextureCache::CreateFromFile(size_t &hash, const std::string & path)
+{
+
+	hash = std::hash<std::string>{}(path);
+
+	if (textures_.find(hash) == textures_.end())
+	{
+		Texture texture;
+		texture.Create(path, true);
+		textures_.insert({ hash, std::move(texture) });
+	}
+
+	return GetTextureFromHash(hash);
 }

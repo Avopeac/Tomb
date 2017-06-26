@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "graphics.h"
 #include "texture.h"
+#include "sampler.h"
 #include "logger.h"
 #include "timing.h"
 #include "sprite_renderer.h"
@@ -27,15 +28,23 @@ Sint32 main(Sint32 argc, char * argv[])
 	
 	graphics::ProgramCache program_cache;
 	graphics::TextureCache texture_cache;
+	graphics::SamplerCache sampler_cache;
 
-	graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, texture_cache);
+	graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, 
+		texture_cache, sampler_cache);
+
 	for (auto i = 0; i < 2000; i++)
 	{ 
 		graphics::Sprite sprite(glm::translate(glm::scale(glm::mat4(1),
 			glm::vec3(128, 128, 128)), glm::vec3(i, 0, 0)));
 
+		size_t texture_hash;
+		texture_cache.CreateFromFile(texture_hash, "assets/textures/smiley.png");
+		sprite.SetTexture(texture_hash);
 		sprite.SetLayer(i);
-		sprite_renderer.Push(sprite, 0, 0);
+		sprite_renderer.Push(sprite, 0, graphics::MagnificationFiltering::Linear,
+			graphics::MinificationFiltering::LinearMipmapLinear, graphics::Wrapping::ClampToEdge,
+			graphics::Wrapping::ClampToEdge);
 	}
 	
 	// Main loop

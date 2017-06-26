@@ -9,11 +9,12 @@
 using namespace graphics;
 
 SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
-	TextureCache & texture_cache) :
+	TextureCache & texture_cache, SamplerCache &sampler_cache) :
 	instances_per_batch_(instances_per_batch),
 	graphics_base_(graphics_base),
 	program_cache_(program_cache),
-	texture_cache_(texture_cache)
+	texture_cache_(texture_cache),
+	sampler_cache_(sampler_cache)
 {
 
 	auto quad_vertex_size = sizeof(graphics_base_.quad_vertices[0]);
@@ -83,7 +84,9 @@ SpriteRenderer::~SpriteRenderer()
 	glDeleteBuffers(1, &instance_buffer_);
 }
 
-void SpriteRenderer::Push(const Sprite & sprite, size_t blend_hash, size_t sampler_hash)
+void SpriteRenderer::Push(const Sprite & sprite, size_t blend_hash,
+	MagnificationFiltering mag, MinificationFiltering min,
+	Wrapping s, Wrapping t)
 {
 	size_t texture_hash = sprite.GetTexture();
 
@@ -91,6 +94,9 @@ void SpriteRenderer::Push(const Sprite & sprite, size_t blend_hash, size_t sampl
 	new_instance.animation = static_cast<Uint32>(sprite.GetAnimation());
 	new_instance.layer = static_cast<Uint32>(sprite.GetLayer());
 	new_instance.transform = sprite.GetTransform();
+
+	size_t sampler_hash;
+	sampler_cache_.GetFromParameters(sampler_hash, mag, min, s, t);
 
 	if (sprite_batches_.empty() ||
 		texture_hash != sprite_batches_.back().texture_hash ||
@@ -135,10 +141,10 @@ void SpriteRenderer::Draw()
 			return a.layer < b.layer;
 		});
 
-		// Get sampler
-		//glBindSampler(0,);
+		// TODO: Fix crash
+		//sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
 
-		glBindTextureUnit(0, texture_cache_.GetTextureFromHash(batch.texture_hash).id);
+		texture_cache_.GetTextureFromHash(batch.texture_hash).Bind(0);
 
 		glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 

@@ -7,6 +7,7 @@
 #include "graphics.h"
 #include "sprite.h"
 #include "shader.h"
+#include "sampler.h"
 #include "texture.h"
 
 namespace graphics
@@ -24,7 +25,6 @@ namespace graphics
 		size_t texture_hash = 0;
 		size_t blend_hash = 0;
 		size_t sampler_hash = 0;
-
 		std::vector<SpriteBatchInstance> instances;
 	};
 
@@ -53,12 +53,14 @@ namespace graphics
 
 		TextureCache & texture_cache_;
 
+		SamplerCache & sampler_cache_;
+
 		std::vector<SpriteBatch> sprite_batches_;
 
 	public:
 
 		SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
-			TextureCache & texture_cache);
+			TextureCache & texture_cache, SamplerCache &sampler_cache);
 
 		~SpriteRenderer();
 
@@ -70,7 +72,9 @@ namespace graphics
 
 		SpriteRenderer &operator=(SpriteRenderer &&) = delete;
 
-		void Push(const Sprite & sprite, size_t blend_hash, size_t sampler_hash);
+		void Push(const Sprite & sprite, size_t blend_hash, 
+			MagnificationFiltering mag, MinificationFiltering min,
+			Wrapping s, Wrapping t);
 
 		void Draw();
 

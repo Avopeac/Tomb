@@ -11,55 +11,43 @@
 namespace graphics
 {
 
-	struct Texture
+	class Texture : base::Disposable
 	{
-		GLuint id;
-	};
-
-	enum class MinificationFiltering : Uint32
-	{
-		Linear = GL_LINEAR,
-		LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
-		LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
-		Nearest = GL_NEAREST,
-		NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
-		NearestMipmapLinear = GL_NEAREST_MIPMAP_LINEAR,
-	};
-
-	enum class MagnificationFiltering : Uint32
-	{
-		Nearest = GL_NEAREST,
-		Linear = GL_LINEAR,
-	};
-
-	enum class Wrapping : Uint32
-	{
-		Repeat = GL_REPEAT,
-		ClampToEdge = GL_CLAMP_TO_EDGE,
-		MirroredRepeat = GL_MIRRORED_REPEAT,
-		MirroredClampToEdge = GL_MIRROR_CLAMP_TO_EDGE,
-	};
-
-	class Sampler
-	{
-		Uint32 unit_;
+		GLuint unit_;
 
 		GLuint id_;
 
 	public:
 
-		Sampler();
+		Texture();
 
-		~Sampler();
+		~Texture();
 
-		void SetFiltering(MagnificationFiltering mag,
-			MinificationFiltering min);
+		Texture(const Texture &) = delete;
 
-		void SetWrap(Wrapping s, Wrapping t);
+		Texture(Texture &&);
 
-		void Bind(Uint32 unit);
+		Texture &operator=(const Texture &other) = delete;
+
+		Texture &operator=(Texture &&other)
+		{
+			unit_ = other.unit_;
+			id_ = other.id_;
+		}
+
+		void Bind(GLuint unit);
 
 		void Unbind();
+
+		void Create(const std::string &path, bool mips);
+
+		// Inherited via Disposable
+		virtual void Free() override;
+
+		inline GLuint GetId() const { return id_; }
+
+		inline GLuint GetUnit() const { return unit_; }
+
 	};
 
 	class TextureCache
@@ -73,7 +61,7 @@ namespace graphics
 
 		~TextureCache();
 
-		void CreateFromFile(const std::string &path);
+		Texture &CreateFromFile(size_t &hash, const std::string &path);
 
 		Texture &GetTextureFromPath(const std::string &path);
 
