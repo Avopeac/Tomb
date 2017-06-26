@@ -144,7 +144,7 @@ void SpriteRenderer::Draw()
 
 		sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
 
-		texture_cache_.GetTextureFromHash(batch.texture_hash).Bind(0);
+		texture_cache_.GetFromHash(batch.texture_hash).Bind(0);
 
 		glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 

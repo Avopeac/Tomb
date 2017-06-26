@@ -35,11 +35,15 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	for (auto i = 0; i < 2000; i++)
 	{ 
-		graphics::Sprite sprite(glm::translate(glm::scale(glm::mat4(1),
-			glm::vec3(128, 128, 128)), glm::vec3(i, 0, 0)));
+
+		auto scale = glm::linearRand(glm::vec3(16, 16, 1), glm::vec3(32, 32, 1));
+
+		auto translation = glm::linearRand(glm::vec3(0), glm::vec3(1024,768,0));
+
+		graphics::Sprite sprite(glm::scale(glm::translate(glm::mat4(1), translation), scale));
 
 		size_t texture_hash;
-		texture_cache.CreateFromFile(texture_hash, "assets/textures/smiley.png");
+		texture_cache.GetFromFile(texture_hash, "assets/textures/smiley.png");
 		sprite.SetTexture(texture_hash);
 		sprite.SetLayer(i);
 		sprite_renderer.Push(sprite, 0, graphics::MagnificationFiltering::Linear,
@@ -73,7 +77,6 @@ Sint32 main(Sint32 argc, char * argv[])
 		sprite_renderer.Draw();
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
-	
 	}
 
 	graphics_base.Free();
