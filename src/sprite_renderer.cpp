@@ -6,6 +6,8 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
+#include "timing.h"
+
 using namespace graphics;
 
 SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
@@ -16,27 +18,28 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 	texture_cache_(texture_cache),
 	sampler_cache_(sampler_cache)
 {
+	auto hexagon_vertex_size = sizeof(graphics_base_.hexagon_vertices[0]);
+	auto hexagon_index_size = sizeof(graphics_base_.hexagon_indices[0]);
+	auto hexagon_vertices_size = sizeof(graphics_base_.hexagon_vertices);
+	auto hexagon_indices_size = sizeof(graphics_base_.hexagon_indices);
+	auto num_vertices = hexagon_vertices_size / sizeof(graphics_base_.hexagon_vertices[0]);
 
-	auto quad_vertex_size = sizeof(graphics_base_.quad_vertices[0]);
-	auto quad_index_size = sizeof(graphics_base_.quad_indices[0]);
-	auto quad_vertices_size = sizeof(graphics_base_.quad_vertices);
-	auto quad_indices_size = sizeof(graphics_base_.quad_indices);
-	auto num_vertices = quad_vertices_size / sizeof(graphics_base_.quad_vertices[0]);
-	auto num_indices = quad_indices_size / sizeof(graphics_base_.quad_indices[0]);
+	num_indices_ = hexagon_indices_size / sizeof(graphics_base_.hexagon_indices[0]);
+
 	auto instance_size = sizeof(SpriteBatchInstance);
 
 	glCreateBuffers(1, &vertex_buffer_);
 	glCreateBuffers(1, &element_buffer_);
 	glCreateBuffers(1, &instance_buffer_);
 
-	glNamedBufferData(vertex_buffer_, quad_vertices_size, graphics_base_.quad_vertices, GL_STATIC_DRAW);
-	glNamedBufferData(element_buffer_, quad_indices_size, graphics_base_.quad_indices, GL_STATIC_DRAW);
+	glNamedBufferData(vertex_buffer_, hexagon_vertices_size, graphics_base_.hexagon_vertices, GL_STATIC_DRAW);
+	glNamedBufferData(element_buffer_, hexagon_indices_size, graphics_base_.hexagon_indices, GL_STATIC_DRAW);
 	glNamedBufferData(instance_buffer_, instances_per_batch_ * instance_size, nullptr, GL_DYNAMIC_DRAW);
 
 	glCreateVertexArrays(1, &vertex_array_);
 
 	glVertexArrayElementBuffer(vertex_array_, element_buffer_);
-	glVertexArrayVertexBuffer(vertex_array_, 0, vertex_buffer_, 0, static_cast<GLsizei>(quad_vertex_size));
+	glVertexArrayVertexBuffer(vertex_array_, 0, vertex_buffer_, 0, static_cast<GLsizei>(hexagon_vertex_size));
 	glVertexArrayVertexBuffer(vertex_array_, 1, instance_buffer_, 0, static_cast<GLsizei>(instance_size));
 
 	GLint attrib_index = 0;
@@ -132,7 +135,7 @@ void SpriteRenderer::Draw()
 
 	pipeline_.Bind();
 
-	auto num_indices = sizeof(graphics_base_.quad_indices) / sizeof(graphics_base_.quad_indices[0]);
+	auto num_indices = sizeof(graphics_base_.hexagon_indices) / sizeof(graphics_base_.hexagon_indices[0]);
 
 	for (auto &batch : sprite_batches_)
 	{
@@ -142,9 +145,16 @@ void SpriteRenderer::Draw()
 			return a.layer < b.layer;
 		});
 
-		sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
 
-		texture_cache_.GetFromHash(batch.texture_hash).Bind(0);
+		if (batch.sampler_hash && batch.texture_hash)
+		{
+			sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
+			texture_cache_.GetFromHash(batch.texture_hash).Bind(0);
+		}
+
+		glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
+
+		glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
 
 		glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 
@@ -156,7 +166,7 @@ void SpriteRenderer::Draw()
 			&batch.instances[0]);
 
 		glDrawElementsInstanced(GL_TRIANGLES,
-			static_cast<GLsizei>(num_indices), GL_UNSIGNED_INT, nullptr,
+			static_cast<GLsizei>(num_indices), GL_UNSIGNED_INT, 0,
 			static_cast<GLsizei>(batch.instances.size()));
 	}
 

@@ -33,22 +33,25 @@ Sint32 main(Sint32 argc, char * argv[])
 	graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, 
 		texture_cache, sampler_cache);
 
-	for (auto i = 0; i < 2000; i++)
-	{ 
 
-		auto scale = glm::linearRand(glm::vec3(16, 16, 1), glm::vec3(32, 32, 1));
+	auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
+	for (auto y = 0; y < 32; ++y)
+	{
+		for (auto x = 0; x < 32; ++x)
+		{
+			float x_offset = y % 2 == 0 ? 0.5f : -0.5f;
+			auto transform = glm::translate(scale_mat, glm::vec3(x_offset + 2.1f * x, 1.6f * y, 0));
 
-		auto translation = glm::linearRand(glm::vec3(0), glm::vec3(1024,768,0));
+			graphics::Sprite sprite(transform);
 
-		graphics::Sprite sprite(glm::scale(glm::translate(glm::mat4(1), translation), scale));
-
-		size_t texture_hash;
-		texture_cache.GetFromFile(texture_hash, "assets/textures/smiley.png");
-		sprite.SetTexture(texture_hash);
-		sprite.SetLayer(i);
-		sprite_renderer.Push(sprite, 0, graphics::MagnificationFiltering::Linear,
-			graphics::MinificationFiltering::LinearMipmapLinear, graphics::Wrapping::ClampToEdge,
-			graphics::Wrapping::ClampToEdge);
+			size_t texture_hash;
+			texture_cache.GetFromFile(texture_hash, "assets/textures/sand/sand_08.png");
+			sprite.SetTexture(texture_hash);
+			sprite.SetLayer(x + y * 32);
+			sprite_renderer.Push(sprite, 0, graphics::MagnificationFiltering::Linear,
+				graphics::MinificationFiltering::LinearMipmapLinear, graphics::Wrapping::ClampToEdge,
+				graphics::Wrapping::ClampToEdge);
+		}
 	}
 	
 	// Main loop
@@ -69,9 +72,7 @@ Sint32 main(Sint32 argc, char * argv[])
 			}
 		}
 
-		float red = 0.5f + 0.5f * (float)glm::sin(current_time);
-
-		glClearColor(red, 1.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		sprite_renderer.Draw();

@@ -12,12 +12,19 @@ out gl_PerVertex
 
 out vec2 v_texcoord;
 
+out vec2 v_position;
+
 uniform mat4 u_viewproj;
+
+uniform float u_time;
 
 void main()
 {
-	gl_Position = u_viewproj * i_transform * vec4(i_position.xy, 0, 1);
+	vec4 transformed = i_transform * vec4(i_position.xy, 0, 1);
 
+	gl_Position = u_viewproj * transformed;
+
+	v_position = transformed.xy;
 	v_texcoord = 0.5 + 0.5 * i_position.xy;
 	v_texcoord.y = 1.0 - v_texcoord.y;
 }

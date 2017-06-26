@@ -31,6 +31,8 @@ namespace graphics
 	class SpriteRenderer
 	{
 
+		GLuint num_indices_;
+
 		size_t instances_per_batch_;
 
 		GLuint vertex_array_;
