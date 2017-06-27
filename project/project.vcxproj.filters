@@ -35,6 +35,12 @@
     <ClCompile Include="..\src\blend_mode.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\post_processing.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\frame_buffer.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -77,6 +83,12 @@
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\blend_mode.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\post_processing.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\frame_buffer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

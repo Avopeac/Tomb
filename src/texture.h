@@ -6,7 +6,9 @@
 #include "SDL.h"
 
 #include "GL/glew.h"
+
 #include "disposable.h"
+#include "frame_buffer.h"
 
 namespace graphics
 {
@@ -25,9 +27,9 @@ namespace graphics
 
 		Texture(const Texture &) = delete;
 
-		Texture(Texture &&);
-
 		Texture &operator=(const Texture &other) = delete;
+
+		Texture(Texture &&);
 
 		Texture &operator=(Texture &&other)
 		{

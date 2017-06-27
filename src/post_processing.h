@@ -12,15 +12,6 @@
 namespace graphics
 {
 
-	class FrameBuffer
-	{
-	public:
-
-		FrameBuffer(){}
-
-		~FrameBuffer() {}
-	};
-
 	class PostProcessing
 	{
 

@@ -1,5 +1,6 @@
 # Folders
 project/build/
+assets/textures/
 
 # Prerequisites
 *.d

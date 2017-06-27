@@ -100,9 +100,11 @@
     <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
     <ClCompile Include="..\src\file.cpp" />
+    <ClCompile Include="..\src\frame_buffer.cpp" />
     <ClCompile Include="..\src\graphics.cpp" />
     <ClCompile Include="..\src\json.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\post_processing.cpp" />
     <ClCompile Include="..\src\sampler.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\sprite.cpp" />
@@ -114,10 +116,12 @@
     <ClInclude Include="..\src\blend_mode.h" />
     <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\disposable.h" />
+    <ClInclude Include="..\src\frame_buffer.h" />
     <ClInclude Include="..\src\graphics.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\file.h" />
+    <ClInclude Include="..\src\post_processing.h" />
     <ClInclude Include="..\src\sampler.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\sprite.h" />

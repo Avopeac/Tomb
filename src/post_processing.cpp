@@ -28,5 +28,6 @@ void PostProcessing::Add(std::function<FrameBuffer &(FrameBuffer source,
 
 FrameBuffer & PostProcessing::Process(FrameBuffer framebuffer)
 {
-	// TODO: Implement
+	// TODO: Implement properly
+	return FrameBuffer(2, 2, false, false);
 }
