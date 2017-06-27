@@ -97,6 +97,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
     <ClCompile Include="..\src\file.cpp" />
     <ClCompile Include="..\src\graphics.cpp" />
@@ -110,6 +111,7 @@
     <ClCompile Include="..\src\third_party\jsmn.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\blend_mode.h" />
     <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\disposable.h" />
     <ClInclude Include="..\src\graphics.h" />

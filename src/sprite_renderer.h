@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "graphics.h"
+#include "blend_mode.h"
 #include "sprite.h"
 #include "shader.h"
 #include "sampler.h"
@@ -57,12 +58,14 @@ namespace graphics
 
 		SamplerCache & sampler_cache_;
 
+		BlendCache & blend_cache_;
+
 		std::vector<SpriteBatch> sprite_batches_;
 
 	public:
 
 		SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
-			TextureCache & texture_cache, SamplerCache &sampler_cache);
+			TextureCache & texture_cache, SamplerCache &sampler_cache, BlendCache &blend_cache);
 
 		~SpriteRenderer();
 
@@ -74,7 +77,8 @@ namespace graphics
 
 		SpriteRenderer &operator=(SpriteRenderer &&) = delete;
 
-		void Push(const Sprite & sprite, size_t blend_hash, 
+		void Push(const Sprite & sprite, BlendMode src_color_blend,
+			BlendMode dst_color_blend, BlendMode src_alpha_blend, BlendMode dst_alpha_blend,
 			MagnificationFiltering mag, MinificationFiltering min,
 			Wrapping s, Wrapping t);
 

@@ -32,6 +32,9 @@
     <ClCompile Include="..\src\sampler.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\blend_mode.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -71,6 +74,9 @@
       <Filter>Source\Input</Filter>
     </ClInclude>
     <ClInclude Include="..\src\sampler.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\blend_mode.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

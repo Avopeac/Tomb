@@ -8,6 +8,7 @@
 #include "graphics.h"
 #include "texture.h"
 #include "sampler.h"
+#include "blend_mode.h"
 #include "logger.h"
 #include "timing.h"
 #include "sprite_renderer.h"
@@ -29,10 +30,10 @@ Sint32 main(Sint32 argc, char * argv[])
 	graphics::ProgramCache program_cache;
 	graphics::TextureCache texture_cache;
 	graphics::SamplerCache sampler_cache;
+	graphics::BlendCache blend_cache;
 
 	graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, 
-		texture_cache, sampler_cache);
-
+		texture_cache, sampler_cache, blend_cache);
 
 	auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
 	for (auto y = 0; y < 32; ++y)
@@ -46,10 +47,17 @@ Sint32 main(Sint32 argc, char * argv[])
 
 			size_t texture_hash;
 			texture_cache.GetFromFile(texture_hash, "assets/textures/sand/sand_08.png");
+
 			sprite.SetTexture(texture_hash);
 			sprite.SetLayer(x + y * 32);
-			sprite_renderer.Push(sprite, 0, graphics::MagnificationFiltering::Linear,
-				graphics::MinificationFiltering::LinearMipmapLinear, graphics::Wrapping::ClampToEdge,
+			sprite_renderer.Push(sprite, 
+				graphics::BlendMode::SrcAlpha,
+				graphics::BlendMode::OneMinusSrcAlpha,
+				graphics::BlendMode::SrcAlpha,
+				graphics::BlendMode::OneMinusSrcAlpha,
+				graphics::MagnificationFiltering::Linear,
+				graphics::MinificationFiltering::LinearMipmapLinear, 
+				graphics::Wrapping::ClampToEdge,
 				graphics::Wrapping::ClampToEdge);
 		}
 	}

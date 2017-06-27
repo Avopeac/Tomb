@@ -42,6 +42,8 @@ void Texture::Create(const std::string & path, bool mips)
 {
 	SDL_RWops * rw = SDL_RWFromFile(path.c_str(), "rb");
 
+	SDL_assert(rw);
+
 	SDL_Surface * surface = IMG_LoadPNG_RW(rw);
 
 	SDL_PixelFormat pixel_format;

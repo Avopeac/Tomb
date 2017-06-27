@@ -11,12 +11,13 @@
 using namespace graphics;
 
 SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
-	TextureCache & texture_cache, SamplerCache &sampler_cache) :
+	TextureCache & texture_cache, SamplerCache &sampler_cache, BlendCache &blend_cache) :
 	instances_per_batch_(instances_per_batch),
 	graphics_base_(graphics_base),
 	program_cache_(program_cache),
 	texture_cache_(texture_cache),
-	sampler_cache_(sampler_cache)
+	sampler_cache_(sampler_cache),
+	blend_cache_(blend_cache)
 {
 	auto hexagon_vertex_size = sizeof(graphics_base_.hexagon_vertices[0]);
 	auto hexagon_index_size = sizeof(graphics_base_.hexagon_indices[0]);
@@ -87,7 +88,8 @@ SpriteRenderer::~SpriteRenderer()
 	glDeleteBuffers(1, &instance_buffer_);
 }
 
-void SpriteRenderer::Push(const Sprite & sprite, size_t blend_hash,
+void SpriteRenderer::Push(const Sprite & sprite, BlendMode src_color_blend,
+	BlendMode dst_color_blend, BlendMode src_alpha_blend, BlendMode dst_alpha_blend,
 	MagnificationFiltering mag, MinificationFiltering min,
 	Wrapping s, Wrapping t)
 {
@@ -98,8 +100,10 @@ void SpriteRenderer::Push(const Sprite & sprite, size_t blend_hash,
 	new_instance.layer = static_cast<Uint32>(sprite.GetLayer());
 	new_instance.transform = sprite.GetTransform();
 
-	size_t sampler_hash;
+	size_t sampler_hash, blend_hash;
 	sampler_cache_.GetFromParameters(sampler_hash, mag, min, s, t);
+	blend_cache_.GetFromParameters(blend_hash, src_color_blend, src_alpha_blend,
+		dst_color_blend, dst_alpha_blend);
 
 	if (sprite_batches_.empty() ||
 		texture_hash != sprite_batches_.back().texture_hash ||
@@ -146,21 +150,24 @@ void SpriteRenderer::Draw()
 		});
 
 
+		// Set blend mode for batch
+		blend_cache_.GetFromHash(batch.blend_hash).Set();
+
+		// Set sampler and texture if present
 		if (batch.sampler_hash && batch.texture_hash)
 		{
 			sampler_cache_.GetFromHash(batch.sampler_hash).Bind(0);
 			texture_cache_.GetFromHash(batch.texture_hash).Bind(0);
 		}
 
+		// Set uniforms
 		glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-
 		glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-
 		glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
-
 		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
 			GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
 
+		// Re-upload subdata for instance buffer
 		glNamedBufferSubData(instance_buffer_, 0,
 			static_cast<GLsizeiptr>(batch.instances.size() * sizeof(SpriteBatchInstance)),
 			&batch.instances[0]);
