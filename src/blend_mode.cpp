@@ -10,6 +10,12 @@ Blend::Blend(BlendMode src_blend, BlendMode dst_blend)
 {
 }
 
+graphics::Blend::Blend()
+	: src_color_blend_(BlendMode::One), dst_color_blend_(BlendMode::One),
+	src_alpha_blend_(BlendMode::One), dst_alpha_blend_(BlendMode::One)
+{
+}
+
 Blend::Blend(BlendMode src_color_blend, BlendMode dst_color_blend,
 	BlendMode src_alpha_blend, BlendMode dst_alpha_blend)
 	: src_color_blend_(src_color_blend), dst_color_blend_(dst_color_blend),

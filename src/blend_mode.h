@@ -28,6 +28,8 @@ namespace graphics
 		BlendMode dst_alpha_blend_ = BlendMode::One;
 
 	public:
+		
+		Blend();
 
 		Blend(BlendMode src_color_blend, BlendMode dst_color_blend,
 			BlendMode src_alpha_blend, BlendMode dst_alpha_blend);
