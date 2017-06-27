@@ -41,16 +41,12 @@ Sint32 main(Sint32 argc, char * argv[])
 		for (auto x = 0; x < 32; ++x)
 		{
 			float x_offset = y % 2 == 0 ? 0.5f : -0.5f;
-			auto transform = glm::translate(scale_mat, glm::vec3(x_offset + 2.1f * x, 1.6f * y, 0));
+			auto transform = glm::translate(scale_mat, 
+				glm::vec3(x_offset + 2.1f * x, 1.6f * y, 0));
 
-			graphics::Sprite sprite(transform);
-
-			size_t texture_hash;
-			texture_cache.GetFromFile(texture_hash, "assets/textures/sand/sand_08.png");
-
-			sprite.SetTexture(texture_hash);
-			sprite.SetLayer(x + y * 32);
+			graphics::Sprite sprite(transform, x + y * 32);
 			sprite_renderer.Push(sprite, 
+				"assets/textures/sand/sand_08.png",
 				graphics::BlendMode::SrcAlpha,
 				graphics::BlendMode::OneMinusSrcAlpha,
 				graphics::BlendMode::SrcAlpha,

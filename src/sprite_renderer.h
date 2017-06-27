@@ -16,16 +16,15 @@ namespace graphics
 
 	struct SpriteBatchInstance
 	{
-		glm::mat4 transform = glm::mat4(1);
-		Uint32 layer = 0;
-		Uint32 animation = 0;
+		glm::mat4 transform;
+		Uint32 layer;
 	};
 
 	struct SpriteBatch
 	{
-		size_t texture_hash = 0;
-		size_t blend_hash = 0;
-		size_t sampler_hash = 0;
+		size_t texture_hash;
+		size_t blend_hash;
+		size_t sampler_hash;
 		std::vector<SpriteBatchInstance> instances;
 	};
 
@@ -77,7 +76,7 @@ namespace graphics
 
 		SpriteRenderer &operator=(SpriteRenderer &&) = delete;
 
-		void Push(const Sprite & sprite, BlendMode src_color_blend,
+		void Push(const Sprite & sprite, const std::string &texture_path, BlendMode src_color_blend,
 			BlendMode dst_color_blend, BlendMode src_alpha_blend, BlendMode dst_alpha_blend,
 			MagnificationFiltering mag, MinificationFiltering min,
 			Wrapping s, Wrapping t);

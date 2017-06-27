@@ -25,7 +25,7 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 	auto hexagon_indices_size = sizeof(graphics_base_.hexagon_indices);
 	auto num_vertices = hexagon_vertices_size / sizeof(graphics_base_.hexagon_vertices[0]);
 
-	num_indices_ = hexagon_indices_size / sizeof(graphics_base_.hexagon_indices[0]);
+	num_indices_ = static_cast<GLuint>(hexagon_indices_size) / sizeof(graphics_base_.hexagon_indices[0]);
 
 	auto instance_size = sizeof(SpriteBatchInstance);
 
@@ -66,12 +66,6 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 	glVertexArrayAttribFormat(vertex_array_, attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, offsetof(SpriteBatchInstance, SpriteBatchInstance::layer));
 	glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
 
-	// Animation attribute
-	glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-	glVertexArrayAttribBinding(vertex_array_, attrib_index, 1);
-	glVertexArrayAttribFormat(vertex_array_, attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, offsetof(SpriteBatchInstance, SpriteBatchInstance::animation));
-	glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
-
 	vertex_program_ = program_cache_.CompileFromFile(GL_VERTEX_SHADER, "assets/shaders/default.vert");
 	fragment_program_ = program_cache_.CompileFromFile(GL_FRAGMENT_SHADER, "assets/shaders/default.frag");
 
@@ -88,19 +82,24 @@ SpriteRenderer::~SpriteRenderer()
 	glDeleteBuffers(1, &instance_buffer_);
 }
 
-void SpriteRenderer::Push(const Sprite & sprite, BlendMode src_color_blend,
-	BlendMode dst_color_blend, BlendMode src_alpha_blend, BlendMode dst_alpha_blend,
-	MagnificationFiltering mag, MinificationFiltering min,
-	Wrapping s, Wrapping t)
+void SpriteRenderer::Push(const Sprite & sprite,
+	const std::string &texture_path, 
+	BlendMode src_color_blend, 
+	BlendMode dst_color_blend, 
+	BlendMode src_alpha_blend, 
+	BlendMode dst_alpha_blend,
+	MagnificationFiltering mag, 
+	MinificationFiltering min,
+	Wrapping s,
+	Wrapping t)
 {
-	size_t texture_hash = sprite.GetTexture();
 
 	SpriteBatchInstance new_instance;
-	new_instance.animation = static_cast<Uint32>(sprite.GetAnimation());
 	new_instance.layer = static_cast<Uint32>(sprite.GetLayer());
 	new_instance.transform = sprite.GetTransform();
 
-	size_t sampler_hash, blend_hash;
+	size_t sampler_hash, blend_hash, texture_hash;
+	texture_cache_.GetFromFile(texture_hash, texture_path);
 	sampler_cache_.GetFromParameters(sampler_hash, mag, min, s, t);
 	blend_cache_.GetFromParameters(blend_hash, src_color_blend, src_alpha_blend,
 		dst_color_blend, dst_alpha_blend);
