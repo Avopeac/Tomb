@@ -6,8 +6,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "file.h"
-#include "shader.h"
 #include "config.h"
 #include "disposable.h"
 
@@ -17,6 +15,9 @@ namespace graphics
 	{
 		SDL_Window * window_;
 		SDL_GLContext context_;
+
+		Uint32 width_;
+		Uint32 height_;
 
 		glm::mat4 projection_;
 		glm::mat4 view_;
@@ -80,6 +81,10 @@ namespace graphics
 		virtual void Free() override;
 
 		inline SDL_Window * GetWindow() const { return window_; }
+
+		inline Uint32 GetBackbufferWidth() const { return width_; }
+
+		inline Uint32 GetBackbufferHeight() const { return height_; }
 
 		inline glm::mat4 GetProjection() const { return projection_; }
 

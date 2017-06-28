@@ -72,11 +72,15 @@ void GraphicsBase::Initialize(const input::Config & config)
 		debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_VIDEO, "Could not load GL extensions.");
 	}
 
+	width_ = config.GetWindowWidth();
+	height_ = config.GetWindowHeight();
+
 	projection_ = glm::ortho(
-		0.0f, (float)config.GetWindowWidth(), 
+		0.0f, (float)config.GetWindowWidth(),
 		0.0f, (float)config.GetWindowHeight()
 	);
 
+	// TODO: View matrix should be manipulated by camera later on
 	view_ = glm::mat4(1);
 	view_projection_ = projection_ * view_;
 }

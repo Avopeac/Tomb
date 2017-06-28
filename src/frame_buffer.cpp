@@ -9,6 +9,22 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 	: width_(width), height_(height), depth_texture_(0),
 	old_viewport_width_(0), old_viewport_height_(0)
 {
+
+
+	if (depth)
+	{
+		GLuint depth_attachment;
+		glCreateTextures(GL_TEXTURE_2D, 1, &depth_attachment);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width, height, 0, 
+			GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+		glTextureParameteri(depth_attachment, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(depth_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		depth_texture_ = depth_attachment;
+		depth_texture_bind_point_ = -1;
+	}
+	
 	GLenum internalFormat = dynamic_range_enabled ? GL_RGBA16F : GL_RGBA8;
 	GLenum format = dynamic_range_enabled ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
@@ -24,25 +40,10 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 	textures_.push_back(color_attachment);
 	texture_bind_points_.push_back(-1);
 
-	if (depth)
-	{
-		GLuint depth_attachment;
-		glCreateTextures(GL_TEXTURE_2D, 1, &depth_attachment);
-		glTextureStorage2D(depth_attachment, 0, GL_DEPTH_COMPONENT16, width, height);
-		glTextureSubImage2D(depth_attachment, 0, 0, 0, width, height,
-			GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
-		glTextureParameteri(depth_attachment, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(depth_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		depth_texture_ = depth_attachment;
-		depth_texture_bind_point_ = -1;
-	}
 
 	glCreateFramebuffers(1, &id_);
 	glNamedFramebufferTexture(id_, GL_COLOR_ATTACHMENT0, textures_.back(), 0);
 	glNamedFramebufferTexture(id_, GL_DEPTH_ATTACHMENT, depth_texture_, 0);
-	
 	
 	GLenum status = glCheckNamedFramebufferStatus(id_, GL_FRAMEBUFFER);
 	switch (status)

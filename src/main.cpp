@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "timing.h"
 #include "sprite_renderer.h"
+#include "renderer.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -26,7 +27,9 @@ Sint32 main(Sint32 argc, char * argv[])
 	// Create window and initialize graphics
 	graphics::GraphicsBase graphics_base;
 	graphics_base.Initialize(config);
-	
+
+	graphics::Renderer renderer(&graphics_base);
+
 	graphics::ProgramCache program_cache;
 	graphics::TextureCache texture_cache;
 	graphics::SamplerCache sampler_cache;
