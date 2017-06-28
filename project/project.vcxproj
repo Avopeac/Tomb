@@ -105,6 +105,7 @@
     <ClCompile Include="..\src\json.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\post_processing.cpp" />
+    <ClCompile Include="..\src\renderer.cpp" />
     <ClCompile Include="..\src\sampler.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\sprite.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\file.h" />
     <ClInclude Include="..\src\post_processing.h" />
+    <ClInclude Include="..\src\renderer.h" />
     <ClInclude Include="..\src\sampler.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\sprite.h" />

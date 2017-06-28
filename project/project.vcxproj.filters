@@ -5,16 +5,10 @@
     <ClCompile Include="..\src\graphics.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shader.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\sprite.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\sprite_renderer.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\texture.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\third_party\jsmn.c">
@@ -29,33 +23,34 @@
     <ClCompile Include="..\src\json.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\sampler.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\blend_mode.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\post_processing.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\frame_buffer.cpp">
-      <Filter>Source\Graphics</Filter>
+    <ClCompile Include="..\src\texture.cpp">
+      <Filter>Source\Graphics.Resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\sampler.cpp">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\frame_buffer.cpp">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\blend_mode.cpp">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shader.cpp">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shader.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\sprite.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\sprite_renderer.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\texture.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\third_party\jsmn.h">
@@ -79,16 +74,25 @@
     <ClInclude Include="..\src\json.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\sampler.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\blend_mode.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\post_processing.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\texture.h">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sampler.h">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\frame_buffer.h">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\blend_mode.h">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shader.h">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\renderer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -113,6 +117,9 @@
     </Filter>
     <Filter Include="Source\Input">
       <UniqueIdentifier>{b385a5bc-9f10-4f1c-919b-04931e0fc178}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics.Resources">
+      <UniqueIdentifier>{48c1fa58-7e47-491f-9e9f-c121c5fb1096}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

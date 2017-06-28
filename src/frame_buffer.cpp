@@ -22,6 +22,7 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 	glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	textures_.push_back(color_attachment);
+	texture_bind_points_.push_back(-1);
 
 	if (depth)
 	{
@@ -35,6 +36,7 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		depth_texture_ = depth_attachment;
+		depth_texture_bind_point_ = -1;
 	}
 
 	glCreateFramebuffers(1, &id_);
@@ -62,20 +64,40 @@ FrameBuffer::~FrameBuffer()
 {
 }
 
-void FrameBuffer::BindColorAttachmentTexture(size_t index)
+void FrameBuffer::BindColorAttachmentTexture(size_t index, GLuint unit)
 {
+	if (index < textures_.size())
+	{
+		glBindTextureUnit(unit, textures_[index]);
+		texture_bind_points_[index] = unit;
+	}
 }
 
 void FrameBuffer::UnbindColorAttachmentTexture(size_t index)
 {
+	if (index < textures_.size())
+	{
+		glBindTextureUnit(texture_bind_points_[index], textures_[index]);
+		texture_bind_points_[index] = -1;
+	}
 }
 
-void FrameBuffer::BindDepthAttachmentTexture()
+void FrameBuffer::BindDepthAttachmentTexture(GLuint unit)
 {
+	if (depth_texture_ != 0)
+	{
+		glBindTextureUnit(unit, depth_texture_);
+		depth_texture_bind_point_ = unit;
+	}
 }
 
 void FrameBuffer::UnbindDepthAttachmentTexture()
 {
+	if (depth_texture_ != 0)
+	{
+		glBindTextureUnit(depth_texture_bind_point_, 0);
+		depth_texture_bind_point_ = -1;
+	}
 }
 
 void FrameBuffer::BindDraw()

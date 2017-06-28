@@ -24,7 +24,11 @@ namespace graphics
 
 		std::vector<GLuint> textures_;
 
+		std::vector<GLint> texture_bind_points_;
+
 		GLuint depth_texture_;
+
+		GLint depth_texture_bind_point_;
 
 	public:
 
@@ -32,11 +36,11 @@ namespace graphics
 
 		~FrameBuffer();
 
-		void BindColorAttachmentTexture(size_t index);
+		void BindColorAttachmentTexture(size_t index, GLuint unit);
 
 		void UnbindColorAttachmentTexture(size_t index);
 
-		void BindDepthAttachmentTexture();
+		void BindDepthAttachmentTexture(GLuint unit);
 
 		void UnbindDepthAttachmentTexture();
 
@@ -46,6 +50,8 @@ namespace graphics
 
 		// Inherited via Disposable
 		virtual void Free() override;
+
+		inline size_t GetColorAttachmentCount() const { return textures_.size(); }
 
 		inline Uint32 GetWidth() const { return width_; }
 
