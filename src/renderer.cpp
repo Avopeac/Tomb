@@ -30,12 +30,14 @@ void Renderer::Invoke()
 
 	offscreen_buffer_->BindDraw();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-
 	sprite_renderer_->Draw();
 
 	offscreen_buffer_->UnbindDraw();
+
+	offscreen_buffer_->Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
+		0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight());
+
+	//post_processing_->Process(*offscreen_buffer_);
 
 }
 

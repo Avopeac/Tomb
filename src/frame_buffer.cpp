@@ -26,7 +26,6 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 		glTextureParameteri(color_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTextureUnit(0, 0);
 		textures_.push_back(color_attachment);
 		texture_bind_points_.push_back(-1);
 
@@ -46,7 +45,6 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 		glTextureParameteri(depth_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTextureUnit(0, 0);
 		
 		depth_texture_ = depth_attachment;
 		depth_texture_bind_point_ = -1;
@@ -110,6 +108,14 @@ void FrameBuffer::UnbindDepthAttachmentTexture()
 	}
 }
 
+void FrameBuffer::Blit(Sint32 sx0, Sint32 sx1, Sint32 sy0, Sint32 sy1, 
+	Sint32 dx0, Sint32 dx1, Sint32  dy0, Sint32 dy1)
+{
+	glNamedFramebufferReadBuffer(id_, GL_COLOR_ATTACHMENT0);
+	glBlitNamedFramebuffer(id_, 0, sx0, sy0, sx1, sy1, dx0, dy0, dx1, dy1,
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
 void FrameBuffer::BindDraw()
 {
 	GLint current_framebuffer;
@@ -123,8 +129,6 @@ void FrameBuffer::BindDraw()
 	}
 
 	glViewport(0, 0, width_, height_);
-	//glNamedFramebufferDrawBuffer(id_, GL_COLOR_ATTACHMENT0);
-	//glNamedFramebufferDrawBuffer(id_, GL_DEPTH_ATTACHMENT);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
 }
 
