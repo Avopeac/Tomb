@@ -30,13 +30,13 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	graphics::Renderer renderer(&graphics_base);
 
-	graphics::ProgramCache program_cache;
-	graphics::TextureCache texture_cache;
-	graphics::SamplerCache sampler_cache;
-	graphics::BlendCache blend_cache;
+	//graphics::ProgramCache program_cache;
+	//graphics::TextureCache texture_cache;
+	//graphics::SamplerCache sampler_cache;
+	//graphics::BlendCache blend_cache;
 
-	graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, 
-		texture_cache, sampler_cache, blend_cache);
+	//graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, 
+		//texture_cache, sampler_cache, blend_cache);
 
 	auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
 	for (auto y = 0; y < 32; ++y)
@@ -48,7 +48,7 @@ Sint32 main(Sint32 argc, char * argv[])
 				glm::vec3(x_offset + 2.1f * x, 1.6f * y, 0));
 
 			graphics::Sprite sprite(transform, x + y * 32);
-			sprite_renderer.Push(sprite, 
+			renderer.GetSpriteRenderer().Push(sprite, 
 				"assets/textures/sand/sand_08.png",
 				graphics::BlendMode::SrcAlpha,
 				graphics::BlendMode::OneMinusSrcAlpha,
@@ -79,10 +79,7 @@ Sint32 main(Sint32 argc, char * argv[])
 			}
 		}
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		sprite_renderer.Draw();
+		renderer.Invoke();
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
 	}

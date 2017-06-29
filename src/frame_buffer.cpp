@@ -10,41 +10,51 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 	old_viewport_width_(0), old_viewport_height_(0)
 {
 
+	glCreateFramebuffers(1, &id_);
 
+	// Create color attachment
+	{
+		GLenum internalFormat = dynamic_range_enabled ? GL_RGBA16F : GL_RGBA8;
+		GLenum format = dynamic_range_enabled ? GL_FLOAT : GL_UNSIGNED_BYTE;
+
+		GLuint color_attachment;
+		glCreateTextures(GL_TEXTURE_2D, 1, &color_attachment);
+		glBindTextureUnit(0, color_attachment);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width_, height_, 0,
+			GL_RGBA, format, nullptr);
+		glTextureParameteri(color_attachment, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(color_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTextureUnit(0, 0);
+		textures_.push_back(color_attachment);
+		texture_bind_points_.push_back(-1);
+
+		// Attach to framebuffer
+		glNamedFramebufferTexture(id_, GL_COLOR_ATTACHMENT0, color_attachment, 0);
+	}
+	
+	// Create depth attachment
 	if (depth)
 	{
 		GLuint depth_attachment;
 		glCreateTextures(GL_TEXTURE_2D, 1, &depth_attachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width, height, 0, 
+		glBindTextureUnit(0, depth_attachment);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width_, height_, 0,
 			GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(depth_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTextureUnit(0, 0);
+		
 		depth_texture_ = depth_attachment;
 		depth_texture_bind_point_ = -1;
+
+		// Attach to framebuffer
+		glNamedFramebufferTexture(id_, GL_DEPTH_ATTACHMENT, depth_texture_, 0);
 	}
-	
-	GLenum internalFormat = dynamic_range_enabled ? GL_RGBA16F : GL_RGBA8;
-	GLenum format = dynamic_range_enabled ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
-	GLuint color_attachment;
-	glCreateTextures(GL_TEXTURE_2D, 1, &color_attachment);
-	glTextureStorage2D(color_attachment, 1, internalFormat, width, height);
-	glTextureSubImage2D(color_attachment, 0, 0, 0, width, height,
-		GL_RGBA, format, nullptr);
-	glTextureParameteri(color_attachment, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(color_attachment, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(color_attachment, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	textures_.push_back(color_attachment);
-	texture_bind_points_.push_back(-1);
-
-
-	glCreateFramebuffers(1, &id_);
-	glNamedFramebufferTexture(id_, GL_COLOR_ATTACHMENT0, textures_.back(), 0);
-	glNamedFramebufferTexture(id_, GL_DEPTH_ATTACHMENT, depth_texture_, 0);
-	
 	GLenum status = glCheckNamedFramebufferStatus(id_, GL_FRAMEBUFFER);
 	switch (status)
 	{
@@ -58,7 +68,6 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_r
 	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete layer targets."); } break;
 	default: break;
 	}
-
 }
 
 FrameBuffer::~FrameBuffer()
@@ -114,8 +123,9 @@ void FrameBuffer::BindDraw()
 	}
 
 	glViewport(0, 0, width_, height_);
-	glNamedFramebufferDrawBuffer(id_, GL_COLOR_ATTACHMENT0);
-	glNamedFramebufferDrawBuffer(id_, GL_DEPTH_ATTACHMENT);
+	//glNamedFramebufferDrawBuffer(id_, GL_COLOR_ATTACHMENT0);
+	//glNamedFramebufferDrawBuffer(id_, GL_DEPTH_ATTACHMENT);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
 }
 
 void FrameBuffer::UnbindDraw()
@@ -123,9 +133,10 @@ void FrameBuffer::UnbindDraw()
 	if (old_viewport_width_ != 0 && old_viewport_height_ != 0)
 	{
 		glViewport(0, 0, old_viewport_width_, old_viewport_height_);
-		glNamedFramebufferDrawBuffer(0, GL_BACK);
-		glNamedFramebufferReadBuffer(id_, GL_COLOR_ATTACHMENT0);
-		glNamedFramebufferReadBuffer(id_, GL_DEPTH_ATTACHMENT);
+		//glNamedFramebufferDrawBuffer(0, GL_BACK);
+		//glNamedFramebufferReadBuffer(id_, GL_COLOR_ATTACHMENT0);
+		//glNamedFramebufferReadBuffer(id_, GL_DEPTH_ATTACHMENT);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
 	}
 }
 
