@@ -25,18 +25,8 @@ Sint32 main(Sint32 argc, char * argv[])
 	config.Load("assets/config.json");
 
 	// Create window and initialize graphics
-	graphics::GraphicsBase graphics_base;
-	graphics_base.Initialize(config);
-
+	graphics::GraphicsBase graphics_base(config);
 	graphics::Renderer renderer(&graphics_base);
-
-	//graphics::ProgramCache program_cache;
-	//graphics::TextureCache texture_cache;
-	//graphics::SamplerCache sampler_cache;
-	//graphics::BlendCache blend_cache;
-
-	//graphics::SpriteRenderer sprite_renderer(4000, graphics_base, program_cache, 
-		//texture_cache, sampler_cache, blend_cache);
 
 	auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
 	for (auto y = 0; y < 32; ++y)
@@ -48,8 +38,10 @@ Sint32 main(Sint32 argc, char * argv[])
 				glm::vec3(x_offset + 2.1f * x, 1.6f * y, 0));
 
 			graphics::Sprite sprite(transform, x + y * 32);
-			renderer.GetSpriteRenderer().Push(sprite, 
-				"assets/textures/sand/sand_08.png",
+			renderer.GetSpriteRenderer().Push(sprite,
+				graphics::SpriteShape::FlatHex,
+				//"assets/textures/sand/sand_08.png",
+				"assets/textures/smiley.png",
 				graphics::BlendMode::SrcAlpha,
 				graphics::BlendMode::OneMinusSrcAlpha,
 				graphics::BlendMode::SrcAlpha,
@@ -83,8 +75,6 @@ Sint32 main(Sint32 argc, char * argv[])
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
 	}
-
-	graphics_base.Free();
 
 	SDL_Quit();
 	IMG_Quit();

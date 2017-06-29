@@ -7,11 +7,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "config.h"
-#include "disposable.h"
 
 namespace graphics
 {
-	class GraphicsBase : public base::Disposable
+	class GraphicsBase
 	{
 		SDL_Window * window_;
 		SDL_GLContext context_;
@@ -25,10 +24,8 @@ namespace graphics
 
 	public:
 
-		const glm::vec2 hexagon_vertices[7] =
+		const glm::vec2 sharp_hexagon_vertices[7] =
 		{
-
-			// Sharp bottom
 			glm::vec2(0.0f, 1.0f), // Top vertex
 			glm::vec2(1.0f, 0.5f), // Top right vertex
 			glm::vec2(1.0f, -0.5f), // Bottom right vertex
@@ -36,15 +33,17 @@ namespace graphics
 			glm::vec2(-1.0f, -0.5f), // Bottom left vertex
 			glm::vec2(-1.0f, 0.5f), // Top left vertex
 			glm::vec2(0.0f, 0.0f), // Center vertex
+		};
 
-			// Flat bottom
-			//glm::vec2(-1.0f, 0.0f), // Left vertex
-			//glm::vec2(-0.5f, 1.0f), // Top left vertex
-			//glm::vec2(0.5f, 1.0f), // Top right vertex
-			//glm::vec2(1.0f, 0.0f), // Right vertex
-			//glm::vec2(0.5f, -1.0f), // Bottom right vertex
-			//glm::vec2(-0.5f, -1.0f), // Bottom left vertex
-			//glm::vec2(0.0f, 0.0f), // Center vertex
+		const glm::vec2 flat_hexagon_vertices[7] =
+		{
+			glm::vec2(-1.0f, 0.0f), // Left vertex
+			glm::vec2(-0.5f, 1.0f), // Top left vertex
+			glm::vec2(0.5f, 1.0f), // Top right vertex
+			glm::vec2(1.0f, 0.0f), // Right vertex
+			glm::vec2(0.5f, -1.0f), // Bottom right vertex
+			glm::vec2(-0.5f, -1.0f), // Bottom left vertex
+			glm::vec2(0.0f, 0.0f), // Center vertex
 		};
 
 		const Uint32 hexagon_indices[18] = {
@@ -71,14 +70,9 @@ namespace graphics
 		};
 
 
-		GraphicsBase();
+		GraphicsBase(const input::Config &config);
 
 		~GraphicsBase();
-
-		void Initialize(const input::Config &config);
-		
-		// Inherited via Disposable
-		virtual void Free() override;
 
 		inline SDL_Window * GetWindow() const { return window_; }
 

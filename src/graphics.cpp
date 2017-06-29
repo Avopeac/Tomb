@@ -8,15 +8,7 @@
 
 using namespace graphics;
 
-GraphicsBase::GraphicsBase()
-{
-}
-
-GraphicsBase::~GraphicsBase()
-{
-}
-
-void GraphicsBase::Initialize(const input::Config & config)
+GraphicsBase::GraphicsBase(const input::Config & config)
 {
 	// Create window with these attributes
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -53,7 +45,7 @@ void GraphicsBase::Initialize(const input::Config & config)
 	{
 		SDL_GL_DeleteContext(context_);
 		SDL_DestroyWindow(window_);
-		
+
 		debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_VIDEO, SDL_GetError());
 	}
 
@@ -85,7 +77,7 @@ void GraphicsBase::Initialize(const input::Config & config)
 	view_projection_ = projection_ * view_;
 }
 
-void GraphicsBase::Free()
+GraphicsBase::~GraphicsBase()
 {
 	SDL_GL_DeleteContext(context_);
 	SDL_DestroyWindow(window_);

@@ -19,52 +19,22 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 	sampler_cache_(sampler_cache),
 	blend_cache_(blend_cache)
 {
-	auto hexagon_vertex_size = sizeof(graphics_base_.hexagon_vertices[0]);
-	auto hexagon_index_size = sizeof(graphics_base_.hexagon_indices[0]);
-	auto hexagon_vertices_size = sizeof(graphics_base_.hexagon_vertices);
-	auto hexagon_indices_size = sizeof(graphics_base_.hexagon_indices);
-	auto num_vertices = hexagon_vertices_size / sizeof(graphics_base_.hexagon_vertices[0]);
 
-	num_indices_ = static_cast<GLuint>(hexagon_indices_size) / sizeof(graphics_base_.hexagon_indices[0]);
 
-	auto instance_size = sizeof(SpriteBatchInstance);
+	CreateBatchObject_(flat_hex_objects, 
+		graphics_base_.flat_hexagon_vertices, sizeof(graphics_base_.flat_hexagon_vertices) / sizeof(graphics_base_.flat_hexagon_vertices[0]),
+		graphics_base_.hexagon_indices, sizeof(graphics_base_.hexagon_indices) / sizeof(graphics_base_.hexagon_indices[0])
+	);
 
-	glCreateBuffers(1, &vertex_buffer_);
-	glCreateBuffers(1, &element_buffer_);
-	glCreateBuffers(1, &instance_buffer_);
+	CreateBatchObject_(sharp_hex_objects,
+		graphics_base_.sharp_hexagon_vertices, sizeof(graphics_base_.sharp_hexagon_vertices) / sizeof(graphics_base_.sharp_hexagon_vertices[0]),
+		graphics_base_.hexagon_indices, sizeof(graphics_base_.hexagon_indices) / sizeof(graphics_base_.hexagon_indices[0])
+	);
 
-	glNamedBufferData(vertex_buffer_, hexagon_vertices_size, graphics_base_.hexagon_vertices, GL_STATIC_DRAW);
-	glNamedBufferData(element_buffer_, hexagon_indices_size, graphics_base_.hexagon_indices, GL_STATIC_DRAW);
-	glNamedBufferData(instance_buffer_, instances_per_batch_ * instance_size, nullptr, GL_DYNAMIC_DRAW);
-
-	glCreateVertexArrays(1, &vertex_array_);
-
-	glVertexArrayElementBuffer(vertex_array_, element_buffer_);
-	glVertexArrayVertexBuffer(vertex_array_, 0, vertex_buffer_, 0, static_cast<GLsizei>(hexagon_vertex_size));
-	glVertexArrayVertexBuffer(vertex_array_, 1, instance_buffer_, 0, static_cast<GLsizei>(instance_size));
-
-	GLint attrib_index = 0;
-
-	// Position attribute
-	glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-	glVertexArrayAttribBinding(vertex_array_, attrib_index, 0);
-	glVertexArrayAttribFormat(vertex_array_, attrib_index, 2, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 0);
-
-	// Transform attribute
-	for (int i = 0; i < 4; ++i)
-	{
-		glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-		glVertexArrayAttribBinding(vertex_array_, attrib_index, 1);
-		glVertexArrayAttribFormat(vertex_array_, attrib_index, 4, GL_FLOAT, GL_FALSE, i * sizeof(glm::vec4));
-		glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
-	}
-	
-	// Layer attribute
-	glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-	glVertexArrayAttribBinding(vertex_array_, attrib_index, 1);
-	glVertexArrayAttribFormat(vertex_array_, attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, offsetof(SpriteBatchInstance, SpriteBatchInstance::layer));
-	glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
+	CreateBatchObject_(rectangular_objects, 
+		graphics_base_.quad_vertices, sizeof(graphics_base_.quad_vertices) / sizeof(graphics_base_.quad_vertices[0]),
+		graphics_base_.quad_indices, sizeof(graphics_base_.quad_indices) / sizeof(graphics_base_.quad_indices[0])
+	);
 
 	vertex_program_ = program_cache_.CompileFromFile(GL_VERTEX_SHADER, "assets/shaders/default.vert");
 	fragment_program_ = program_cache_.CompileFromFile(GL_FRAGMENT_SHADER, "assets/shaders/default.frag");
@@ -76,13 +46,13 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 
 SpriteRenderer::~SpriteRenderer()
 {
-	glDeleteVertexArrays(1, &vertex_array_);
-	glDeleteBuffers(1, &vertex_buffer_);
-	glDeleteBuffers(1, &element_buffer_);
-	glDeleteBuffers(1, &instance_buffer_);
+	DeleteBatchObject_(flat_hex_objects);
+	DeleteBatchObject_(sharp_hex_objects);
+	DeleteBatchObject_(rectangular_objects);
 }
 
 void SpriteRenderer::Push(const Sprite & sprite,
+	SpriteShape shape,
 	const std::string &texture_path, 
 	BlendMode src_color_blend, 
 	BlendMode dst_color_blend, 
@@ -94,9 +64,9 @@ void SpriteRenderer::Push(const Sprite & sprite,
 	Wrapping t)
 {
 
-	SpriteBatchInstance new_instance;
-	new_instance.layer = static_cast<Uint32>(sprite.GetLayer());
-	new_instance.transform = sprite.GetTransform();
+	SpriteBatchInstance instance;
+	instance.layer = static_cast<Uint32>(sprite.GetLayer());
+	instance.transform = sprite.GetTransform();
 
 	size_t sampler_hash, blend_hash, texture_hash;
 	texture_cache_.GetFromFile(texture_hash, texture_path);
@@ -104,50 +74,151 @@ void SpriteRenderer::Push(const Sprite & sprite,
 	blend_cache_.GetFromParameters(blend_hash, src_color_blend, src_alpha_blend,
 		dst_color_blend, dst_alpha_blend);
 
-	if (sprite_batches_.empty() ||
-		texture_hash != sprite_batches_.back().texture_hash ||
-		blend_hash != sprite_batches_.back().blend_hash ||
-		sampler_hash != sprite_batches_.back().sampler_hash)
+	switch (shape)
 	{
-		// Add sprite data to new sprite batch
-		SpriteBatch new_sprite_batch;
-		new_sprite_batch.texture_hash = texture_hash;
-		new_sprite_batch.blend_hash = blend_hash;
-		new_sprite_batch.sampler_hash = sampler_hash;
-		new_sprite_batch.instances.push_back(new_instance);
-		sprite_batches_.push_back(new_sprite_batch);
-	}
-	else
-	{
-		// Add sprite data to old sprite batch
-		sprite_batches_.back().instances.push_back(new_instance);
+	case graphics::SpriteShape::Rectangle: 
+		PushToBatchObject_(rectangular_sprite_batches_, instance, 
+			sampler_hash, blend_hash, texture_hash);
+		break;
+	case graphics::SpriteShape::FlatHex:
+		PushToBatchObject_(flat_hex_sprite_batches_, instance, 
+			sampler_hash, blend_hash, texture_hash);
+		break;
+	case graphics::SpriteShape::SharpHex:
+		PushToBatchObject_(sharp_hex_sprite_batches_, instance,
+			sampler_hash, blend_hash, texture_hash);
+		break;
+	default:
+		break;
 	}
 }
 
 void SpriteRenderer::Draw()
 {
-	// Set depth test
+
+	// Clear current framebuffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+
+	// Set depth test to false 
 	glDisable(GL_DEPTH_TEST);
 	glDepthFunc(GL_NEVER);
 
-	// Set blend mode
+	// Enable blending
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glBindVertexArray(vertex_array_);
 
 	pipeline_.Bind();
 
-	auto num_indices = sizeof(graphics_base_.hexagon_indices) / sizeof(graphics_base_.hexagon_indices[0]);
+	// Set standard uniforms
+	glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
+	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
+	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
+	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
+		GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
 
-	for (auto &batch : sprite_batches_)
+	DrawBatchObject_(sharp_hex_objects, sharp_hex_sprite_batches_);
+	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_);
+	DrawBatchObject_(rectangular_objects, rectangular_sprite_batches_);
+	
+	pipeline_.Unbind();
+}
+
+void SpriteRenderer::PushToBatchObject_(std::vector<SpriteBatch>& batches, 
+	SpriteBatchInstance &instance, 
+	size_t sampler_hash, 
+	size_t blend_hash, 
+	size_t texture_hash)
+{
+	if (batches.empty() ||
+		texture_hash != batches.back().texture_hash ||
+		blend_hash != batches.back().blend_hash ||
+		sampler_hash != batches.back().sampler_hash)
+	{
+		// Add sprite data to new sprite batch
+		SpriteBatch batch;
+		batch.texture_hash = texture_hash;
+		batch.blend_hash = blend_hash;
+		batch.sampler_hash = sampler_hash;
+		batch.instances.push_back(instance);
+		batches.push_back(batch);
+	}
+	else
+	{
+		// Add sprite data to old sprite batch
+		batches.back().instances.push_back(instance);
+	}
+}
+
+void SpriteRenderer::CreateBatchObject_(SpriteRendererBatchObjects &objects, const glm::vec2 * const vertices,
+	Uint32 num_vertices, const Uint32 * const indices, Uint32 num_indices)
+{
+
+	objects.num_vertices = num_vertices;
+	objects.num_indices = num_indices;
+
+	auto vertex_size = sizeof(vertices[0]);
+	auto index_size = sizeof(indices[0]);
+	auto vertices_size = objects.num_vertices * vertex_size;
+	auto indices_size = objects.num_indices * index_size;
+	auto instance_size = sizeof(SpriteBatchInstance);
+
+	glCreateBuffers(1, &objects.vertex_buffer);
+	glCreateBuffers(1, &objects.element_buffer);
+	glCreateBuffers(1, &objects.instance_buffer);
+
+	glNamedBufferData(objects.vertex_buffer, vertices_size, vertices, GL_STATIC_DRAW);
+	glNamedBufferData(objects.element_buffer, indices_size, indices, GL_STATIC_DRAW);
+	glNamedBufferData(objects.instance_buffer, instances_per_batch_ * instance_size, nullptr, GL_DYNAMIC_DRAW);
+
+	glCreateVertexArrays(1, &objects.vertex_array);
+
+	glVertexArrayElementBuffer(objects.vertex_array, objects.element_buffer);
+	glVertexArrayVertexBuffer(objects.vertex_array, 0, objects.vertex_buffer, 0, static_cast<GLsizei>(vertex_size));
+	glVertexArrayVertexBuffer(objects.vertex_array, 1, objects.instance_buffer, 0, static_cast<GLsizei>(instance_size));
+
+	GLint attrib_index = 0;
+
+	// Position attribute
+	glEnableVertexArrayAttrib(objects.vertex_array, attrib_index);
+	glVertexArrayAttribBinding(objects.vertex_array, attrib_index, 0);
+	glVertexArrayAttribFormat(objects.vertex_array, attrib_index, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayBindingDivisor(objects.vertex_array, attrib_index++, 0);
+
+	// Transform attribute
+	for (int i = 0; i < 4; ++i)
+	{
+		glEnableVertexArrayAttrib(objects.vertex_array, attrib_index);
+		glVertexArrayAttribBinding(objects.vertex_array, attrib_index, 1);
+		glVertexArrayAttribFormat(objects.vertex_array, attrib_index, 4, GL_FLOAT, GL_FALSE, i * sizeof(glm::vec4));
+		glVertexArrayBindingDivisor(objects.vertex_array, attrib_index++, 1);
+	}
+
+	// Layer attribute
+	glEnableVertexArrayAttrib(objects.vertex_array, attrib_index);
+	glVertexArrayAttribBinding(objects.vertex_array, attrib_index, 1);
+	glVertexArrayAttribFormat(objects.vertex_array, attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, offsetof(SpriteBatchInstance, SpriteBatchInstance::layer));
+	glVertexArrayBindingDivisor(objects.vertex_array, attrib_index++, 1);
+}
+
+void graphics::SpriteRenderer::DeleteBatchObject_(SpriteRendererBatchObjects & objects)
+{
+	glDeleteVertexArrays(1, &objects.vertex_array);
+	glDeleteBuffers(1, &objects.vertex_buffer);
+	glDeleteBuffers(1, &objects.element_buffer);
+	glDeleteBuffers(1, &objects.instance_buffer);
+}
+
+void SpriteRenderer::DrawBatchObject_(SpriteRendererBatchObjects & objects, std::vector<SpriteBatch> & batches)
+{
+	glBindVertexArray(objects.vertex_array);
+
+	for (auto &batch : batches)
 	{
 		// Sort by layer within batch
 		std::sort(batch.instances.begin(), batch.instances.end(), [](const SpriteBatchInstance &a, const SpriteBatchInstance &b)
 		{
 			return a.layer < b.layer;
 		});
-
 
 		// Set blend mode for batch
 		blend_cache_.GetFromHash(batch.blend_hash).Set();
@@ -159,22 +230,14 @@ void SpriteRenderer::Draw()
 			texture_cache_.GetFromHash(batch.texture_hash).Bind(0);
 		}
 
-		// Set uniforms
-		glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-		glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-		glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
-		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
-			GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
-
 		// Re-upload subdata for instance buffer
-		glNamedBufferSubData(instance_buffer_, 0,
+		glNamedBufferSubData(objects.instance_buffer, 0,
 			static_cast<GLsizeiptr>(batch.instances.size() * sizeof(SpriteBatchInstance)),
 			&batch.instances[0]);
 
 		glDrawElementsInstanced(GL_TRIANGLES,
-			static_cast<GLsizei>(num_indices), GL_UNSIGNED_INT, 0,
+			static_cast<GLsizei>(objects.num_indices), GL_UNSIGNED_INT, 0,
 			static_cast<GLsizei>(batch.instances.size()));
 	}
 
-	pipeline_.Unbind();
 }
