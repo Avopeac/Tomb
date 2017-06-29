@@ -110,6 +110,7 @@ void SpriteRenderer::Draw()
 	pipeline_.Bind();
 
 	// Set standard uniforms
+	// TODO: Cache uniform locations at program creation
 	glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
