@@ -67,7 +67,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
@@ -89,7 +89,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -100,6 +100,7 @@
     <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
     <ClCompile Include="..\src\file.cpp" />
+    <ClCompile Include="..\src\font_renderer.cpp" />
     <ClCompile Include="..\src\frame_buffer.cpp" />
     <ClCompile Include="..\src\graphics.cpp" />
     <ClCompile Include="..\src\json.cpp" />
@@ -117,11 +118,13 @@
     <ClInclude Include="..\src\blend_mode.h" />
     <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\disposable.h" />
+    <ClInclude Include="..\src\font_renderer.h" />
     <ClInclude Include="..\src\frame_buffer.h" />
     <ClInclude Include="..\src\graphics.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\file.h" />
+    <ClInclude Include="..\src\map.h" />
     <ClInclude Include="..\src\post_processing.h" />
     <ClInclude Include="..\src\renderer.h" />
     <ClInclude Include="..\src\sampler.h" />

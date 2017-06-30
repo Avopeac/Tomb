@@ -43,6 +43,9 @@ namespace graphics
 
 		void Create(const std::string &path, bool mips);
 
+		// Frees the surface afterwards
+		void Create(SDL_Surface * surface, bool mips);
+
 		// Inherited via Disposable
 		virtual void Free() override;
 
@@ -66,6 +69,8 @@ namespace graphics
 		Texture &GetFromFile(size_t &hash, const std::string &path);
 
 		Texture &GetFromHash(size_t hash);
+
+		Texture &GetFromSurface(size_t &hash, SDL_Surface * surface);
 
 	};
 }

@@ -1,5 +1,6 @@
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_ttf.h"
 
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -19,6 +20,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	// Initialization
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+	TTF_Init();
 
 	// Load config
 	input::Config config;
@@ -39,9 +41,8 @@ Sint32 main(Sint32 argc, char * argv[])
 
 			graphics::Sprite sprite(transform, x + y * 32);
 			renderer.GetSpriteRenderer().Push(sprite,
-				graphics::SpriteShape::FlatHex,
-				//"assets/textures/sand/sand_08.png",
-				"assets/textures/smiley.png",
+				graphics::SpriteShape::SharpHex,
+				"assets/textures/sand/sand_08.png",
 				graphics::BlendMode::SrcAlpha,
 				graphics::BlendMode::OneMinusSrcAlpha,
 				graphics::BlendMode::SrcAlpha,
@@ -76,8 +77,9 @@ Sint32 main(Sint32 argc, char * argv[])
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
 	}
 
-	SDL_Quit();
+	TTF_Quit();
 	IMG_Quit();
-
+	SDL_Quit();
+	
 	return 0;
 }

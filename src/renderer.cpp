@@ -17,6 +17,10 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	sprite_renderer_ = std::make_unique<SpriteRenderer>(SPRITE_INSTANCES_PER_BATCH,
 		*graphics_base_, *program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
+	// TODO: Broken hashing of textures
+	//font_renderer_ = std::make_unique<FontRenderer>(*graphics_base,
+		//*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
+
 	offscreen_buffer_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
 		graphics_base_->GetBackbufferHeight(), true, true);
 }

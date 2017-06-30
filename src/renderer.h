@@ -9,6 +9,7 @@
 #include "sampler.h"
 #include "blend_mode.h"
 #include "sprite_renderer.h"
+#include "font_renderer.h"
 #include "post_processing.h"
 
 #define SPRITE_INSTANCES_PER_BATCH 4000
@@ -27,6 +28,7 @@ namespace graphics
 		std::unique_ptr<BlendCache> blend_cache_;
 		std::unique_ptr<PostProcessing> post_processing_;
 		std::unique_ptr<SpriteRenderer> sprite_renderer_;
+		std::unique_ptr<FontRenderer> font_renderer_;
 
 	public:
 
@@ -35,6 +37,8 @@ namespace graphics
 		~Renderer();
 
 		inline SpriteRenderer &GetSpriteRenderer() { return *sprite_renderer_; }
+
+		inline FontRenderer &GetFontRenderer() { return *font_renderer_; }
 
 		inline PostProcessing &GetPostProcessing() { return *post_processing_; }
 

@@ -46,6 +46,13 @@ void Texture::Create(const std::string & path, bool mips)
 
 	SDL_Surface * surface = IMG_LoadPNG_RW(rw);
 
+	Create(surface, mips);
+
+	SDL_FreeRW(rw);
+}
+
+void Texture::Create(SDL_Surface * surface, bool mips)
+{
 	SDL_PixelFormat pixel_format;
 	SDL_memset(&pixel_format, 0, sizeof(pixel_format));
 	pixel_format.BitsPerPixel = surface->format->BitsPerPixel;
@@ -85,13 +92,12 @@ void Texture::Create(const std::string & path, bool mips)
 	glTextureParameteri(id_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(id_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	if (mips) 
+	if (mips)
 	{
 		glGenerateTextureMipmap(id_);
 	}
 
 	SDL_FreeSurface(surface);
-	SDL_FreeRW(rw);
 }
 
 void Texture::Free()
@@ -132,4 +138,22 @@ Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path)
 
 	return textures_[hash];
 
+}
+
+Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface)
+{
+	hash = std::hash<Uint64>{}(reinterpret_cast<uintptr_t>(surface->pixels));
+
+	if (textures_.find(hash) == textures_.end())
+	{
+		Texture texture;
+		texture.Create(surface, true);
+		textures_.insert({ hash, std::move(texture) });
+	}
+	else
+	{
+		SDL_assert(false); // We should never ever get the same hash for two different pointers
+	}
+
+	return textures_[hash];
 }
