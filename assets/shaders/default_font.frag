@@ -16,7 +16,7 @@ void main()
 {
 	//vec4 color = texture(u_texture, vec3(v_texcoord, float(v_texture_array_index)));
 
-	vec4 color = texture(u_texture, vec3(v_texcoord, float(0)));
+	vec4 color = texture2DArray(u_texture, vec3(v_texcoord, 0.0));
 
-	o_color = vec4(1,1,1,color.a);
+	o_color = vec4(1, 1, 1, 1); //color.a);
 }
