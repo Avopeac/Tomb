@@ -17,9 +17,8 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	sprite_renderer_ = std::make_unique<SpriteRenderer>(SPRITE_INSTANCES_PER_BATCH,
 		*graphics_base_, *program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
-	// TODO: Broken hashing of textures
-	//font_renderer_ = std::make_unique<FontRenderer>(*graphics_base,
-		//*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
+	font_renderer_ = std::make_unique<FontRenderer>(*graphics_base,
+		*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
 	offscreen_buffer_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
 		graphics_base_->GetBackbufferHeight(), true, true);
@@ -31,17 +30,28 @@ Renderer::~Renderer()
 
 void Renderer::Invoke()
 {
+	// Clear current framebuffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 
+	// Set depth test to false 
+	glDisable(GL_DEPTH_TEST);
+	glDepthFunc(GL_NEVER);
+
+	// Enable blending
+	glEnable(GL_BLEND);
+
+	// Draw sprites to offscreen buffer
 	offscreen_buffer_->BindDraw();
-
 	sprite_renderer_->Draw();
-
+	font_renderer_->Draw();
 	offscreen_buffer_->UnbindDraw();
 
+	// TODO: Font, GUI and post processing happens between here
+
+	// Blit offscreen buffer to default framebuffer
 	offscreen_buffer_->Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
 		0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight());
-
-	//post_processing_->Process(*offscreen_buffer_);
 
 }
 

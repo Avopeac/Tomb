@@ -72,19 +72,19 @@ void Texture::Create(SDL_Surface * surface, bool mips)
 	pixel_format.Amask = 0xff000000;
 	#endif
 
-	GLint internalFormat;
+	GLint internal_format;
 	if (pixel_format.BytesPerPixel == 3)
 	{
-		internalFormat = GL_RGB8;
+		internal_format = GL_RGB8;
 	}
 	else if (pixel_format.BytesPerPixel == 4)
 	{
-		internalFormat = GL_RGBA8;
+		internal_format = GL_RGBA8;
 	}
 
 	SDL_Surface * converted_surface = SDL_ConvertSurface(surface, &pixel_format, 0);
 
-	glTextureStorage2D(id_, 1, internalFormat, converted_surface->w, converted_surface->h);
+	glTextureStorage2D(id_, 1, internal_format, converted_surface->w, converted_surface->h);
 	glTextureSubImage2D(id_, 0, 0, 0, converted_surface->w, converted_surface->h,
 		GL_RGBA, GL_UNSIGNED_BYTE, converted_surface->pixels);
 	glTextureParameteri(id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -140,9 +140,9 @@ Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path)
 
 }
 
-Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface)
+Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name)
 {
-	hash = std::hash<Uint64>{}(reinterpret_cast<uintptr_t>(surface->pixels));
+	hash = std::hash<std::string>{}(name);
 
 	if (textures_.find(hash) == textures_.end())
 	{
@@ -152,7 +152,7 @@ Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface)
 	}
 	else
 	{
-		SDL_assert(false); // We should never ever get the same hash for two different pointers
+		SDL_assert(false); // We should never ever get the same hash based on name
 	}
 
 	return textures_[hash];

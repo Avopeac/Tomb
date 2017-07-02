@@ -96,17 +96,6 @@ void SpriteRenderer::Push(const Sprite & sprite,
 void SpriteRenderer::Draw()
 {
 
-	// Clear current framebuffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-
-	// Set depth test to false 
-	glDisable(GL_DEPTH_TEST);
-	glDepthFunc(GL_NEVER);
-
-	// Enable blending
-	glEnable(GL_BLEND);
-
 	pipeline_.Bind();
 
 	// Set standard uniforms

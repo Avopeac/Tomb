@@ -70,7 +70,7 @@ namespace graphics
 
 		Texture &GetFromHash(size_t hash);
 
-		Texture &GetFromSurface(size_t &hash, SDL_Surface * surface);
+		Texture &GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name);
 
 	};
 }
