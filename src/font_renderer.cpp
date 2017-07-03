@@ -39,15 +39,19 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 	RenderTextInstance text_instance;
 	text_instance.color = color;
 
+	int offset_accumulation = 0;
+
 	for (size_t i = 0; i < string.length(); ++i)
 	{
 		char character = string[i];
 
-		int kerning = i > 0 ? TTF_GetFontKerningSizeGlyphs(font_, string[i - 1], character) : 0;
-
 		FontGlyph &glyph = glyphs_[character];
 
-		// TODO: Offset each character position
+		if (i > 0)
+		{
+			int kerning = TTF_GetFontKerningSizeGlyphs(font_, (Uint16)string[i - 1], (Uint16)character);
+			offset_accumulation += kerning > 0 ? kerning : glyph.advance;
+		}
 
 		RenderCharacterInstance char_instance;
 		
@@ -66,10 +70,11 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 		char_instance.positions[2][2] = color.x;
 		char_instance.positions[2][3] = color.x;
 
-		char_instance.positions[3][0] = kerning;
+		char_instance.positions[3][0] = offset_accumulation;
 		char_instance.positions[3][1] = glyph.advance;
 		char_instance.positions[3][2] = glyph.texture_array_index;
-
+		char_instance.positions[3][3] = 0;
+		
 		text_instance.render_chars.push_back(char_instance);
 	}
 
@@ -117,7 +122,7 @@ void FontRenderer::GenerateGlyphTextures()
 {
 
 	// Point size in 72DPI
-	const int pt_size = 16;
+	const int pt_size = 64;
 
 	// TODO: Less hardcoded
 	const std::string default_font_path = "assets/fonts/bellefair/bellefair_regular.ttf";
@@ -153,7 +158,7 @@ void FontRenderer::GenerateGlyphTextures()
 	glTextureParameteri(texture_array_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(texture_array_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(texture_array_, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTextureStorage3D(texture_array_, 1, GL_RGBA8, 64, 64, static_cast<GLsizei>(characters_.size()));
+	glTextureStorage3D(texture_array_, 1, GL_RGBA8, 128, 128, static_cast<GLsizei>(characters_.size()));
 
 	// White base color, easily tintable
 	SDL_Color white = { 1, 1, 1, 1 };
@@ -265,12 +270,6 @@ void FontRenderer::CreateObjects(const glm::vec2 * const vertices,
 		glVertexArrayAttribFormat(vertex_array_, attrib_index, 4, GL_FLOAT, GL_FALSE, i * sizeof(glm::vec4));
 		glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
 	}
-
-	// Texture index attribute
-	glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-	glVertexArrayAttribBinding(vertex_array_, attrib_index, 1);
-	glVertexArrayAttribFormat(vertex_array_, attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, offsetof(RenderCharacterInstance, RenderCharacterInstance::texture_array_index));
-	glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
 }
 
 void FontRenderer::DeleteObjects()

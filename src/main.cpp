@@ -30,7 +30,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	graphics::GraphicsBase graphics_base(config);
 	graphics::Renderer renderer(&graphics_base);
 
-	/*auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
+	auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
 	for (auto y = 0; y < 32; ++y)
 	{
 		for (auto x = 0; x < 32; ++x)
@@ -50,15 +50,13 @@ Sint32 main(Sint32 argc, char * argv[])
 				graphics::MagnificationFiltering::Linear,
 				graphics::MinificationFiltering::LinearMipmapLinear, 
 				graphics::Wrapping::ClampToEdge,
-				graphics::Wrapping::ClampToEdge);
+				graphics::Wrapping::ClampToEdge); 
 		}
-	}*/
+	}
 
-
-	renderer.GetFontRenderer().Push("A", 
-		glm::ivec4(1, 0, 1, 1), glm::vec2(50, 50), glm::vec2(32, 32));
-
-	
+	renderer.GetFontRenderer().Push("Andreas", 
+		glm::ivec4(1, 1, 1, 1), glm::vec2(100, 50), glm::vec2(64, 64));
+	 
 	// Main loop
 	bool running = true;
 	double previous_time = util::GetSeconds();
