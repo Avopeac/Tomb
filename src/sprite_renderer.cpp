@@ -21,7 +21,7 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 {
 
 
-	CreateBatchObject_(flat_hex_objects, 
+	CreateBatchObject_(flat_hex_objects,
 		graphics_base_.flat_hexagon_vertices, sizeof(graphics_base_.flat_hexagon_vertices) / sizeof(graphics_base_.flat_hexagon_vertices[0]),
 		graphics_base_.hexagon_indices, sizeof(graphics_base_.hexagon_indices) / sizeof(graphics_base_.hexagon_indices[0])
 	);
@@ -31,7 +31,7 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 		graphics_base_.hexagon_indices, sizeof(graphics_base_.hexagon_indices) / sizeof(graphics_base_.hexagon_indices[0])
 	);
 
-	CreateBatchObject_(rectangular_objects, 
+	CreateBatchObject_(rectangular_objects,
 		graphics_base_.quad_vertices, sizeof(graphics_base_.quad_vertices) / sizeof(graphics_base_.quad_vertices[0]),
 		graphics_base_.quad_indices, sizeof(graphics_base_.quad_indices) / sizeof(graphics_base_.quad_indices[0])
 	);
@@ -53,12 +53,12 @@ SpriteRenderer::~SpriteRenderer()
 
 void SpriteRenderer::Push(const Sprite & sprite,
 	SpriteShape shape,
-	const std::string &texture_path, 
-	BlendMode src_color_blend, 
-	BlendMode dst_color_blend, 
-	BlendMode src_alpha_blend, 
+	const std::string &texture_path,
+	BlendMode src_color_blend,
+	BlendMode dst_color_blend,
+	BlendMode src_alpha_blend,
 	BlendMode dst_alpha_blend,
-	MagnificationFiltering mag, 
+	MagnificationFiltering mag,
 	MinificationFiltering min,
 	Wrapping s,
 	Wrapping t)
@@ -76,12 +76,12 @@ void SpriteRenderer::Push(const Sprite & sprite,
 
 	switch (shape)
 	{
-	case graphics::SpriteShape::Rectangle: 
-		PushToBatchObject_(rectangular_sprite_batches_, instance, 
+	case graphics::SpriteShape::Rectangle:
+		PushToBatchObject_(rectangular_sprite_batches_, instance,
 			sampler_hash, blend_hash, texture_hash);
 		break;
 	case graphics::SpriteShape::FlatHex:
-		PushToBatchObject_(flat_hex_sprite_batches_, instance, 
+		PushToBatchObject_(flat_hex_sprite_batches_, instance,
 			sampler_hash, blend_hash, texture_hash);
 		break;
 	case graphics::SpriteShape::SharpHex:
@@ -109,14 +109,14 @@ void SpriteRenderer::Draw()
 	DrawBatchObject_(sharp_hex_objects, sharp_hex_sprite_batches_);
 	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_);
 	DrawBatchObject_(rectangular_objects, rectangular_sprite_batches_);
-	
+
 	pipeline_.Unbind();
 }
 
-void SpriteRenderer::PushToBatchObject_(std::vector<SpriteBatch>& batches, 
-	SpriteBatchInstance &instance, 
-	size_t sampler_hash, 
-	size_t blend_hash, 
+void SpriteRenderer::PushToBatchObject_(std::vector<SpriteBatch>& batches,
+	SpriteBatchInstance &instance,
+	size_t sampler_hash,
+	size_t blend_hash,
 	size_t texture_hash)
 {
 	if (batches.empty() ||
@@ -200,7 +200,6 @@ void graphics::SpriteRenderer::DeleteBatchObject_(SpriteRendererBatchObjects & o
 
 void SpriteRenderer::DrawBatchObject_(SpriteRendererBatchObjects & objects, std::vector<SpriteBatch> & batches)
 {
-	glBindVertexArray(objects.vertex_array);
 
 	for (auto &batch : batches)
 	{
@@ -224,6 +223,8 @@ void SpriteRenderer::DrawBatchObject_(SpriteRendererBatchObjects & objects, std:
 		glNamedBufferSubData(objects.instance_buffer, 0,
 			static_cast<GLsizeiptr>(batch.instances.size() * sizeof(SpriteBatchInstance)),
 			&batch.instances[0]);
+
+		glBindVertexArray(objects.vertex_array);
 
 		glDrawElementsInstanced(GL_TRIANGLES,
 			static_cast<GLsizei>(objects.num_indices), GL_UNSIGNED_INT, 0,

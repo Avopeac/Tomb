@@ -63,12 +63,12 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 		char_instance.positions[1][0] = position.x;
 		char_instance.positions[1][1] = position.y;
 		char_instance.positions[1][2] = scale.x;
-		char_instance.positions[1][3] = scale.x;
+		char_instance.positions[1][3] = scale.y;
 
-		char_instance.positions[2][0] = color.x;
-		char_instance.positions[2][1] = color.x;
-		char_instance.positions[2][2] = color.x;
-		char_instance.positions[2][3] = color.x;
+		char_instance.positions[2][0] = 1.0f / 128.0f;
+		char_instance.positions[2][1] = 1.0f / 128.0f;
+		char_instance.positions[2][2] = 128.0f;
+		char_instance.positions[2][3] = 128.0f;
 
 		char_instance.positions[3][0] = offset_accumulation;
 		char_instance.positions[3][1] = glyph.advance;
@@ -83,7 +83,6 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 
 void FontRenderer::Draw()
 {
-
 	glBindVertexArray(vertex_array_);
 
 	pipeline_.Bind();
@@ -115,7 +114,17 @@ void FontRenderer::Draw()
 			static_cast<GLsizei>(text.render_chars.size()));
 	}
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (auto &text : render_texts_)
+	{
+		glDrawElementsInstanced(GL_TRIANGLES,
+			static_cast<GLsizei>(num_indices_), GL_UNSIGNED_INT, 0,
+			static_cast<GLsizei>(text.render_chars.size()));
+	}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	pipeline_.Unbind();
+
 }
 
 void FontRenderer::GenerateGlyphTextures()

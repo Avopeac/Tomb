@@ -54,8 +54,8 @@ Sint32 main(Sint32 argc, char * argv[])
 		}
 	}
 
-	renderer.GetFontRenderer().Push("Andreas", 
-		glm::ivec4(1, 1, 1, 1), glm::vec2(100, 50), glm::vec2(64, 64));
+	renderer.GetFontRenderer().Push("A", 
+		glm::ivec4(1, 1, 1, 1), glm::vec2(500, 500), glm::vec2(64, 64));
 	 
 	// Main loop
 	bool running = true;
