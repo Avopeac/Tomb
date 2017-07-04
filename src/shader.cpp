@@ -57,7 +57,7 @@ const Program & ProgramCache::GetProgramByHash(size_t hash)
 
 graphics::ProgramPipeline::ProgramPipeline()
 {
-	glCreateProgramPipelines(1, &id_);
+	glGenProgramPipelines(1, &id_);
 }
 
 graphics::ProgramPipeline::~ProgramPipeline()

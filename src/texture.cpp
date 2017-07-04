@@ -9,7 +9,7 @@ using namespace graphics;
 
 Texture::Texture()
 {
-	glCreateTextures(GL_TEXTURE_2D, 1, &id_);
+	glGenTextures(1, &id_);
 }
 
 Texture::~Texture()
@@ -29,13 +29,16 @@ Texture::Texture(Texture &&other)
 
 void Texture::Bind(GLuint unit)
 {
-	glBindTextureUnit(unit, id_);
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, id_);
 	unit_ = unit;
 }
 
 void Texture::Unbind()
 {
-	glBindTextureUnit(unit_, id_);
+	glActiveTexture(GL_TEXTURE0 + unit_);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	unit_ = 0;
 }
 
 void Texture::Create(const std::string & path, bool mips)
@@ -84,18 +87,21 @@ void Texture::Create(SDL_Surface * surface, bool mips)
 
 	SDL_Surface * converted_surface = SDL_ConvertSurface(surface, &pixel_format, 0);
 
-	glTextureStorage2D(id_, 1, internal_format, converted_surface->w, converted_surface->h);
-	glTextureSubImage2D(id_, 0, 0, 0, converted_surface->w, converted_surface->h,
+	glBindTexture(GL_TEXTURE_2D, id_);
+	glTexStorage2D(GL_TEXTURE_2D, 1, internal_format, converted_surface->w, converted_surface->h);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, converted_surface->w, converted_surface->h, 
 		GL_RGBA, GL_UNSIGNED_BYTE, converted_surface->pixels);
-	glTextureParameteri(id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(id_, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(id_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(id_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	if (mips)
 	{
-		glGenerateTextureMipmap(id_);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	SDL_FreeSurface(surface);
 }

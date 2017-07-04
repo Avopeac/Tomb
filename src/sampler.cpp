@@ -5,7 +5,8 @@ using namespace graphics;
 Sampler::Sampler() :
 	unit_(0), id_(0)
 {
-	glCreateSamplers(1, &id_);
+	glGenSamplers(1, &id_);
+	//glCreateSamplers(1, &id_);
 }
 
 Sampler::~Sampler()
@@ -32,14 +33,14 @@ void Sampler::SetWrap(Wrapping s, Wrapping t)
 
 void Sampler::Bind(Uint32 unit)
 {
+	glBindSampler(unit, id_);
 	unit_ = unit;
-	glBindSamplers(unit_, 1, &id_);
 }
 
 void Sampler::Unbind()
 {
+	glBindSampler(unit_, 0);
 	unit_ = 0;
-	glBindSamplers(unit_, 0, 0);
 }
 
 void Sampler::Free()
