@@ -152,42 +152,72 @@ void SpriteRenderer::CreateBatchObject_(SpriteRendererBatchObjects &objects, con
 	auto indices_size = objects.num_indices * index_size;
 	auto instance_size = sizeof(SpriteBatchInstance);
 
-	glCreateBuffers(1, &objects.vertex_buffer);
-	glCreateBuffers(1, &objects.element_buffer);
-	glCreateBuffers(1, &objects.instance_buffer);
+	glGenBuffers(1, &objects.vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objects.vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices_size, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glNamedBufferData(objects.vertex_buffer, vertices_size, vertices, GL_STATIC_DRAW);
-	glNamedBufferData(objects.element_buffer, indices_size, indices, GL_STATIC_DRAW);
-	glNamedBufferData(objects.instance_buffer, instances_per_batch_ * instance_size, nullptr, GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &objects.instance_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objects.instance_buffer);
+	glBufferData(GL_ARRAY_BUFFER, instances_per_batch_ * instance_size, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glCreateVertexArrays(1, &objects.vertex_array);
-
-	glVertexArrayElementBuffer(objects.vertex_array, objects.element_buffer);
-	glVertexArrayVertexBuffer(objects.vertex_array, 0, objects.vertex_buffer, 0, static_cast<GLsizei>(vertex_size));
-	glVertexArrayVertexBuffer(objects.vertex_array, 1, objects.instance_buffer, 0, static_cast<GLsizei>(instance_size));
+	glGenBuffers(1, &objects.element_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects.element_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	GLint attrib_index = 0;
+	glGenVertexArrays(1, &objects.vertex_array);
+	glBindVertexArray(objects.vertex_array);
+	
+	// Index data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects.element_buffer);
+
+	// Vertex data
+	glBindBuffer(GL_ARRAY_BUFFER, objects.vertex_buffer);
 
 	// Position attribute
-	glEnableVertexArrayAttrib(objects.vertex_array, attrib_index);
-	glVertexArrayAttribBinding(objects.vertex_array, attrib_index, 0);
-	glVertexArrayAttribFormat(objects.vertex_array, attrib_index, 2, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayBindingDivisor(objects.vertex_array, attrib_index++, 0);
 
+	glEnableVertexAttribArray(attrib_index); 
+	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, vertex_size, 0);
+	glVertexAttribDivisor(attrib_index, 0);
+	attrib_index++;
+
+	// Instance data
+	glBindBuffer(GL_ARRAY_BUFFER, objects.instance_buffer);
+	
 	// Transform attribute
-	for (int i = 0; i < 4; ++i)
-	{
-		glEnableVertexArrayAttrib(objects.vertex_array, attrib_index);
-		glVertexArrayAttribBinding(objects.vertex_array, attrib_index, 1);
-		glVertexArrayAttribFormat(objects.vertex_array, attrib_index, 4, GL_FLOAT, GL_FALSE, i * sizeof(glm::vec4));
-		glVertexArrayBindingDivisor(objects.vertex_array, attrib_index++, 1);
-	}
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(0 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(1 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(2 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(3 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
 
 	// Layer attribute
-	glEnableVertexArrayAttrib(objects.vertex_array, attrib_index);
-	glVertexArrayAttribBinding(objects.vertex_array, attrib_index, 1);
-	glVertexArrayAttribFormat(objects.vertex_array, attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, offsetof(SpriteBatchInstance, SpriteBatchInstance::layer));
-	glVertexArrayBindingDivisor(objects.vertex_array, attrib_index++, 1);
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 1, GL_UNSIGNED_INT, GL_FALSE, (GLsizei)instance_size, (const void *)(4 * sizeof(glm::vec4)));
+	glVertexBindingDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void graphics::SpriteRenderer::DeleteBatchObject_(SpriteRendererBatchObjects & objects)
@@ -200,6 +230,8 @@ void graphics::SpriteRenderer::DeleteBatchObject_(SpriteRendererBatchObjects & o
 
 void SpriteRenderer::DrawBatchObject_(SpriteRendererBatchObjects & objects, std::vector<SpriteBatch> & batches)
 {
+
+	glBindVertexArray(objects.vertex_array);
 
 	for (auto &batch : batches)
 	{
@@ -220,15 +252,16 @@ void SpriteRenderer::DrawBatchObject_(SpriteRendererBatchObjects & objects, std:
 		}
 
 		// Re-upload subdata for instance buffer
-		glNamedBufferSubData(objects.instance_buffer, 0,
-			static_cast<GLsizeiptr>(batch.instances.size() * sizeof(SpriteBatchInstance)),
+		glBindBuffer(GL_ARRAY_BUFFER, objects.instance_buffer);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizei)(batch.instances.size() * sizeof(SpriteBatchInstance)),
 			&batch.instances[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glBindVertexArray(objects.vertex_array);
-
+		// Draw all sprites for the batch
 		glDrawElementsInstanced(GL_TRIANGLES,
-			static_cast<GLsizei>(objects.num_indices), GL_UNSIGNED_INT, 0,
-			static_cast<GLsizei>(batch.instances.size()));
+			(GLsizei)objects.num_indices, GL_UNSIGNED_INT, 0,
+			(GLsizei)batch.instances.size());
 	}
 
+	glBindVertexArray(0);
 }

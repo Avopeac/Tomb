@@ -105,26 +105,20 @@ void FontRenderer::Draw()
 			1, glm::value_ptr(text.color));
 
 		// Re-upload subdata for instance buffer
-		glNamedBufferSubData(instance_buffer_, 0,
-			static_cast<GLsizeiptr>(text.render_chars.size() * sizeof(RenderCharacterInstance)),
+		glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(text.render_chars.size() * sizeof(RenderCharacterInstance)),
 			&text.render_chars[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+		// Draw characters
 		glDrawElementsInstanced(GL_TRIANGLES,
-			static_cast<GLsizei>(num_indices_), GL_UNSIGNED_INT, 0,
-			static_cast<GLsizei>(text.render_chars.size()));
+			(GLsizei)num_indices_, GL_UNSIGNED_INT, 0,
+			(GLsizei)text.render_chars.size());
 	}
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (auto &text : render_texts_)
-	{
-		glDrawElementsInstanced(GL_TRIANGLES,
-			static_cast<GLsizei>(num_indices_), GL_UNSIGNED_INT, 0,
-			static_cast<GLsizei>(text.render_chars.size()));
-	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	pipeline_.Unbind();
 
+	glBindVertexArray(0);
 }
 
 void FontRenderer::GenerateGlyphTextures()
@@ -161,13 +155,15 @@ void FontRenderer::GenerateGlyphTextures()
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texture_array_);
-	glTextureParameteri(texture_array_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(texture_array_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTextureParameteri(texture_array_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(texture_array_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(texture_array_, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTextureStorage3D(texture_array_, 1, GL_RGBA8, 128, 128, static_cast<GLsizei>(characters_.size()));
+	glGenTextures(1, &texture_array_);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, texture_array_);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, 128, 128, (GLsizei)characters_.size(),
+		0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 	// White base color, easily tintable
 	SDL_Color white = { 1, 1, 1, 1 };
@@ -200,8 +196,8 @@ void FontRenderer::GenerateGlyphTextures()
 			#endif
 
 			surface = SDL_ConvertSurface(surface, &pixel_format, 0);
-			glTextureSubImage3D(texture_array_, 0, 0, 0, i, surface->w, surface->h,
-				1, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i,
+				surface->w, surface->h, 1, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 
 			int min_x;
 			int min_y;
@@ -226,6 +222,7 @@ void FontRenderer::GenerateGlyphTextures()
 		}
 	}
 
+	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
 	// Set back old pixel store state.
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, swapbytes);
@@ -249,36 +246,65 @@ void FontRenderer::CreateObjects(const glm::vec2 * const vertices,
 	auto indices_size = num_indices_ * index_size;
 	auto instance_size = sizeof(RenderCharacterInstance);
 
-	glCreateBuffers(1, &vertex_buffer_);
-	glCreateBuffers(1, &element_buffer_);
-	glCreateBuffers(1, &instance_buffer_);
+	glGenBuffers(1, &vertex_buffer_);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
+	glBufferData(GL_ARRAY_BUFFER, vertices_size, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glNamedBufferData(vertex_buffer_, vertices_size, vertices, GL_STATIC_DRAW);
-	glNamedBufferData(element_buffer_, indices_size, indices, GL_STATIC_DRAW);
-	glNamedBufferData(instance_buffer_, MAX_CHARS_PER_FONT_RENDER_INSTANCE * instance_size, nullptr, GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &instance_buffer_);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
+	glBufferData(GL_ARRAY_BUFFER, MAX_CHARS_PER_FONT_RENDER_INSTANCE * instance_size, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glCreateVertexArrays(1, &vertex_array_);
-
-	glVertexArrayElementBuffer(vertex_array_, element_buffer_);
-	glVertexArrayVertexBuffer(vertex_array_, 0, vertex_buffer_, 0, static_cast<GLsizei>(vertex_size));
-	glVertexArrayVertexBuffer(vertex_array_, 1, instance_buffer_, 0, static_cast<GLsizei>(instance_size));
+	glGenBuffers(1, &element_buffer_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	GLint attrib_index = 0;
+	glGenVertexArrays(1, &vertex_array_);
+	glBindVertexArray(vertex_array_);
+
+	// Index data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_);
+
+	// Vertex data
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
 
 	// Position attribute
-	glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-	glVertexArrayAttribBinding(vertex_array_, attrib_index, 0);
-	glVertexArrayAttribFormat(vertex_array_, attrib_index, 2, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 0);
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, vertex_size, 0);
+	glVertexAttribDivisor(attrib_index, 0);
+	attrib_index++;
+
+	// Instance data
+	glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
 
 	// Transform attribute
-	for (int i = 0; i < 4; ++i)
-	{
-		glEnableVertexArrayAttrib(vertex_array_, attrib_index);
-		glVertexArrayAttribBinding(vertex_array_, attrib_index, 1);
-		glVertexArrayAttribFormat(vertex_array_, attrib_index, 4, GL_FLOAT, GL_FALSE, i * sizeof(glm::vec4));
-		glVertexArrayBindingDivisor(vertex_array_, attrib_index++, 1);
-	}
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(0 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(1 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(2 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 4, GL_FLOAT, GL_FALSE, (GLsizei)instance_size, (const void *)(3 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(attrib_index, 1);
+	attrib_index++;
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void FontRenderer::DeleteObjects()
