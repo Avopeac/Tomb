@@ -90,7 +90,8 @@ void FontRenderer::Draw()
 	size_t hash;
 	blend_cache_.GetFromParameters(hash, BlendMode::SrcAlpha, BlendMode::OneMinusSrcAlpha);
 
-	glBindTextureUnit(0, texture_array_);
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, texture_array_);
 	glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
@@ -117,7 +118,8 @@ void FontRenderer::Draw()
 	}
 
 	pipeline_.Unbind();
-
+	
+	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 	glBindVertexArray(0);
 }
 
