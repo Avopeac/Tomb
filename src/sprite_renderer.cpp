@@ -8,6 +8,8 @@
 
 #include "timing.h"
 
+#include "logger.h"
+
 using namespace graphics;
 
 SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphics_base, ProgramCache & program_cache,
@@ -103,6 +105,11 @@ void SpriteRenderer::Draw()
 	glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
+
+	int x, y;
+	SDL_GetMouseState(&x, &y);
+	glProgramUniform2f(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_mouse"), x, y);
+
 	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
 		GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
 

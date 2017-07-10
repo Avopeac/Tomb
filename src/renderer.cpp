@@ -44,6 +44,7 @@ void Renderer::Invoke()
 	// Draw sprites to offscreen buffer
 	offscreen_buffer_->BindDraw();
 	sprite_renderer_->Draw();
+	//post_processing_->Process(*offscreen_buffer_);
 	font_renderer_->Draw();
 	offscreen_buffer_->UnbindDraw();
 

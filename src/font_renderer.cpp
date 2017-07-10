@@ -2,6 +2,7 @@
 
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include "SDL_image.h"
 
 #include "timing.h"
 #include "logger.h"
@@ -53,7 +54,7 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 			offset_accumulation += kerning > 0 ? kerning : glyph.advance;
 		}
 
-		RenderCharacterInstance char_instance;
+		RenderCharacterInstance char_instance; 
 		
 		char_instance.positions[0][0] = glyph.min_x;
 		char_instance.positions[0][1] = glyph.max_x;
@@ -62,7 +63,7 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 
 		char_instance.positions[1][0] = position.x;
 		char_instance.positions[1][1] = position.y;
-		char_instance.positions[1][2] = scale.x;
+		char_instance.positions[1][2] = scale.x; 
 		char_instance.positions[1][3] = scale.y;
 
 		char_instance.positions[2][0] = 1.0f / 128.0f;
@@ -70,11 +71,11 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 		char_instance.positions[2][2] = 128.0f;
 		char_instance.positions[2][3] = 128.0f;
 
-		char_instance.positions[3][0] = offset_accumulation;
-		char_instance.positions[3][1] = glyph.advance;
-		char_instance.positions[3][2] = glyph.texture_array_index;
-		char_instance.positions[3][3] = 0;
-		
+		char_instance.positions[3][0] = offset_accumulation; 
+		char_instance.positions[3][1] = glyph.texture_array_index;
+		char_instance.positions[3][2] = glyph.texture_w;
+		char_instance.positions[3][3] = glyph.texture_h; 
+		     
 		text_instance.render_chars.push_back(char_instance);
 	}
 
@@ -127,7 +128,7 @@ void FontRenderer::GenerateGlyphTextures()
 {
 
 	// Point size in 72DPI
-	const int pt_size = 64;
+	const int pt_size = 32;
 
 	// TODO: Less hardcoded
 	const std::string default_font_path = "assets/fonts/bellefair/bellefair_regular.ttf";
@@ -201,11 +202,11 @@ void FontRenderer::GenerateGlyphTextures()
 			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i,
 				surface->w, surface->h, 1, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 
-			int min_x;
-			int min_y;
-			int max_x;
-			int max_y;
-			int advance;
+			int min_x = 0;
+			int min_y = 0;
+			int max_x = 0;
+			int max_y = 0;
+			int advance = 0;
 
 			// TODO: Check for errors
 			TTF_GlyphMetrics(font_, character, &min_x, &max_x, &min_y, &max_y, &advance);
@@ -217,6 +218,8 @@ void FontRenderer::GenerateGlyphTextures()
 			glyph.max_x = max_x;
 			glyph.min_y = min_y;
 			glyph.max_y = max_y;
+			glyph.texture_w = surface->w;
+			glyph.texture_h = surface->h;
 			glyph.advance = advance;
 			glyphs_.insert({ character, glyph });
 

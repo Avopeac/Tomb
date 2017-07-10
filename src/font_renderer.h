@@ -19,6 +19,8 @@ namespace graphics
 	struct FontGlyph
 	{
 		size_t texture_array_index;
+		size_t texture_w;
+		size_t texture_h;
 		size_t min_x;
 		size_t max_x;
 		size_t min_y;

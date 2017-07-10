@@ -1,4 +1,4 @@
-#version 430
+#version 410
 
 out vec4 o_color;
 
@@ -16,5 +16,9 @@ uniform vec4 u_color;
 
 void main()
 {
-	o_color = u_color * texture(u_texture, vec3(v_texcoord, v_texture_array_index)).a;
+	vec4 color = texture(u_texture, vec3(v_texcoord, v_texture_array_index));
+	o_color = u_color;
+	o_color.rgb *= color.a;
+
+	//o_color = u_color * texture(u_texture, vec3(v_texcoord, v_texture_array_index)).a;
 }
