@@ -40,20 +40,14 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 	RenderTextInstance text_instance;
 	text_instance.color = color;
 
-	int offset_accumulation = 0;
+	int advance_accumulation = 0;
 
 	for (size_t i = 0; i < string.length(); ++i)
 	{
 		char character = string[i];
 
 		FontGlyph &glyph = glyphs_[character];
-
-		if (i > 0)
-		{
-			int kerning = TTF_GetFontKerningSizeGlyphs(font_, (Uint16)string[i - 1], (Uint16)character);
-			offset_accumulation += kerning > 0 ? kerning : glyph.advance;
-		}
-
+		
 		RenderCharacterInstance char_instance; 
 		
 		char_instance.positions[0][0] = glyph.min_x;
@@ -66,17 +60,26 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 		char_instance.positions[1][2] = scale.x; 
 		char_instance.positions[1][3] = scale.y;
 
-		char_instance.positions[2][0] = 1.0f / 128.0f;
-		char_instance.positions[2][1] = 1.0f / 128.0f;
-		char_instance.positions[2][2] = 128.0f;
-		char_instance.positions[2][3] = 128.0f;
+		char_instance.positions[2][0] = font_height_;
+		char_instance.positions[2][1] = font_descent_;
+		char_instance.positions[2][2] = font_ascent_;
+		char_instance.positions[2][3] = font_line_skip_;
 
-		char_instance.positions[3][0] = offset_accumulation; 
+		char_instance.positions[3][0] = advance_accumulation;
 		char_instance.positions[3][1] = glyph.texture_array_index;
 		char_instance.positions[3][2] = glyph.texture_w;
 		char_instance.positions[3][3] = glyph.texture_h; 
 		     
 		text_instance.render_chars.push_back(char_instance);
+
+		int kerning = 0;
+		if (i > 0)
+		{
+			kerning = TTF_GetFontKerningSizeGlyphs(font_, (Uint16)string[i - 1], (Uint16)character);
+			
+		}
+
+		advance_accumulation += kerning > 0 ? kerning : glyph.advance;
 	}
 
 	render_texts_.push_back(text_instance);
@@ -125,13 +128,13 @@ void FontRenderer::Draw()
 }
 
 void FontRenderer::GenerateGlyphTextures()
-{
-
+{ 
+ 
 	// Point size in 72DPI
-	const int pt_size = 32;
+	const int pt_size = 72;
 
 	// TODO: Less hardcoded
-	const std::string default_font_path = "assets/fonts/bellefair/bellefair_regular.ttf";
+	const std::string default_font_path = "assets/fonts/arial/arial.ttf";
 
 	// Load the font file
 	font_ = TTF_OpenFont(default_font_path.c_str(), pt_size);
@@ -139,6 +142,11 @@ void FontRenderer::GenerateGlyphTextures()
 	{
 		debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_INPUT, TTF_GetError());
 	}
+
+	font_height_ = TTF_FontHeight(font_);
+	font_ascent_ = TTF_FontAscent(font_);
+	font_descent_ = TTF_FontDescent(font_);
+	font_line_skip_ = TTF_FontLineSkip(font_);
 
 	GLint swapbytes, lsbfirst, rowlength, skiprows, skippixels, alignment;
 
@@ -177,7 +185,7 @@ void FontRenderer::GenerateGlyphTextures()
 		// Create surface for glyph with high quality
 		SDL_Surface * surface = TTF_RenderGlyph_Blended(font_, character, white);
 		if (surface)
-		{
+		{ 
 
 			SDL_PixelFormat pixel_format;
 			SDL_memset(&pixel_format, 0, sizeof(pixel_format));
@@ -220,7 +228,7 @@ void FontRenderer::GenerateGlyphTextures()
 			glyph.max_y = max_y;
 			glyph.texture_w = surface->w;
 			glyph.texture_h = surface->h;
-			glyph.advance = advance;
+			glyph.advance = advance; 
 			glyphs_.insert({ character, glyph });
 
 			SDL_FreeSurface(surface);

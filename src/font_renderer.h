@@ -42,9 +42,9 @@ namespace graphics
 
 	class FontRenderer
 	{
-		const std::string characters_ = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?0123456789.=,:-;(%){#}[&]<*>";
+		const std::string characters_ = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?0123456789.=,:-;(%){#}[&]<*> ";
 
-		GraphicsBase & graphics_base_;
+		GraphicsBase & graphics_base_; 
 
 		ProgramCache & program_cache_;
 
@@ -79,6 +79,10 @@ namespace graphics
 		std::unordered_map<char, FontGlyph> glyphs_;
 
 		TTF_Font * font_;
+		int font_ascent_;
+		int font_descent_;
+		int font_line_skip_;
+		int font_height_;
 
 	public:
 

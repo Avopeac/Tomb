@@ -18,26 +18,29 @@ uniform mat4 u_viewproj;
 
 uniform float u_time;
 
+#define FONT_TEXTURE_SIZE 128
+
+#define FONT_TEXTURE_INV_SIZE 0.0078125 // 1.0 / 128.0
+
 void main()
 {
 
-	mat4 translate = mat4(1);
-	translate[3][0] = i_char_instance[1][0] + 2 * i_char_instance[3][0];
-	translate[3][1] = i_char_instance[1][1];
 
-	mat4 scale = mat4(1);
-	scale[0][0] = i_char_instance[0][1] - i_char_instance[0][0];
-	scale[1][1] = i_char_instance[0][3];
+	float x_scale = i_char_instance[3][2] - i_char_instance[0][0];
+	float y_scale = i_char_instance[3][3]; 
 
-	vec4 transformed = translate * scale * vec4(i_position.xy, 0, 1);
+	float x_offset = i_char_instance[1][0] + i_char_instance[3][0] * 2.0;
+	float y_offset = i_char_instance[1][1];
 
+	vec4 transformed = vec4(i_position.xy, 0, 1);
+	transformed.x = transformed.x * x_scale + x_offset;
+	transformed.y = transformed.y * y_scale + y_offset;
 	gl_Position = u_viewproj * transformed;
-
 
 	v_position = transformed.xy;
 	v_texcoord = 0.5 + 0.5 * i_position.xy;
 	v_texcoord.y = 1.0 - v_texcoord.y;
-	v_texcoord.x *= i_char_instance[3][2] * i_char_instance[2][0];
-	v_texcoord.y *= i_char_instance[3][3] * i_char_instance[2][1];
+	v_texcoord.x *= i_char_instance[3][2] * FONT_TEXTURE_INV_SIZE;
+	v_texcoord.y *= i_char_instance[3][3] * FONT_TEXTURE_INV_SIZE;
 	v_texture_array_index = uint(i_char_instance[3][1]);
 }

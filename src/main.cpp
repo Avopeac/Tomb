@@ -37,7 +37,7 @@ Sint32 main(Sint32 argc, char * argv[])
 		{
 			float x_offset = y % 2 == 0 ? 0.5f : -0.5f;
 			auto transform = glm::translate(scale_mat, 
-				glm::vec3(x_offset + 2.1f * x, 1.6f * y, 0));
+				glm::vec3(x_offset + 2.0f * x, 1.5f * y, 0));
 
 			graphics::Sprite sprite(transform, x + y * 32);
 			renderer.GetSpriteRenderer().Push(sprite,
@@ -54,7 +54,7 @@ Sint32 main(Sint32 argc, char * argv[])
 		}
 	}
 
-	renderer.GetFontRenderer().Push("Tomb",
+	renderer.GetFontRenderer().Push("kalle",
 		glm::ivec4(1, 1, 1, 1), glm::vec2(500, 500), glm::vec2(32, 32));
 	
 	// Main loop
