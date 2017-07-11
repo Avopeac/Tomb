@@ -20,8 +20,8 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	font_renderer_ = std::make_unique<FontRendererIndividual>(*graphics_base,
 		*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
-	offscreen_buffer_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
-		graphics_base_->GetBackbufferHeight(), true, true);
+	//offscreen_buffer_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
+		//graphics_base_->GetBackbufferHeight(), true, true);
 }
 
 Renderer::~Renderer()
@@ -42,17 +42,17 @@ void Renderer::Invoke()
 	glEnable(GL_BLEND);
 
 	// Draw sprites to offscreen buffer
-	offscreen_buffer_->BindDraw();
+	//offscreen_buffer_->BindDraw();
 	sprite_renderer_->Draw();
 	//post_processing_->Process(*offscreen_buffer_);
 	font_renderer_->Draw();
-	offscreen_buffer_->UnbindDraw();
+	//offscreen_buffer_->UnbindDraw();
 
 	// TODO: Font, GUI and post processing happens between here
 
 	// Blit offscreen buffer to default framebuffer
-	offscreen_buffer_->Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
-		0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight());
+	//offscreen_buffer_->Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
+		//0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight());
 
 }
 

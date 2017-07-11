@@ -15,12 +15,11 @@ uniform float u_time;
 
 uniform vec2 u_position;
 
-uniform vec2 u_scale;
+uniform vec2 u_size;
 
 void main()
 {
-	vec2 position = i_position + u_position;
-	position *= u_scale;
+	vec2 position = u_position + i_position * u_size * 0.5;
 
 	gl_Position = u_viewproj * vec4(position, 0, 1);
 

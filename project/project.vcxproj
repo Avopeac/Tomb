@@ -47,12 +47,16 @@
     <OutDir>$(SolutionDir)build\</OutDir>
     <IntDir>C:\VS_TEMP\</IntDir>
     <TargetName>tomb</TargetName>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <CustomBuildBeforeTargets>
+    </CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)build\</OutDir>
     <IntDir>C:\VS_TEMP\</IntDir>
     <TargetName>tomb</TargetName>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -72,6 +76,17 @@
     <PreBuildEvent>
       <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>
+      </Message>
+    </CustomBuildStep>
+    <PreLinkEvent>
+      <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -95,6 +110,13 @@
     <PreBuildEvent>
       <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
     </PreBuildEvent>
+    <PreLinkEvent>
+      <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
+    </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\blend_mode.cpp" />

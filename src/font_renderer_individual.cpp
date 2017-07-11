@@ -68,8 +68,7 @@ void FontRendererIndividual::Draw()
 	{
 		glProgramUniform4fv(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_color"), 1,
 			glm::value_ptr(text.color));
-		glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_scale"), 1,
-			glm::value_ptr(text.scale));
+	
 
 		int advance_accumulation = 0;
 
@@ -79,25 +78,28 @@ void FontRendererIndividual::Draw()
 
 			glm::vec2 glyph_position = text.position;
 			glyph_position.x += (float)advance_accumulation + text.glyphs[i]->min_x;
-			glyph_position.y -= text.glyphs[i]->max_y;
+
+			glm::vec2 glyph_size = glm::vec2(text.glyphs[i]->texture_w, text.glyphs[i]->texture_h); 
 
 			glActiveTexture(GL_TEXTURE0 + 0);
 			glBindTexture(GL_TEXTURE_2D, glyph_textures_[texture_index]);
 			glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_position"), 1,
 				glm::value_ptr(glyph_position));
+			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_size"), 1,
+				glm::value_ptr(glyph_size));
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-			int kerning = 0;
+			int kerning = 0; 
 			if (i > 0)
 			{
 				kerning = TTF_GetFontKerningSizeGlyphs(font_, (Uint16)text.glyphs[i - 1]->character,
 					(Uint16)text.glyphs[i]->character);
-			}
+			} 
 
-			advance_accumulation += kerning > 0 ? kerning : text.glyphs[i]->advance;
-
+			//advance_accumulation += kerning > 0 ? kerning : text.glyphs[i]->advance; 
+			advance_accumulation += text.glyphs[i]->advance;
 		}
 
 	}
@@ -165,7 +167,7 @@ void FontRendererIndividual::DeleteObjects_()
 void FontRendererIndividual::GenerateGlyphTextures_()
 {
 	// Point size in 72DPI
-	const int pt_size = 72;
+	const int pt_size = 32;
 
 	// TODO: Less hardcoded
 	const std::string default_font_path = "assets/fonts/arial/arial.ttf";
