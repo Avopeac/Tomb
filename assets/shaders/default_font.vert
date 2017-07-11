@@ -29,7 +29,7 @@ void main()
 	float x_scale = i_char_instance[3][2] - i_char_instance[0][0];
 	float y_scale = i_char_instance[3][3]; 
 
-	float x_offset = i_char_instance[1][0] + i_char_instance[3][0] * 2.0;
+	float x_offset = i_char_instance[1][0] + i_char_instance[0][0] + i_char_instance[3][0];
 	float y_offset = i_char_instance[1][1];
 
 	vec4 transformed = vec4(i_position.xy, 0, 1);
