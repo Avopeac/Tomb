@@ -15,7 +15,6 @@ FontRendererIndividual::FontRendererIndividual(GraphicsBase & graphics_base, Pro
 	texture_cache_(texture_cache), sampler_cache_(sampler_cache),
 	blend_cache_(blend_cache)
 {
-
 	GenerateGlyphTextures_();
 
 	CreateObjects_(graphics_base_.quad_vertices, sizeof(graphics_base_.quad_vertices) / sizeof(graphics_base_.quad_vertices[0]),
@@ -51,9 +50,12 @@ void FontRendererIndividual::Push(const std::string & string, const glm::vec4 & 
 
 void FontRendererIndividual::Draw()
 {
-	size_t hash;
+	size_t blend_hash;
+	blend_cache_.GetFromParameters(blend_hash, BlendMode::SrcAlpha, BlendMode::OneMinusSrcAlpha).Set();
 
-	blend_cache_.GetFromParameters(hash, BlendMode::SrcAlpha, BlendMode::OneMinusSrcAlpha).Set();
+	size_t sampler_hash;
+	sampler_cache_.GetFromParameters(sampler_hash, MagnificationFiltering::Nearest, MinificationFiltering::Nearest,
+		Wrapping::ClampToEdge, Wrapping::ClampToEdge).Bind(0);
 
 	glBindVertexArray(vertex_array_);
 
@@ -68,21 +70,19 @@ void FontRendererIndividual::Draw()
 	{
 		glProgramUniform4fv(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_color"), 1,
 			glm::value_ptr(text.color));
-	
 
-		int advance_accumulation = 0;
+		glm::vec2 glyph_position = text.position;
 
 		for (int i = 0; i < text.glyphs.size(); ++i)
 		{
-			GLuint texture_index = text.glyphs[i]->texture_index;
+			auto glyph = text.glyphs[i];
 
-			glm::vec2 glyph_position = text.position;
-			glyph_position.x += (float)advance_accumulation + text.glyphs[i]->min_x;
+			glyph_position.x += glyph->min_x;
 
-			glm::vec2 glyph_size = 0.5f * glm::vec2(text.glyphs[i]->texture_w, text.glyphs[i]->texture_h); 
+			glm::vec2 glyph_size = 0.5f * glm::vec2(glyph->texture_w, glyph->texture_h); 
 
 			glActiveTexture(GL_TEXTURE0 + 0);
-			glBindTexture(GL_TEXTURE_2D, glyph_textures_[texture_index - 32]);
+			glBindTexture(GL_TEXTURE_2D, glyph_textures_[glyph->texture_index]);
 			glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_position"), 1,
 				glm::value_ptr(glyph_position));
@@ -91,18 +91,12 @@ void FontRendererIndividual::Draw()
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-			int kerning = 0; 
-			if (i > 0)
-			{
-				kerning = TTF_GetFontKerningSizeGlyphs(font_, (Uint16)text.glyphs[i - 1]->character,
-					(Uint16)text.glyphs[i]->character);
-			} 
-
-			//advance_accumulation += kerning > 0 ? kerning : text.glyphs[i]->advance; 
-			advance_accumulation += text.glyphs[i]->advance;
+			glyph_position.x += glyph->advance - glyph->min_x;
 		}
 
 	}
+
+	sampler_cache_.GetFromHash(sampler_hash).Unbind();
 
 	pipeline_.Unbind();
 	
@@ -167,10 +161,10 @@ void FontRendererIndividual::DeleteObjects_()
 void FontRendererIndividual::GenerateGlyphTextures_()
 {
 	// Point size in 72DPI
-	const int pt_size = 32;
+	const int pt_size = 72;
 
 	// TODO: Less hardcoded
-	const std::string default_font_path = "assets/fonts/arial/arial.ttf";
+	const std::string default_font_path = "assets/fonts/bellefair/bellefair_regular.ttf";
 
 	// Load the font file
 	font_ = TTF_OpenFont(default_font_path.c_str(), pt_size);
@@ -202,15 +196,14 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	glyph_textures_.resize(128 - 32);
+	glyph_textures_.resize(characters_.size());
 
 	// White base color, easily tintable
 	SDL_Color white = { 1, 1, 1, 1 };
-	for (uint8_t i = 32; i < 128; ++i)
+	for (uint8_t i = 0; i < glyph_textures_.size(); ++i)
 	{
-
 		// Create surface for glyph with high quality
-		SDL_Surface * surface = TTF_RenderGlyph_Blended(font_, (Uint16)i, white);
+		SDL_Surface * surface = TTF_RenderGlyph_Blended(font_, characters_[i], white);
 		if (surface)
 		{
 			SDL_PixelFormat pixel_format;
@@ -233,15 +226,11 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 #endif
 
 			surface = SDL_ConvertSurface(surface, &pixel_format, 0);
-			glGenTextures(1, &glyph_textures_[i - 32]);
-			glBindTexture(GL_TEXTURE_2D, glyph_textures_[i - 32]);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glGenTextures(1, &glyph_textures_[i]);
+			glBindTexture(GL_TEXTURE_2D, glyph_textures_[i]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, surface->w, surface->h,
 				0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+			glGenerateMipmap(GL_TEXTURE_2D);
 
 			int min_x = 0;
 			int min_y = 0;
@@ -250,11 +239,11 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 			int advance = 0;
 
 			// TODO: Check for errors
-			TTF_GlyphMetrics(font_, (Uint16)i, &min_x, &max_x, &min_y, &max_y, &advance);
+			TTF_GlyphMetrics(font_, characters_[i], &min_x, &max_x, &min_y, &max_y, &advance);
 
 			// Insert glyph
 			FontGlyphIndividual glyph;
-			glyph.character = (char)i;
+			glyph.character = characters_[i];
 			glyph.texture_index = i;
 			glyph.min_x = min_x;
 			glyph.max_x = max_x;
@@ -263,7 +252,7 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 			glyph.texture_w = surface->w;
 			glyph.texture_h = surface->h;
 			glyph.advance = advance;
-			glyphs_.insert({ i, glyph });
+			glyphs_.insert({ characters_[i], glyph });
 
 			SDL_FreeSurface(surface);
 		}

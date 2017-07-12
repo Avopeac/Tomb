@@ -21,11 +21,11 @@ namespace graphics
 		size_t texture_index;
 		size_t texture_w;
 		size_t texture_h;
-		size_t min_x;
-		size_t max_x;
-		size_t min_y;
-		size_t max_y;
-		size_t advance;
+		int min_x;
+		int max_x;
+		int min_y;
+		int max_y;
+		int advance;
 	};
 
 	struct FontData
@@ -46,6 +46,8 @@ namespace graphics
 
 	class FontRendererIndividual
 	{
+		const std::string characters_ = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+
 		GraphicsBase & graphics_base_;
 
 		ProgramCache & program_cache_;
