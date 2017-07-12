@@ -46,8 +46,6 @@ namespace graphics
 
 	class FontRendererIndividual
 	{
-		const std::string characters_ = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?0123456789.=,:-;(%){#}[&]<*> ";
-
 		GraphicsBase & graphics_base_;
 
 		ProgramCache & program_cache_;

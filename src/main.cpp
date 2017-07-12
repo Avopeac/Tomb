@@ -54,7 +54,7 @@ Sint32 main(Sint32 argc, char * argv[])
 		}
 	}
 
-	renderer.GetFontRenderer().Push("kalle",
+	renderer.GetFontRenderer().Push("abcdefghijklmnopqrstuvwxyz",
 		glm::ivec4(1, 1, 1, 1), glm::vec2(500, 500), glm::vec2(32, 32));
 	
 	// Main loop

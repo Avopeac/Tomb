@@ -19,7 +19,7 @@ uniform vec2 u_size;
 
 void main()
 {
-	vec2 position = u_position + i_position * u_size * 0.5;
+	vec2 position = u_position + i_position * u_size;
 
 	gl_Position = u_viewproj * vec4(position, 0, 1);
 
