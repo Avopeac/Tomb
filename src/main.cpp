@@ -53,9 +53,6 @@ Sint32 main(Sint32 argc, char * argv[])
 				graphics::Wrapping::ClampToEdge); 
 		}
 	}
-
-	renderer.GetFontRenderer().Push("abcdefghijklmnopqrstuvwxyz",
-		glm::ivec4(1, 1, 1, 1), glm::vec2(20, 500), glm::vec2(32, 32));
 	
 	// Main loop
 	bool running = true;
@@ -74,6 +71,16 @@ Sint32 main(Sint32 argc, char * argv[])
 				running = false;
 			}
 		}
+
+		std::string print = "Frame: ";
+		print.append(std::to_string(1000.0 / frame_time));
+		print.append(" FPS");
+		//print.append("(");
+		//print.append(std::to_string(1.0 / frame_time));
+		//print.append(" FPS)");
+
+		renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
+			glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
 
 		renderer.Invoke();
 

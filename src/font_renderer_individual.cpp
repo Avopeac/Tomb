@@ -71,30 +71,38 @@ void FontRendererIndividual::Draw()
 		glProgramUniform4fv(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_color"), 1,
 			glm::value_ptr(text.color));
 
-		glm::vec2 glyph_position = text.position;
+		float offset = 0.0f;
 
 		for (int i = 0; i < text.glyphs.size(); ++i)
 		{
 			auto glyph = text.glyphs[i];
 
-			glyph_position.x += glyph->min_x;
+			if (i == ' ') {
+				offset += 32;
+				continue;
+			}
 
-			glm::vec2 glyph_size = 0.5f * glm::vec2(glyph->texture_w, glyph->texture_h); 
+			//glm::vec2 glyph_size = glm::vec2(glyph->texture_w, glyph->texture_h);
+			glm::vec2 glyph_size = glm::vec2(16, 16);
 
 			glActiveTexture(GL_TEXTURE0 + 0);
 			glBindTexture(GL_TEXTURE_2D, glyph_textures_[glyph->texture_index]);
 			glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
 			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_position"), 1,
-				glm::value_ptr(glyph_position));
+				glm::value_ptr(text.position));
+			glProgramUniform1f(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_xoffset"), offset);
 			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_size"), 1,
 				glm::value_ptr(glyph_size));
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-			glyph_position.x += glyph->advance - glyph->min_x;
+			//offset += glyph->texture_w; //glyph->advance;
+			offset += 32;
 		}
 
 	}
+
+	batch_.clear();
 
 	sampler_cache_.GetFromHash(sampler_hash).Unbind();
 
@@ -178,22 +186,12 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 	font_data_.font_descent = TTF_FontDescent(font_);
 	font_data_.font_line_skip = TTF_FontLineSkip(font_);
 
-	GLint swapbytes, lsbfirst, rowlength, skiprows, skippixels, alignment;
+	GLint alignment;
 
 	// Save current pixel store state.
-	glGetIntegerv(GL_UNPACK_SWAP_BYTES, &swapbytes);
-	glGetIntegerv(GL_UNPACK_LSB_FIRST, &lsbfirst);
-	glGetIntegerv(GL_UNPACK_ROW_LENGTH, &rowlength);
-	glGetIntegerv(GL_UNPACK_SKIP_ROWS, &skiprows);
-	glGetIntegerv(GL_UNPACK_SKIP_PIXELS, &skippixels);
 	glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
 
 	// Set desired pixel store state.
-	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
-	glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glyph_textures_.resize(characters_.size());
@@ -232,6 +230,11 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 				0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
+			//std::string path = "assets/textures/char_";
+			//path.append(std::to_string(i));
+			//path.append(".png");
+			//IMG_SavePNG(surface, path.c_str());
+
 			int min_x = 0;
 			int min_y = 0;
 			int max_x = 0;
@@ -254,6 +257,12 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 			glyph.advance = advance;
 			glyphs_.insert({ characters_[i], glyph });
 
+
+			char log[512];
+			sprintf(log, "%c has advance %i", glyph.character, glyph.advance);
+			debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_RENDER, log);
+
+
 			SDL_FreeSurface(surface);
 		}
 	}
@@ -261,10 +270,5 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Set back old pixel store state.
-	glPixelStorei(GL_UNPACK_SWAP_BYTES, swapbytes);
-	glPixelStorei(GL_UNPACK_LSB_FIRST, lsbfirst);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowlength);
-	glPixelStorei(GL_UNPACK_SKIP_ROWS, skiprows);
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, skippixels);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 }

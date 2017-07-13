@@ -15,11 +15,14 @@ uniform float u_time;
 
 uniform vec2 u_position;
 
+uniform float u_xoffset;
+
 uniform vec2 u_size;
 
 void main()
 {
 	vec2 position = u_position + i_position * u_size;
+	position.x += u_xoffset;
 
 	gl_Position = u_viewproj * vec4(position, 0, 1);
 

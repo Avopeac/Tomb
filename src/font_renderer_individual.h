@@ -46,7 +46,7 @@ namespace graphics
 
 	class FontRendererIndividual
 	{
-		const std::string characters_ = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+		const std::string characters_ = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789:;.,()[]{}%&/#\"!\\*'^-_<>?+ ";
 
 		GraphicsBase & graphics_base_;
 

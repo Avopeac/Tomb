@@ -10,6 +10,8 @@ uniform sampler2D u_texture;
 
 uniform float u_time;
 
+uniform vec2 u_mouse;
+
 void main()
 {
 	vec2 texcoord_wobble = 0.005 * vec2(0.0, sin(5.0 * u_time + v_position.y));

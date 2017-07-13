@@ -108,14 +108,17 @@ void SpriteRenderer::Draw()
 
 	int x, y;
 	SDL_GetMouseState(&x, &y);
-	glProgramUniform2f(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_mouse"), x, y);
+	float normalized_x = (float)x / graphics_base_.GetBackbufferWidth();
+	float normalized_y = (float)y / graphics_base_.GetBackbufferHeight();
+	 
+	glProgramUniform2f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_mouse"), normalized_x, normalized_y);
 
 	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
 		GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
 
 	DrawBatchObject_(sharp_hex_objects, sharp_hex_sprite_batches_);
-	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_);
-	DrawBatchObject_(rectangular_objects, rectangular_sprite_batches_);
+	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_); 
+	DrawBatchObject_(rectangular_objects, rectangular_sprite_batches_); 
 
 	pipeline_.Unbind();
 }
