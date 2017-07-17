@@ -148,7 +148,7 @@
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\file.h" />
-    <ClInclude Include="..\src\map.h" />
+    <ClInclude Include="..\src\maplogic.h" />
     <ClInclude Include="..\src\post_processing.h" />
     <ClInclude Include="..\src\renderer.h" />
     <ClInclude Include="..\src\sampler.h" />

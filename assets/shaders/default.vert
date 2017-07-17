@@ -18,8 +18,6 @@ uniform mat4 u_viewproj;
 
 uniform float u_time;
 
-uniform vec2 u_mouse;
-
 void main()
 {
 	vec4 transformed = i_transform * vec4(i_position.xy, 0, 1);

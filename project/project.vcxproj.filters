@@ -103,14 +103,14 @@
     <ClInclude Include="..\src\renderer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\map.h">
-      <Filter>Source\Map</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\font_renderer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\font_renderer_individual.h">
       <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\maplogic.h">
+      <Filter>Source\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

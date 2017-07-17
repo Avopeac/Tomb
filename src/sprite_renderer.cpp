@@ -108,9 +108,13 @@ void SpriteRenderer::Draw()
 
 	int x, y;
 	SDL_GetMouseState(&x, &y);
-	float normalized_x = (float)x / graphics_base_.GetBackbufferWidth();
-	float normalized_y = (float)y / graphics_base_.GetBackbufferHeight();
-	 
+	float normalized_x = 2.0f * ((float)x / graphics_base_.GetBackbufferWidth()) - 1.0f;
+	float normalized_y = 2.0f * ((float)y / graphics_base_.GetBackbufferHeight()) - 1.0f; 
+	
+	std::string coordinate = std::to_string(normalized_x); 
+	coordinate.append(" " + std::to_string(normalized_y));
+
+	debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_INPUT, coordinate.c_str());
 	glProgramUniform2f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_mouse"), normalized_x, normalized_y);
 
 	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,

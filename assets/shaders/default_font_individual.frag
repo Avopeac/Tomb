@@ -14,5 +14,5 @@ void main()
 {
 	o_color = u_color * texture(u_texture, v_texcoord).a;
 
-	o_color.a = 1.0;
+	//o_color.a = 1.0;
 }
