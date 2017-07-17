@@ -15,6 +15,8 @@
 #include "sprite_renderer.h"
 #include "renderer.h"
 
+#include "maplogic.h"
+
 Sint32 main(Sint32 argc, char * argv[])
 {
 	// Initialization

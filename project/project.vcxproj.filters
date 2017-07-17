@@ -50,6 +50,9 @@
     <ClCompile Include="..\src\font_renderer_individual.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\maplogic.cpp">
+      <Filter>Source\Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">

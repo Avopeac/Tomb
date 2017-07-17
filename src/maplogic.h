@@ -4,17 +4,20 @@
 
 namespace game
 {
-	struct CubeCoordinate
+
+#define NUM_HEX_DIRECTIONS 6
+
+	struct HexCubeCoordinate
 	{
 		int32_t x, y, z;
 	};
 
-	struct AxialCoordinate
+	struct HexCoordinate
 	{
 		int32_t q, r;
 	};
 
-	enum class CubeDirection
+	enum class HexDirection
 	{
 		Right = 0,
 		UpRight,
@@ -24,165 +27,114 @@ namespace game
 		DownRight,
 	};
 
-	enum class AxialDirection
-	{
-		Right = 0,
-		UpRight,
-		UpLeft,
-		Left,
-		DownLeft,
-		DownRight,
-	};
+	/// Credit goes to Amit at http://www.redblobgames.com
 
 	class MapLogic
 	{
 
-		AxialCoordinate axial_directions_[] =
-		{
-			{ 1, 0 },
-			{ 1, -1 },
-			{ 0, -1 },
-			{ -1, 0 },
-			{ -1, 1 },
-			{ 0, 1 }
+		HexCoordinate axial_directions_[NUM_HEX_DIRECTIONS] = { { 1,0 },{ 1,-1 },{ 0,-1 },{ -1,0 },{ -1,1 },{ 0,1 } };
+
+		HexCubeCoordinate cube_directions_[NUM_HEX_DIRECTIONS] = { { 1,-1,0 },{ 1,0,-1 },{ 0,1,-1 },{ -1,1,0 },{ -1,0,1 },{ 0,-1,1 } };
+
+		HexCubeCoordinate cube_diagonals_[NUM_HEX_DIRECTIONS] = { { 2,-1,-1 },{ 1,1,-2 },{ -1,2,-1 },{ -2,1,1 },{ -1,-1,2 },{ 1,-2,1 } };
+
+		HexCoordinate hex_odd_row_directions_[2][NUM_HEX_DIRECTIONS] = { 
+			{ { 1,0 },{ 0,-1 },{ -1,-1 },{ -1,0 },{ -1,1 },{ 0,1 } },
+			{ { 1,0 },{ 1,-1 },{ 0,-1 },{ -1,0 },{ 0,1 },{ 1,1 } }
 		};
 
-		CubeCoordinate cube_directions_[] =
-		{
-			{ 1, -1, 0 },
-			{ 1, 0, -1 },
-			{ 0, 1, -1 },
-			{ -1, 1, 0 },
-			{ -1, 0, 1 },
-			{ 0, -1, 1 }
+		HexCoordinate hex_even_row_directions_[2][NUM_HEX_DIRECTIONS] = { 
+			{ { 1,0 },{ 1,-1 },{ 0,-1 },{ -1,0 },{ 0,1 },{ 1,1 } },
+		    { { 1,0 },{ 0,-1 },{ -1,-1 },{ -1,0 },{ -1,1 },{ 0,1 } }
+		};
+
+		HexCoordinate hex_odd_column_directions_[2][NUM_HEX_DIRECTIONS] = { 
+			{ { 1,0 },{ 1,-1 },{ 0,-1 },{ -1,-1 },{ -1,0 },{ 0,1 } },
+			{ { 1,1 },{ 1,0 },{ 0,-1 },{ -1,0 },{ -1,1 },{ 0,1 } }
+		};
+
+		HexCoordinate hex_even_column_directions_[2][NUM_HEX_DIRECTIONS] = { 
+			{ { 1,1 },{ 1,0 },{ 0,-1 },{ -1,0 },{ -1,1 },{ 0,1 } },
+			{ { 1,0 },{ 1,-1 },{ 0,-1 },{ -1,-1 },{ -1,0 },{ 0,1 } }
 		};
 
 	public:
 
-		MapLogic();
+		MapLogic() {}
 
-		~MapLogic();
+		~MapLogic() {};
 
-		inline AxialCoordinate GetAxialDirection(AxialDirection direction)
-		{
-			return axial_directions_[static_cast<int>(direction)];
-		}
+		/// ALGEBRA
+		
+		inline int32_t GetCubeDistance(HexCubeCoordinate a, HexCubeCoordinate b);
 
-		inline AxialCoordinate GetCubeNeighbor(AxialCoordinate axial, AxialDirection direction)
-		{
-			AxialCoordinate neighbor = GetAxialDirection(direction);
-			neighbor.r += axial.r;
-			neighbor.q += axial.q;
-			return neighbor;
-		}
+		inline int32_t GetAxialDistance(HexCoordinate a, HexCoordinate b);
 
-		inline CubeCoordinate GetCubeDirection(CubeDirection direction)
-		{
-			return cube_directions_[static_cast<int>(direction)];
-		}
+		inline int32_t GetOddRowOffsetDistance(HexCoordinate a, HexCoordinate b);
 
-		inline CubeCoordinate GetCubeNeighbor(CubeCoordinate cube, CubeDirection direction)
-		{
-			CubeCoordinate neighbor = GetCubeDirection(direction);
-			neighbor.x += cube.x;
-			neighbor.y += cube.y;
-			neighbor.z += cube.z;
-			return neighbor;
-		}
+		inline int32_t GetEvenRowOffsetDistance(HexCoordinate a, HexCoordinate b);
+
+		inline int32_t GetOddColumnOffsetDistance(HexCoordinate a, HexCoordinate b);
+
+		inline int32_t GetEvenColumnOffsetDistance(HexCoordinate a, HexCoordinate b);
+
+		/// NEIGHBORHOOD
+
+		// Nearest neighbor fetch diagonally
+		inline HexCubeCoordinate GetCubeDiagonalNeighbor(HexCubeCoordinate cube, HexDirection direction);
+
+		// Directional offset for axial coordinates
+		inline HexCoordinate GetAxialDirection(HexDirection direction);
+
+		// Neigbor fetch for axial coordinates
+		inline HexCoordinate GetAxialNeighbor(HexCoordinate axial, HexDirection direction);
+
+		// Directional offset for cube coordinates
+		inline HexCubeCoordinate GetCubeDirection(HexDirection direction);
+
+		// Neigbor fetch for cube coordinates
+		inline HexCubeCoordinate GetCubeNeighbor(HexCubeCoordinate cube, HexDirection direction);
+
+		/// COORDINATE CONVERSION
 
 		// Conversion between cube to axial coordinates
-		inline AxialCoordinate CubeToAxial(CubeCoordinate cube)
-		{
-			AxialCoordinate axial;
-			axial.q = cube.x;
-			axial.r = cube.z;
-			return axial;
-		}
+		inline HexCoordinate CubeToAxial(HexCubeCoordinate cube);
 
 		// Conversion between axial to cube coordinates
-		inline CubeCoordinate AxialToCube(AxialCoordinate axial)
-		{
-			CubeCoordinate cube;
-			cube.x = axial.q;
-			cube.z = axial.r;
-			cube.y = -cube.x - cube.z;
-			return cube;
-		}
+		inline HexCubeCoordinate AxialToCube(HexCoordinate axial);
+
+		/// PLACEMENT
 
 		// 1. Shoves odd rows by +½ column
-		inline AxialCoordinate CubeToOddRowAxial(CubeCoordinate cube)
-		{
-			AxialCoordinate axial;
-			axial.q = cube.x + (cube.z - (cube.z & 1)) / 2;
-			axial.r = cube.z;
-			return axial;
-		}
+		inline HexCoordinate CubeToOddRowAxial(HexCubeCoordinate cube);
+
+		inline HexCoordinate GetOddRowOffsetNeighbor(HexCoordinate axial, HexDirection direction);
 
 		// Conversion back from 1.
-		inline CubeCoordinate OddRowAxialToCube(AxialCoordinate axial)
-		{
-			CubeCoordinate cube;
-			cube.x = axial.q - (axial.r - (axial.r & 1)) / 2;
-			cube.z = axial.r;
-			cube.y = -cube.x - cube.z;
-			return cube;
-		}
-
+		inline HexCubeCoordinate OddRowAxialToCube(HexCoordinate axial);
+		
 		// 2. Shoves even rows by +½ column
-		inline AxialCoordinate CubeToEvenRowAxial(CubeCoordinate cube)
-		{
-			AxialCoordinate axial;
-			axial.q = cube.x + (cube.z + (cube.z & 1)) / 2;
-			axial.r = cube.z;
-			return axial;
-		}
+		inline HexCoordinate CubeToEvenRowAxial(HexCubeCoordinate cube);
+
+		inline HexCoordinate GetEvenRowOffsetNeighbor(HexCoordinate axial, HexDirection direction);
 
 		// Conversion back from 2.
-		inline CubeCoordinate EvenRowAxialToCube(AxialCoordinate axial)
-		{
-			CubeCoordinate cube;
-			cube.x = axial.q - (axial.r + (axial.r & 1)) / 2;
-			cube.z = axial.r;
-			cube.y = -cube.x - cube.z;
-			return cube;
-		}
-
+		inline HexCubeCoordinate EvenRowAxialToCube(HexCoordinate axial);
+		
 		// 3. Shoves odd columns by +½ row
-		inline AxialCoordinate CubeToOddColumnAxial(CubeCoordinate cube)
-		{
-			AxialCoordinate axial;
-			axial.q = cube.x;
-			axial.r = cube.z + (cube.x - (cube.x & 1)) / 2;
-			return axial;
-		}
+		inline HexCoordinate CubeToOddColumnAxial(HexCubeCoordinate cube);
+
+		inline HexCoordinate GetOddColumnOffsetNeighbor(HexCoordinate axial, HexDirection direction);
 
 		// Conversion back from 3.
-		inline CubeCoordinate OddColumnAxialToCube(AxialCoordinate axial)
-		{
-			CubeCoordinate cube;
-			cube.x = axial.q;
-			cube.z = axial.r - (axial.q - (axial.q & 1)) / 2;
-			cube.y = -cube.x - cube.z;
-			return cube;
-		}
+		inline HexCubeCoordinate OddColumnAxialToCube(HexCoordinate axial);
 
 		// 4. Shoves even columns by +½ row
-		inline AxialCoordinate CubeToEvenColumnAxial(CubeCoordinate cube)
-		{
-			AxialCoordinate axial;
-			axial.q = cube.x;
-			axial.r = cube.z + (cube.x + (cube.x & 1)) / 2;
-			return axial;
-		}
+		inline HexCoordinate CubeToEvenColumnAxial(HexCubeCoordinate cube);
+		
+		inline HexCoordinate GetEvenColumnOffsetNeighbor(HexCoordinate axial, HexDirection direction);
 
 		// Conversion back from 4.
-		inline CubeCoordinate EvenColumnAxialToCube(AxialCoordinate axial)
-		{
-			CubeCoordinate cube;
-			cube.x = axial.q;
-			cube.z = axial.r - (axial.q + (axial.q & 1)) / 2;
-			cube.y = -cube.x - cube.z;
-			return cube;
-		}
+		inline HexCubeCoordinate EvenColumnAxialToCube(HexCoordinate axial);
 	};
 }
