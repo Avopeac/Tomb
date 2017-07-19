@@ -115,6 +115,15 @@
     <ClInclude Include="..\src\maplogic.h">
       <Filter>Source\Map</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\mapmodel.h">
+      <Filter>Source\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mapcontroller.h">
+      <Filter>Source\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mapview.h">
+      <Filter>Source\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

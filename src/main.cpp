@@ -16,6 +16,7 @@
 #include "renderer.h"
 
 #include "maplogic.h"
+#include "mapmodel.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -55,7 +56,10 @@ Sint32 main(Sint32 argc, char * argv[])
 				graphics::Wrapping::ClampToEdge); 
 		}
 	}
-	
+
+	// TESTING: Map shapes
+	game::MapModel models(32, 32, game::MapShapeType::Rectangle);
+		
 	// Main loop
 	bool running = true;
 	double previous_time = util::GetSeconds();
