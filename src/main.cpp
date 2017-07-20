@@ -17,6 +17,7 @@
 
 #include "maplogic.h"
 #include "mapmodel.h"
+#include "mapview.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -33,32 +34,10 @@ Sint32 main(Sint32 argc, char * argv[])
 	graphics::GraphicsBase graphics_base(config);
 	graphics::Renderer renderer(&graphics_base);
 
-	auto scale_mat = glm::scale(glm::mat4(1), glm::vec3(32, 32, 1));
-	for (auto y = 0; y < 32; ++y)
-	{
-		for (auto x = 0; x < 32; ++x)
-		{
-			float x_offset = y % 2 == 0 ? 0.5f : -0.5f;
-			auto transform = glm::translate(scale_mat, 
-				glm::vec3(x_offset + 2.0f * x, 1.5f * y, 0));
-
-			graphics::Sprite sprite(transform, x + y * 32);
-			renderer.GetSpriteRenderer().Push(sprite,
-				graphics::SpriteShape::SharpHex,
-				"assets/textures/sand/sand_08.png",
-				graphics::BlendMode::SrcAlpha,
-				graphics::BlendMode::OneMinusSrcAlpha,
-				graphics::BlendMode::SrcAlpha,
-				graphics::BlendMode::OneMinusSrcAlpha,
-				graphics::MagnificationFiltering::Linear,
-				graphics::MinificationFiltering::LinearMipmapLinear, 
-				graphics::Wrapping::ClampToEdge,
-				graphics::Wrapping::ClampToEdge); 
-		}
-	}
-
 	// TESTING: Map shapes
-	game::MapModel models(32, 32, game::MapShapeType::Rectangle);
+	game::MapLogic logic;
+	game::MapModel model(32, 32, game::MapShapeType::Rectangle, logic);
+	game::MapView view(model, logic);
 		
 	// Main loop
 	bool running = true;
@@ -77,6 +56,8 @@ Sint32 main(Sint32 argc, char * argv[])
 				running = false;
 			}
 		}
+
+		view.Update(renderer, (float)frame_time);
 
 		std::string print = "Frame: ";
 		print.append(std::to_string(1000.0 / frame_time));

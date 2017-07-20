@@ -53,6 +53,9 @@
     <ClCompile Include="..\src\maplogic.cpp">
       <Filter>Source\Map</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mapmodel.cpp">
+      <Filter>Source\Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">

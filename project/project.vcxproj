@@ -129,6 +129,7 @@
     <ClCompile Include="..\src\json.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\maplogic.cpp" />
+    <ClCompile Include="..\src\mapmodel.cpp" />
     <ClCompile Include="..\src\post_processing.cpp" />
     <ClCompile Include="..\src\renderer.cpp" />
     <ClCompile Include="..\src\sampler.cpp" />

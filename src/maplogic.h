@@ -10,11 +10,31 @@ namespace game
 	struct HexCubeCoordinate
 	{
 		int32_t x, y, z;
+
+		bool operator==(const HexCubeCoordinate &other)
+		{
+			return x == other.x && y == other.y && z == other.z;
+		}
 	};
 
 	struct HexCoordinate
 	{
 		int32_t q, r;
+	};
+
+	inline bool operator==(const HexCoordinate& lhs, const HexCoordinate& rhs)
+	{
+		return lhs.q == rhs.q && lhs.r == rhs.r;
+	}
+
+	struct HexCoordinateHash
+	{
+		std::size_t operator()(HexCoordinate const & coordinate) const
+		{
+			std::size_t h1 = std::hash<int32_t>{}(coordinate.q);
+			std::size_t h2 = std::hash<int32_t>{}(coordinate.r);
+			return h1 ^ (h2 << 1);
+		}
 	};
 
 	enum class HexDirection

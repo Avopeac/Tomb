@@ -33,8 +33,8 @@ void MapModel::BuildTriangleMap()
 		{
 
 			hex.q = q;
-
-			tiles_.insert[hex] = MapTileType::Sand;
+		
+			tiles_[hex] = MapTileType::Sand;
 		}
 	}
 }
@@ -50,12 +50,12 @@ void MapModel::BuildRectangleMap()
 	{
 		hex.r = r;
 
-		for (int q = -half_width; q <= half_width; ++q)
+		for (int q = -half_width; q < half_width; ++q)
 		{
 
 			hex.q = q;
 
-			tiles_.insert[hex] = MapTileType::Sand;
+			tiles_[hex] = MapTileType::Sand;
 		}
 	}
 }
@@ -78,7 +78,7 @@ void MapModel::BuildRhombusMap()
 
 			hex.q = q;
 
-			tiles_.insert[hex] = MapTileType::Sand;
+			tiles_[hex] = MapTileType::Sand;
 		}
 
 		++offset;

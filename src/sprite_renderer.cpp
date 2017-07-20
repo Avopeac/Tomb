@@ -1,6 +1,7 @@
 #include "sprite_renderer.h"
 
 #include <algorithm>
+#include <chrono>
 
 #include "GL/glew.h"
 
@@ -44,6 +45,10 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 	pipeline_.SetStages(vertex_program_);
 	pipeline_.SetStages(fragment_program_);
 
+	rectangular_sprite_batches_.reserve(128);
+	flat_hex_sprite_batches_.reserve(128);
+	sharp_hex_sprite_batches_.reserve(128);
+
 }
 
 SpriteRenderer::~SpriteRenderer()
@@ -78,20 +83,20 @@ void SpriteRenderer::Push(const Sprite & sprite,
 
 	switch (shape)
 	{
-	case graphics::SpriteShape::Rectangle:
-		PushToBatchObject_(rectangular_sprite_batches_, instance,
-			sampler_hash, blend_hash, texture_hash);
-		break;
-	case graphics::SpriteShape::FlatHex:
-		PushToBatchObject_(flat_hex_sprite_batches_, instance,
-			sampler_hash, blend_hash, texture_hash);
-		break;
-	case graphics::SpriteShape::SharpHex:
-		PushToBatchObject_(sharp_hex_sprite_batches_, instance,
-			sampler_hash, blend_hash, texture_hash);
-		break;
-	default:
-		break;
+		case graphics::SpriteShape::SharpHex:
+			PushToBatchObject_(sharp_hex_sprite_batches_, instance,
+				sampler_hash, blend_hash, texture_hash);
+			break;
+		case graphics::SpriteShape::Rectangle:
+			PushToBatchObject_(rectangular_sprite_batches_, instance,
+				sampler_hash, blend_hash, texture_hash);
+			break;
+		case graphics::SpriteShape::FlatHex:
+			PushToBatchObject_(flat_hex_sprite_batches_, instance,
+				sampler_hash, blend_hash, texture_hash);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -109,22 +114,25 @@ void SpriteRenderer::Draw()
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	float normalized_x = 2.0f * ((float)x / graphics_base_.GetBackbufferWidth()) - 1.0f;
-	float normalized_y = 2.0f * ((float)y / graphics_base_.GetBackbufferHeight()) - 1.0f; 
-	
-	std::string coordinate = std::to_string(normalized_x); 
-	coordinate.append(" " + std::to_string(normalized_y));
+	float normalized_y = 2.0f * ((float)y / graphics_base_.GetBackbufferHeight()) - 1.0f;
 
-	debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_INPUT, coordinate.c_str());
+	//std::string coordinate = std::to_string(normalized_x);
+	//coordinate.append(" " + std::to_string(normalized_y));
+	//debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_INPUT, coordinate.c_str());
 	glProgramUniform2f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_mouse"), normalized_x, normalized_y);
 
 	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
 		GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
 
 	DrawBatchObject_(sharp_hex_objects, sharp_hex_sprite_batches_);
-	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_); 
-	DrawBatchObject_(rectangular_objects, rectangular_sprite_batches_); 
+	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_);
+	DrawBatchObject_(rectangular_objects, rectangular_sprite_batches_);
 
 	pipeline_.Unbind();
+
+	//sharp_hex_sprite_batches_.clear();
+	//flat_hex_sprite_batches_.clear();
+	//rectangular_sprite_batches_.clear();
 }
 
 void SpriteRenderer::PushToBatchObject_(std::vector<SpriteBatch>& batches,
@@ -143,6 +151,7 @@ void SpriteRenderer::PushToBatchObject_(std::vector<SpriteBatch>& batches,
 		batch.texture_hash = texture_hash;
 		batch.blend_hash = blend_hash;
 		batch.sampler_hash = sampler_hash;
+		batch.instances.reserve(1024);
 		batch.instances.push_back(instance);
 		batches.push_back(batch);
 	}
@@ -184,7 +193,7 @@ void SpriteRenderer::CreateBatchObject_(SpriteRendererBatchObjects &objects, con
 	GLint attrib_index = 0;
 	glGenVertexArrays(1, &objects.vertex_array);
 	glBindVertexArray(objects.vertex_array);
-	
+
 	// Index data
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects.element_buffer);
 
@@ -193,14 +202,14 @@ void SpriteRenderer::CreateBatchObject_(SpriteRendererBatchObjects &objects, con
 
 	// Position attribute
 
-	glEnableVertexAttribArray(attrib_index); 
+	glEnableVertexAttribArray(attrib_index);
 	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, vertex_size, 0);
 	glVertexAttribDivisor(attrib_index, 0);
 	attrib_index++;
 
 	// Instance data
 	glBindBuffer(GL_ARRAY_BUFFER, objects.instance_buffer);
-	
+
 	// Transform attribute
 
 	glEnableVertexAttribArray(attrib_index);
