@@ -1,7 +1,6 @@
 #include "sprite_renderer.h"
 
 #include <algorithm>
-#include <chrono>
 
 #include "GL/glew.h"
 
@@ -44,11 +43,6 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 
 	pipeline_.SetStages(vertex_program_);
 	pipeline_.SetStages(fragment_program_);
-
-	rectangular_sprite_batches_.reserve(128);
-	flat_hex_sprite_batches_.reserve(128);
-	sharp_hex_sprite_batches_.reserve(128);
-
 }
 
 SpriteRenderer::~SpriteRenderer()
@@ -151,7 +145,6 @@ void SpriteRenderer::PushToBatchObject_(std::vector<SpriteBatch>& batches,
 		batch.texture_hash = texture_hash;
 		batch.blend_hash = blend_hash;
 		batch.sampler_hash = sampler_hash;
-		batch.instances.reserve(1024);
 		batch.instances.push_back(instance);
 		batches.push_back(batch);
 	}
@@ -284,6 +277,8 @@ void SpriteRenderer::DrawBatchObject_(SpriteRendererBatchObjects & objects, std:
 		glDrawElementsInstanced(GL_TRIANGLES,
 			(GLsizei)objects.num_indices, GL_UNSIGNED_INT, 0,
 			(GLsizei)batch.instances.size());
+
+		batch.instances.clear();
 	}
 
 	glBindVertexArray(0);

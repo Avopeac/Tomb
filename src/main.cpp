@@ -60,14 +60,16 @@ Sint32 main(Sint32 argc, char * argv[])
 		view.Update(renderer, (float)frame_time);
 
 		std::string print = "Frame: ";
-		print.append(std::to_string(1000.0 / frame_time));
-		print.append(" FPS");
+		print.append(std::to_string(frame_time));
+		print.append(" ms");
+
+		std::cout << print << std::endl;
 		//print.append("(");
 		//print.append(std::to_string(1.0 / frame_time));
 		//print.append(" FPS)");
 
-		renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
-			glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
+		//renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
+			//glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
 
 		renderer.Invoke();
 
