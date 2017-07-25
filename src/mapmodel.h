@@ -55,6 +55,7 @@ namespace game
 		~MapModel() {}
 
 		inline auto GetTileBeginIterator() const { return tiles_.cbegin(); }
+
 		inline auto GetTileEndIterator() const { return tiles_.cend(); }
 
 	private:

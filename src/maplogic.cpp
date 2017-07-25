@@ -1,53 +1,54 @@
 #include "maplogic.h"
 
-#include "glm/glm.hpp"
 #include "glm/gtx/component_wise.hpp"
 
 using namespace game;
 
-inline int32_t MapLogic::GetCubeDistance(HexCubeCoordinate a, HexCubeCoordinate b)
+const float MapLogic::sqrt3_ = glm::sqrt(3.0f);
+
+int32_t MapLogic::GetCubeDistance(HexCubeCoordinate a, HexCubeCoordinate b) const
 {
 	glm::ivec3 v0{ a.x, a.y, a.z };
 	glm::ivec3 v1{ b.x, b.y, b.z };
 	return glm::compMax(glm::abs(v0 - v1));
 }
 
-inline int32_t MapLogic::GetAxialDistance(HexCoordinate a, HexCoordinate b)
+int32_t MapLogic::GetAxialDistance(HexCoordinate a, HexCoordinate b) const
 {
 	HexCubeCoordinate c0 = AxialToCube(a);
 	HexCubeCoordinate c1 = AxialToCube(b);
 	return GetCubeDistance(c0, c1);
 }
 
-inline int32_t MapLogic::GetOddRowOffsetDistance(HexCoordinate a, HexCoordinate b)
+int32_t MapLogic::GetOddRowOffsetDistance(HexCoordinate a, HexCoordinate b) const
 {
 	HexCubeCoordinate c0 = OddRowAxialToCube(a);
 	HexCubeCoordinate c1 = OddRowAxialToCube(b);
 	return GetCubeDistance(c0, c1);
 }
 
-inline int32_t MapLogic::GetEvenRowOffsetDistance(HexCoordinate a, HexCoordinate b)
+int32_t MapLogic::GetEvenRowOffsetDistance(HexCoordinate a, HexCoordinate b) const
 {
 	HexCubeCoordinate c0 = EvenRowAxialToCube(a);
 	HexCubeCoordinate c1 = EvenRowAxialToCube(b);
 	return GetCubeDistance(c0, c1);
 }
 
-inline int32_t MapLogic::GetOddColumnOffsetDistance(HexCoordinate a, HexCoordinate b)
+int32_t MapLogic::GetOddColumnOffsetDistance(HexCoordinate a, HexCoordinate b) const
 {
 	HexCubeCoordinate c0 = OddColumnAxialToCube(a);
 	HexCubeCoordinate c1 = OddColumnAxialToCube(b);
 	return GetCubeDistance(c0, c1);
 }
 
-inline int32_t MapLogic::GetEvenColumnOffsetDistance(HexCoordinate a, HexCoordinate b)
+int32_t MapLogic::GetEvenColumnOffsetDistance(HexCoordinate a, HexCoordinate b) const
 {
 	HexCubeCoordinate c0 = EvenColumnAxialToCube(a);
 	HexCubeCoordinate c1 = EvenColumnAxialToCube(b);
 	return GetCubeDistance(c0, c1);
 }
 
-inline HexCubeCoordinate MapLogic::GetCubeDiagonalNeighbor(HexCubeCoordinate cube, HexDirection direction)
+HexCubeCoordinate MapLogic::GetCubeDiagonalNeighbor(HexCubeCoordinate cube, HexDirection direction) const
 {
 	HexCubeCoordinate neighbor = cube_diagonals_[static_cast<int>(direction)];
 	neighbor.x += cube.x;
@@ -56,12 +57,12 @@ inline HexCubeCoordinate MapLogic::GetCubeDiagonalNeighbor(HexCubeCoordinate cub
 	return neighbor;
 }
 
-inline HexCoordinate MapLogic::GetAxialDirection(HexDirection direction)
+HexCoordinate MapLogic::GetAxialDirection(HexDirection direction) const
 {
 	return axial_directions_[static_cast<int>(direction)];
 }
 
-inline HexCoordinate MapLogic::GetAxialNeighbor(HexCoordinate axial, HexDirection direction)
+HexCoordinate MapLogic::GetAxialNeighbor(HexCoordinate axial, HexDirection direction) const
 {
 	HexCoordinate neighbor = GetAxialDirection(direction);
 	neighbor.r += axial.r;
@@ -69,12 +70,12 @@ inline HexCoordinate MapLogic::GetAxialNeighbor(HexCoordinate axial, HexDirectio
 	return neighbor;
 }
 
-inline HexCubeCoordinate MapLogic::GetCubeDirection(HexDirection direction)
+HexCubeCoordinate MapLogic::GetCubeDirection(HexDirection direction) const
 {
 	return cube_directions_[static_cast<int>(direction)];
 }
 
-inline HexCubeCoordinate MapLogic::GetCubeNeighbor(HexCubeCoordinate cube, HexDirection direction)
+HexCubeCoordinate MapLogic::GetCubeNeighbor(HexCubeCoordinate cube, HexDirection direction) const
 {
 	HexCubeCoordinate neighbor = GetCubeDirection(direction);
 	neighbor.x += cube.x;
@@ -83,7 +84,7 @@ inline HexCubeCoordinate MapLogic::GetCubeNeighbor(HexCubeCoordinate cube, HexDi
 	return neighbor;
 }
 
-inline HexCoordinate MapLogic::CubeToAxial(HexCubeCoordinate cube)
+HexCoordinate MapLogic::CubeToAxial(HexCubeCoordinate cube) const
 {
 	HexCoordinate axial;
 	axial.q = cube.x;
@@ -91,7 +92,7 @@ inline HexCoordinate MapLogic::CubeToAxial(HexCubeCoordinate cube)
 	return axial;
 }
 
-inline HexCubeCoordinate MapLogic::AxialToCube(HexCoordinate axial)
+HexCubeCoordinate MapLogic::AxialToCube(HexCoordinate axial) const
 {
 	HexCubeCoordinate cube;
 	cube.x = axial.q;
@@ -100,7 +101,32 @@ inline HexCubeCoordinate MapLogic::AxialToCube(HexCoordinate axial)
 	return cube;
 }
 
-inline HexCoordinate MapLogic::CubeToOddRowAxial(HexCubeCoordinate cube)
+glm::vec2 MapLogic::AxialToCartesian(HexCoordinate axial, float size) const
+{
+	return { 2.0f * (axial.q + axial.r * 0.5f), 1.5f * axial.r };
+}
+
+glm::vec2 MapLogic::OddRowAxialToCartesian(HexCoordinate axial, float size) const
+{
+	return { sqrt3_ * (axial.q + 0.5 * (axial.r & 1)), 1.5f * axial.r };
+}
+
+glm::vec2 MapLogic::OddColumnAxialToCartesian(HexCoordinate axial, float size) const
+{
+	return { size * 1.5f * axial.q, size * sqrt3_ * (axial.r + 0.5 * (axial.q & 1)) };
+}
+
+glm::vec2 MapLogic::EvenRowAxialToCartesian(HexCoordinate axial, float size) const
+{
+	return { size * sqrt3_ * (axial.q - 0.5 * (axial.r & 1)), size * 1.5f * axial.r };
+}
+
+glm::vec2 MapLogic::EvenColumnAxialToCartesian(HexCoordinate axial, float size) const
+{
+	return { size * 1.5f * axial.q, size * sqrt3_ * (axial.r - 0.5 * (axial.q & 1)) };
+}
+
+HexCoordinate MapLogic::CubeToOddRowAxial(HexCubeCoordinate cube) const
 {
 	HexCoordinate axial;
 	axial.q = cube.x + (cube.z - (cube.z & 1)) / 2;
@@ -108,17 +134,17 @@ inline HexCoordinate MapLogic::CubeToOddRowAxial(HexCubeCoordinate cube)
 	return axial;
 }
 
-inline HexCoordinate MapLogic::GetOddRowOffsetNeighbor(HexCoordinate axial, HexDirection direction)
+HexCoordinate MapLogic::GetOddRowOffsetNeighbor(HexCoordinate axial, HexDirection direction) const
 {
 	int parity = axial.r & 1;
 	int index = static_cast<int>(direction);
 	HexCoordinate neighbor = hex_odd_row_directions_[parity][index];
-	neighbor.r += axial.r; 
+	neighbor.r += axial.r;
 	neighbor.q += axial.q;
 	return neighbor;
 }
 
-inline HexCubeCoordinate MapLogic::OddRowAxialToCube(HexCoordinate axial)
+HexCubeCoordinate MapLogic::OddRowAxialToCube(HexCoordinate axial) const
 {
 	HexCubeCoordinate cube;
 	cube.x = axial.q - (axial.r - (axial.r & 1)) / 2;
@@ -127,7 +153,7 @@ inline HexCubeCoordinate MapLogic::OddRowAxialToCube(HexCoordinate axial)
 	return cube;
 }
 
-inline HexCoordinate MapLogic::CubeToEvenRowAxial(HexCubeCoordinate cube)
+HexCoordinate MapLogic::CubeToEvenRowAxial(HexCubeCoordinate cube) const
 {
 	HexCoordinate axial;
 	axial.q = cube.x + (cube.z + (cube.z & 1)) / 2;
@@ -135,7 +161,7 @@ inline HexCoordinate MapLogic::CubeToEvenRowAxial(HexCubeCoordinate cube)
 	return axial;
 }
 
-inline HexCoordinate MapLogic::GetEvenRowOffsetNeighbor(HexCoordinate axial, HexDirection direction)
+HexCoordinate MapLogic::GetEvenRowOffsetNeighbor(HexCoordinate axial, HexDirection direction) const
 {
 	int parity = axial.r & 1;
 	int index = static_cast<int>(direction);
@@ -145,7 +171,7 @@ inline HexCoordinate MapLogic::GetEvenRowOffsetNeighbor(HexCoordinate axial, Hex
 	return neighbor;
 }
 
-inline HexCubeCoordinate MapLogic::EvenRowAxialToCube(HexCoordinate axial)
+HexCubeCoordinate MapLogic::EvenRowAxialToCube(HexCoordinate axial) const
 {
 	HexCubeCoordinate cube;
 	cube.x = axial.q - (axial.r + (axial.r & 1)) / 2;
@@ -154,7 +180,7 @@ inline HexCubeCoordinate MapLogic::EvenRowAxialToCube(HexCoordinate axial)
 	return cube;
 }
 
-inline HexCoordinate MapLogic::CubeToOddColumnAxial(HexCubeCoordinate cube)
+HexCoordinate MapLogic::CubeToOddColumnAxial(HexCubeCoordinate cube) const
 {
 	HexCoordinate axial;
 	axial.q = cube.x;
@@ -162,7 +188,7 @@ inline HexCoordinate MapLogic::CubeToOddColumnAxial(HexCubeCoordinate cube)
 	return axial;
 }
 
-inline HexCoordinate MapLogic::GetOddColumnOffsetNeighbor(HexCoordinate axial, HexDirection direction)
+HexCoordinate MapLogic::GetOddColumnOffsetNeighbor(HexCoordinate axial, HexDirection direction) const
 {
 	int parity = axial.q & 1;
 	int index = static_cast<int>(direction);
@@ -172,7 +198,7 @@ inline HexCoordinate MapLogic::GetOddColumnOffsetNeighbor(HexCoordinate axial, H
 	return neighbor;
 }
 
-inline HexCubeCoordinate MapLogic::OddColumnAxialToCube(HexCoordinate axial)
+HexCubeCoordinate MapLogic::OddColumnAxialToCube(HexCoordinate axial) const
 {
 	HexCubeCoordinate cube;
 	cube.x = axial.q;
@@ -181,7 +207,7 @@ inline HexCubeCoordinate MapLogic::OddColumnAxialToCube(HexCoordinate axial)
 	return cube;
 }
 
-inline HexCoordinate MapLogic::CubeToEvenColumnAxial(HexCubeCoordinate cube)
+HexCoordinate MapLogic::CubeToEvenColumnAxial(HexCubeCoordinate cube) const
 {
 	HexCoordinate axial;
 	axial.q = cube.x;
@@ -189,7 +215,7 @@ inline HexCoordinate MapLogic::CubeToEvenColumnAxial(HexCubeCoordinate cube)
 	return axial;
 }
 
-inline HexCoordinate MapLogic::GetEvenColumnOffsetNeighbor(HexCoordinate axial, HexDirection direction)
+HexCoordinate MapLogic::GetEvenColumnOffsetNeighbor(HexCoordinate axial, HexDirection direction) const
 {
 	int parity = axial.q & 1;
 	int index = static_cast<int>(direction);
@@ -199,7 +225,7 @@ inline HexCoordinate MapLogic::GetEvenColumnOffsetNeighbor(HexCoordinate axial, 
 	return neighbor;
 }
 
-inline HexCubeCoordinate MapLogic::EvenColumnAxialToCube(HexCoordinate axial)
+HexCubeCoordinate MapLogic::EvenColumnAxialToCube(HexCoordinate axial) const
 {
 	HexCubeCoordinate cube;
 	cube.x = axial.q;

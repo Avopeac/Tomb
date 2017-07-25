@@ -36,7 +36,7 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	// TESTING: Map shapes
 	game::MapLogic logic;
-	game::MapModel model(32, 32, game::MapShapeType::Rectangle, logic);
+	game::MapModel model(32, 32, game::MapShapeType::FlatHexagon, logic);
 	game::MapView view(model, logic);
 		
 	// Main loop

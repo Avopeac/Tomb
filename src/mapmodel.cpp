@@ -91,4 +91,20 @@ void MapModel::BuildSharpHexagonMap()
 
 void MapModel::BuildFlatHexagonMap()
 {
+	for (int z = -3; z <= 3; ++z)
+	{
+		for (int y = -3; y <= 3; ++y)
+		{
+			for (int x = -3; x <= 3; ++x)
+			{
+				HexCubeCoordinate cube;
+				cube.x = x;
+				cube.y = y;
+				cube.z = z;
+
+				HexCoordinate hex = logic_.CubeToOddRowAxial(cube);
+				tiles_[hex] = MapTileType::Sand;
+			}
+		}
+	}
 }
