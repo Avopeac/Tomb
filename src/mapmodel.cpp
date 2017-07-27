@@ -91,20 +91,35 @@ void MapModel::BuildSharpHexagonMap()
 
 void MapModel::BuildFlatHexagonMap()
 {
-	for (int z = -3; z <= 3; ++z)
-	{
-		for (int y = -3; y <= 3; ++y)
-		{
-			for (int x = -3; x <= 3; ++x)
-			{
-				HexCubeCoordinate cube;
-				cube.x = x;
-				cube.y = y;
-				cube.z = z;
+	int start_z = -3;
+	int end_z = 3;
 
-				HexCoordinate hex = logic_.CubeToOddRowAxial(cube);
-				tiles_[hex] = MapTileType::Sand;
-			}
+	int row = 0;
+	int x = 0;
+	int y = 3;
+
+	for (int z = start_z; z <= end_z; ++z)
+	{
+		for (int j = row; j <= 3; ++j)
+		{
+
+			HexCubeCoordinate cube;
+			cube.x = x;
+			cube.y = y;
+			cube.z = z;
+
+			HexCoordinate hex = logic_.CubeToAxial(cube);
+			tiles_[hex] = MapTileType::Sand;
+
+			x++;
+			y--;
 		}
+
+		
+		row--;
+
+		x = row;
+		y = z <= 0 ? 3 : 3 - z;
+
 	}
 }
