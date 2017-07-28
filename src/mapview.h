@@ -30,8 +30,8 @@ namespace game
 			const float size = 16.0f;
 			const float height = size * 2.0f;
 			const float width = glm::sqrt(3.0f) * 0.5f * height;
-			const float map_offset_x = 10.0f;
-			const float map_offset_y = 15.0f;
+			const float map_offset_x = 16.0f;
+			const float map_offset_y = 16.0f;
 
 			auto scale = glm::scale(glm::mat4(1), glm::vec3(width, height, 1));
 			for (auto it = model_.GetTileBeginIterator(); it != model_.GetTileEndIterator(); ++it)
