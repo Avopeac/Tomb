@@ -126,6 +126,11 @@ glm::vec2 MapLogic::EvenColumnAxialToCartesian(HexCoordinate axial, float size) 
 	return { size * 1.5f * axial.q, size * sqrt3_ * (axial.r - 0.5 * (axial.q & 1)) };
 }
 
+HexCoordinate game::MapLogic::CartesianToAxial(glm::vec2, float size) const
+{
+	return HexCoordinate();
+}
+
 HexCoordinate MapLogic::CubeToOddRowAxial(HexCubeCoordinate cube) const
 {
 	HexCoordinate axial;

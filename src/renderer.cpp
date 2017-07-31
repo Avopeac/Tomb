@@ -21,7 +21,7 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 		*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
 	offscreen_buffer_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
-		graphics_base_->GetBackbufferHeight(), true, true);
+		graphics_base_->GetBackbufferHeight(), true, true, 4);
 }
 
 Renderer::~Renderer()

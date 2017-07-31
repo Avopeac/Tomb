@@ -136,6 +136,8 @@ namespace game
 
 		glm::vec2 EvenColumnAxialToCartesian(HexCoordinate axial, float size) const;
 
+		HexCoordinate CartesianToAxial(glm::vec2, float size) const;
+
 		/// PLACEMENT
 
 		// 1. Shoves odd rows by +½ column

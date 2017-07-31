@@ -59,11 +59,11 @@ Sint32 main(Sint32 argc, char * argv[])
 
 		view.Update(renderer, (float)frame_time);
 
-		std::string print = "Frame: ";
-		print.append(std::to_string(frame_time));
-		print.append(" ms");
+		//std::string print = "Frame: ";
+		//print.append(std::to_string(frame_time));
+		//print.append(" ms");
 
-		std::cout << print << std::endl;
+		//std::cout << print << std::endl;
 		//print.append("(");
 		//print.append(std::to_string(1.0 / frame_time));
 		//print.append(" FPS)");

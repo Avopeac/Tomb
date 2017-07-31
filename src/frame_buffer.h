@@ -30,9 +30,11 @@ namespace graphics
 
 		GLint depth_texture_bind_point_;
 
+		int num_samples_;
+
 	public:
 
-		FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_range_enabled);
+		FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_range_enabled, int num_samples = 0);
 
 		~FrameBuffer();
 
