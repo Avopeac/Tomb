@@ -17,7 +17,7 @@ PostProcessing::~PostProcessing()
 {
 }
 
-void PostProcessing::Add(std::function<FrameBuffer &(FrameBuffer &source,
+void PostProcessing::Add(std::function<FrameBuffer *(FrameBuffer *source,
 	TextureCache &texture_cache,
 	ProgramCache &program_cache,
 	SamplerCache &sampler_cache,
@@ -26,15 +26,22 @@ void PostProcessing::Add(std::function<FrameBuffer &(FrameBuffer &source,
 	effects_.push_back(effect);
 }
 
-FrameBuffer & PostProcessing::Process(FrameBuffer &framebuffer)
+FrameBuffer *PostProcessing::Process(FrameBuffer *framebuffer)
 {
-	FrameBuffer *dest = nullptr;
-	FrameBuffer *src = &framebuffer;
-	for (auto effect : effects_)
+	if (effects_.empty())
 	{
-		dest = &effect(*src, texture_cache_, program_cache_, sampler_cache_, blend_cache_);
-		src = dest;
+		return nullptr;
 	}
 
-	return *dest;
+	return Process_(effects_[0](framebuffer, texture_cache_, program_cache_, sampler_cache_, blend_cache_), 0);
+}
+
+FrameBuffer * PostProcessing::Process_(FrameBuffer * src, int i)
+{
+	if (i == effects_.size() - 1)
+	{
+		return src;
+	}
+
+	return Process_(effects_[i + 1](src, texture_cache_, program_cache_, sampler_cache_, blend_cache_), i + 1);
 }

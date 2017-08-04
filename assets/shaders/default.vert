@@ -20,7 +20,7 @@ uniform float u_time;
 
 void main()
 {
-	vec4 transformed = i_transform * vec4(i_position.xy, 0, 1);
+	vec4 transformed = i_transform * vec4(i_position.xy, -0.01, 1);
 
 	gl_Position = u_viewproj * transformed;
 

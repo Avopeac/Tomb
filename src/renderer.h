@@ -22,7 +22,7 @@ namespace graphics
 
 		GraphicsBase *graphics_base_;
 
-		std::unique_ptr<FrameBuffer> offscreen_buffer_;
+		std::unique_ptr<FrameBuffer> offscreen_buffer_msaa_, offscreen_buffer_resolved_;
 		std::unique_ptr<TextureCache> texture_cache_;
 		std::unique_ptr<SamplerCache> sampler_cache_;
 		std::unique_ptr<ProgramCache> program_cache_;

@@ -14,6 +14,8 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetSwapInterval(config.GetVerticalSync());
@@ -68,10 +70,13 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 
 	width_ = config.GetWindowWidth();
 	height_ = config.GetWindowHeight();
+	near_ = 0.0f;
+	far_ = 1.0f;
 
 	projection_ = glm::ortho(
 		0.0f, (float)config.GetWindowWidth(),
-		0.0f, (float)config.GetWindowHeight()
+		0.0f, (float)config.GetWindowHeight(),
+		near_, far_
 	);
 
 	// TODO: View matrix should be manipulated by camera later on

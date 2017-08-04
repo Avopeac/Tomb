@@ -5,103 +5,64 @@
 
 using namespace graphics;
 
-FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, bool depth, bool dynamic_range_enabled, int num_samples)
-	: width_(width), height_(height), depth_texture_(0),
+FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
+	const std::vector<FrameBufferAttachmentDescriptor> &descriptors,
+	const FrameBufferAttachmentDescriptor * const depth_stencil_descriptor)
+	: width_(width), height_(height), num_samples_(num_samples),
 	old_viewport_width_(0), old_viewport_height_(0),
-	num_samples_(num_samples)
+	depth_stencil_attachment_(nullptr)
 {
 
+	GLenum target = num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
+	// Enable multisampling for GL state machine
 	if (num_samples_ > 0 && glIsEnabled(GL_MULTISAMPLE) == GL_FALSE)
 	{
 		glEnable(GL_MULTISAMPLE);
 	}
 
-	GLenum target = num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-
-	// Create color attachment
-	GLuint color_attachment = 0;
+	for (const auto &descriptor : descriptors)
 	{
-
-		GLenum internalFormat = dynamic_range_enabled ? GL_RGBA16F : GL_RGBA8;
-		GLenum format = GL_RGBA;
-		GLenum type = dynamic_range_enabled ? GL_FLOAT : GL_UNSIGNED_BYTE;
-
-		glGenTextures(1, &color_attachment);
-		glBindTexture(target, color_attachment);
-
-		if (num_samples_ > 0)
-		{
-			glTexImage2DMultisample(target, num_samples_, internalFormat, width_, height_, false);
-		}
-		else
-		{
-			glTexImage2D(target, 0, internalFormat, width_, height_, 0,
-				format, type, nullptr);
-			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		}
-
-		glBindTexture(target, 0);
-
-		textures_.push_back(color_attachment);
-		texture_bind_points_.push_back(-1);
+		attachments_.push_back(std::make_unique<FrameBufferAttachment>(width_, height_, num_samples_,
+			descriptor));
 	}
-	
-	// Create depth attachment
-	GLuint depth_attachment = 0;
-	if (depth)
+
+	if (depth_stencil_descriptor)
 	{
-		GLenum internalFormat = GL_DEPTH_COMPONENT16;
-		GLenum format = GL_DEPTH_COMPONENT;
-		GLenum type = GL_UNSIGNED_INT;
-
-		glGenTextures(1, &depth_attachment);
-		glBindTexture(target, depth_attachment);
-
-		if (num_samples_ > 0)
-		{
-			glTexImage2DMultisample(target, num_samples_, internalFormat, width_, height_, false);
-		}
-		else
-		{
-			glTexImage2D(target, 0, internalFormat, width_, height_, 0,
-				format, type, nullptr); 
-			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		}
-		
-		glBindTexture(target, 0);
-
-		depth_texture_ = depth_attachment;
-		depth_texture_bind_point_ = -1;
+		depth_stencil_attachment_ = std::make_unique<FrameBufferAttachment>(width_, height_,
+			num_samples_, *depth_stencil_descriptor);
 	}
 
 	glGenFramebuffers(1, &id_);
 	glBindFramebuffer(GL_FRAMEBUFFER, id_);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target, color_attachment, 0);
-	if (depth)
+
+	for (int i = 0; i < attachments_.size(); ++i)
 	{
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target, depth_attachment, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+			target, attachments_[i]->GetId(), 0);
+	}
+	
+	if (depth_stencil_attachment_)
+	{
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
+			target, depth_stencil_attachment_->GetId(), 0);
 	}
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	switch (status)
 	{
-	case GL_FRAMEBUFFER_UNDEFINED: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer undefined."); } break;
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete attachment."); } break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer missing attachment."); } break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Frambuffer incomplete draw buffer."); } break;
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete read buffer."); } break;
-	case GL_FRAMEBUFFER_UNSUPPORTED: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer unsupported."); } break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete multisample."); } break;
-	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete layer targets."); } break;
-	default: break;
+		case GL_FRAMEBUFFER_UNDEFINED: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer undefined."); } break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete attachment."); } break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer missing attachment."); } break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Frambuffer incomplete draw buffer."); } break;
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete read buffer."); } break;
+		case GL_FRAMEBUFFER_UNSUPPORTED: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer unsupported."); } break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete multisample."); } break;
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: { debug::Log(SDL_LOG_PRIORITY_ERROR, SDL_LOG_CATEGORY_RENDER, "Framebuffer incomplete layer targets."); } break;
+		default: break;
 	}
 }
 
@@ -109,59 +70,31 @@ FrameBuffer::~FrameBuffer()
 {
 }
 
-void FrameBuffer::BindColorAttachmentTexture(size_t index, GLuint unit)
-{
-	if (index < textures_.size())
-	{
-		glActiveTexture(GL_TEXTURE0 + unit);
-		glBindTexture(num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 0);
-		texture_bind_points_[index] = unit;
-	}
-}
-
-void FrameBuffer::UnbindColorAttachmentTexture(size_t index)
-{
-	if (index < textures_.size())
-	{
-		glActiveTexture(GL_TEXTURE0 + texture_bind_points_[index]);
-		glBindTexture(num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 0);
-		texture_bind_points_[index] = -1;
-	}
-}
-
-void FrameBuffer::BindDepthAttachmentTexture(GLuint unit)
-{
-	if (depth_texture_ != 0)
-	{
-		glActiveTexture(GL_TEXTURE0 + unit);
-		glBindTexture(num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 0);
-		depth_texture_bind_point_ = unit;
-	}
-}
-
-void FrameBuffer::UnbindDepthAttachmentTexture()
-{
-	if (depth_texture_ != 0)
-	{
-		glActiveTexture(GL_TEXTURE0 + depth_texture_bind_point_);
-		glBindTexture(num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 0);
-		depth_texture_bind_point_ = -1;
-	}
-}
-
 void FrameBuffer::Blit(Sint32 sx0, Sint32 sx1, Sint32 sy0, Sint32 sy1, 
-	Sint32 dx0, Sint32 dx1, Sint32  dy0, Sint32 dy1)
+	Sint32 dx0, Sint32 dx1, Sint32  dy0, Sint32 dy1, FrameBuffer * fbo)
 {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glDrawBuffer(GL_BACK);
+	if (fbo)
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->id_);
+	}
+	else
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
 
-	glBlitFramebuffer(sx0, sy0, sx1, sy1, dx0, dy0, dx1, dy1, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
+	
+	GLenum buffer_bits = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+
+	glBlitFramebuffer(sx0, sy0, sx1, sy1, dx0, dy0, dx1, dy1, buffer_bits, GL_NEAREST);
+
+	if (glGetError() == GL_INVALID_OPERATION)
+	{
+		debug::Log(SDL_LOG_PRIORITY_WARN, SDL_LOG_CATEGORY_RENDER, "Could not blit to framebuffer properly.");
+	}
 }
 
-void FrameBuffer::BindDraw()
+void FrameBuffer::BindDraw(GLbitfield clear_flags, float r, float g, float b, float a)
 {
 	GLint current_framebuffer;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &current_framebuffer);
@@ -175,6 +108,12 @@ void FrameBuffer::BindDraw()
 
 	glViewport(0, 0, width_, height_);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
+
+	if (clear_flags != 0)
+	{
+		glClearColor(r, g, b, a);
+		glClear(clear_flags);
+	}
 }
 
 void FrameBuffer::UnbindDraw()
@@ -182,9 +121,6 @@ void FrameBuffer::UnbindDraw()
 	if (old_viewport_width_ != 0 && old_viewport_height_ != 0)
 	{
 		glViewport(0, 0, old_viewport_width_, old_viewport_height_);
-		//glNamedFramebufferDrawBuffer(0, GL_BACK);
-		//glNamedFramebufferReadBuffer(id_, GL_COLOR_ATTACHMENT0);
-		//glNamedFramebufferReadBuffer(id_, GL_DEPTH_ATTACHMENT);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 }
@@ -192,6 +128,62 @@ void FrameBuffer::UnbindDraw()
 void FrameBuffer::Free()
 {
 	glDeleteFramebuffers(1, &id_);
-	glDeleteTextures(1, &depth_texture_);
-	glDeleteTextures(static_cast<GLsizei>(textures_.size()), textures_.data());
+}
+
+FrameBufferAttachment::FrameBufferAttachment(uint32_t width, 
+	uint32_t height, 
+	uint32_t num_samples,
+	const FrameBufferAttachmentDescriptor &descriptor) :
+	width_(width), 
+	height_(height), 
+	num_samples_(num_samples),
+	descriptor_(descriptor)
+{
+	GLenum target = num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
+	glGenTextures(1, &id_);
+	glBindTexture(target, id_);
+
+	if (num_samples_ > 0)
+	{
+		glTexImage2DMultisample(target, num_samples_, descriptor_.internal_format, width_, height_, false);
+	}
+	else
+	{
+		glTexImage2D(target, 0, descriptor_.internal_format, width_, height_, 
+			0, descriptor_.format, descriptor_.type, nullptr);
+
+		// Default texture sampler parameters (best to use sampler objects instead of relying on this)
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
+
+	glBindTexture(target, 0);
+
+	bind_point_ = 0;
+}
+
+FrameBufferAttachment::~FrameBufferAttachment()
+{
+}
+
+void FrameBufferAttachment::Free()
+{
+	glDeleteTextures(1, &id_);
+}
+
+void FrameBufferAttachment::Bind(Uint32 bind_point)
+{
+	glActiveTexture(GL_TEXTURE0 + bind_point);
+	glBindTexture(GL_TEXTURE_2D, id_);
+	bind_point_ = bind_point;
+}
+
+void FrameBufferAttachment::Unbind()
+{
+	glActiveTexture(GL_TEXTURE0 + bind_point_);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	bind_point_ = -1;
 }

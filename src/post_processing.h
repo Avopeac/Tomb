@@ -25,7 +25,7 @@ namespace graphics
 
 		BlendCache &blend_cache_;
 
-		std::vector<std::function<FrameBuffer &(FrameBuffer &source,
+		std::vector<std::function<FrameBuffer *(FrameBuffer *source,
 			TextureCache &texture_cache,
 			ProgramCache &program_cache,
 			SamplerCache &sampler_cache,
@@ -40,13 +40,17 @@ namespace graphics
 
 		~PostProcessing();
 
-		void Add(std::function<FrameBuffer &(FrameBuffer &source,
+		void Add(std::function<FrameBuffer *(FrameBuffer *source,
 			TextureCache &texture_cache,
 			ProgramCache &program_cache,
 			SamplerCache &sampler_cache,
 			BlendCache &blend_cache)> effect);
 
-		FrameBuffer &Process(FrameBuffer &framebuffer);
+		FrameBuffer *Process(FrameBuffer *framebuffer);
+
+	private:
+
+		FrameBuffer *Process_(FrameBuffer * src, int i);
 
 	};
 }

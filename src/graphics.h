@@ -17,6 +17,8 @@ namespace graphics
 
 		Uint32 width_;
 		Uint32 height_;
+		float near_;
+		float far_;
 
 		glm::mat4 projection_;
 		glm::mat4 view_;
@@ -47,12 +49,12 @@ namespace graphics
 		};
 
 		const Uint32 hexagon_indices[18] = {
-			0, 7, 1,
-			1, 7, 2,
-			2, 7, 3,
-			3, 7, 4,
-			4, 7, 5,
-			5, 7, 0,
+			0, 6, 1,
+			1, 6, 2,
+			2, 6, 3,
+			3, 6, 4,
+			4, 6, 5,
+			5, 6, 0,
 		};
 
 		const glm::vec2 quad_vertices[4] =
