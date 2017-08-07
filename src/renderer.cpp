@@ -10,9 +10,10 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	texture_cache_ = std::make_unique<TextureCache>();
 	sampler_cache_ = std::make_unique<SamplerCache>();
 	blend_cache_ = std::make_unique<BlendCache>();
+	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
 
 	post_processing_ = std::make_unique<PostProcessing>(*texture_cache_,
-		*program_cache_, *sampler_cache_, *blend_cache_);
+		*program_cache_, *sampler_cache_, *blend_cache_, *frame_buffer_cache_);
 
 	sprite_renderer_ = std::make_unique<SpriteRenderer>(SPRITE_INSTANCES_PER_BATCH,
 		*graphics_base_, *program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
@@ -34,12 +35,15 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	depth_stencil_descriptor.internal_format = GL_DEPTH_COMPONENT16;
 	depth_stencil_descriptor.type = GL_FLOAT;
 
-	offscreen_buffer_msaa_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
-		graphics_base_->GetBackbufferHeight(), 4, descriptors, &depth_stencil_descriptor);
+	frame_buffer_cache_->GetFromParameters("offscreen_4x_msaa", offscreen_4x_msaa_hash_,
+		graphics_base_->GetBackbufferWidth(),
+		graphics_base_->GetBackbufferHeight(),
+		4, descriptors, &depth_stencil_descriptor);
 
-	offscreen_buffer_resolved_ = std::make_unique<FrameBuffer>(graphics_base_->GetBackbufferWidth(),
-		graphics_base_->GetBackbufferHeight(), 0, descriptors, &depth_stencil_descriptor);
-
+	frame_buffer_cache_->GetFromParameters("offscreen_4x_resolve", offscreen_4x_resolve_hash_,
+		graphics_base_->GetBackbufferWidth(),
+		graphics_base_->GetBackbufferHeight(),
+		0, descriptors, &depth_stencil_descriptor);
 }
 
 Renderer::~Renderer()
@@ -59,22 +63,19 @@ void Renderer::Invoke()
 	// Enable blending
 	glEnable(GL_BLEND);
 
-	// Draw sprites to offscreen buffer
-	offscreen_buffer_msaa_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
+	// Draw sprites to MSAA offscreen buffer
+	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).BindDraw(
+		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
 	sprite_renderer_->Draw();
 	font_renderer_->Draw();
-	offscreen_buffer_msaa_->UnbindDraw();
+	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).UnbindDraw();
 
 	// TODO: Font, GUI and post processing happens between here
 
-	// Blit offscreen buffer to default framebuffer
-	/*offscreen_buffer_msaa_->Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
-		0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(), offscreen_buffer_resolved_.get());*/
-
-	offscreen_buffer_msaa_->Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
+	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
 		0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(), nullptr);
 
 
-	post_processing_->Process(offscreen_buffer_resolved_.get());
+	//post_processing_->Process(offscreen_buffer_resolved_.get());
 }
 

@@ -22,7 +22,7 @@ namespace graphics
 
 		GraphicsBase *graphics_base_;
 
-		std::unique_ptr<FrameBuffer> offscreen_buffer_msaa_, offscreen_buffer_resolved_;
+		std::unique_ptr<FrameBufferCache> frame_buffer_cache_;
 		std::unique_ptr<TextureCache> texture_cache_;
 		std::unique_ptr<SamplerCache> sampler_cache_;
 		std::unique_ptr<ProgramCache> program_cache_;
@@ -31,6 +31,9 @@ namespace graphics
 		std::unique_ptr<SpriteRenderer> sprite_renderer_;
 		//std::unique_ptr<FontRenderer> font_renderer_;
 		std::unique_ptr<FontRendererIndividual> font_renderer_;
+
+		size_t offscreen_4x_msaa_hash_;
+		size_t offscreen_4x_resolve_hash_;
 
 	public:
 

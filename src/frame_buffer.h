@@ -95,7 +95,7 @@ namespace graphics
 
 	class FrameBufferCache
 	{
-		std::unordered_map<size_t, FrameBuffer> buffers_;
+		std::unordered_map<size_t, std::unique_ptr<FrameBuffer>> buffers_;
 
 	public:
 		
@@ -112,5 +112,14 @@ namespace graphics
 
 		FrameBuffer &GetFromHash(size_t hash);
 
+		inline bool ExistInCache(const std::string &name) const
+		{
+			return buffers_.find(std::hash<std::string>{}(name)) != buffers_.cend();
+		}
+
+		inline bool ExistInCache(size_t hash) const
+		{
+			return buffers_.find(hash) != buffers_.cend();
+		}
 	};
 }

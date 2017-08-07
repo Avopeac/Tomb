@@ -42,6 +42,8 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
 			target, attachments_[i]->GetId(), 0);
 	}
 	
+	// TODO: No support for stencil buffer attachments yet.
+	// Check requirements of attachment via the format passed in.
 	if (depth_stencil_attachment_)
 	{
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
@@ -162,7 +164,7 @@ FrameBufferAttachment::FrameBufferAttachment(uint32_t width,
 
 	glBindTexture(target, 0);
 
-	bind_point_ = 0;
+	bind_point_ = -1;
 }
 
 FrameBufferAttachment::~FrameBufferAttachment()
@@ -176,6 +178,11 @@ void FrameBufferAttachment::Free()
 
 void FrameBufferAttachment::Bind(Uint32 bind_point)
 {
+	if (bind_point_ != -1)
+	{
+		Unbind();
+	}
+
 	glActiveTexture(GL_TEXTURE0 + bind_point);
 	glBindTexture(GL_TEXTURE_2D, id_);
 	bind_point_ = bind_point;
@@ -183,7 +190,55 @@ void FrameBufferAttachment::Bind(Uint32 bind_point)
 
 void FrameBufferAttachment::Unbind()
 {
+	if (bind_point_ == -1)
+	{
+		return;
+	}
+
 	glActiveTexture(GL_TEXTURE0 + bind_point_);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	bind_point_ = -1;
+}
+
+FrameBufferCache::FrameBufferCache()
+{
+}
+
+FrameBufferCache::~FrameBufferCache()
+{
+	for (auto &buffer : buffers_)
+	{
+		buffer.second->Free();
+	}
+}
+
+FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name, size_t & out_hash, 
+	Uint32 width, Uint32 height, Uint32 num_samples, 
+	const std::vector<FrameBufferAttachmentDescriptor>& descriptors, 
+	const FrameBufferAttachmentDescriptor * const depth_stencil_descriptor)
+{
+	SDL_assert(!name.empty());
+
+	out_hash = std::hash<std::string>{}(name);
+
+	if (buffers_.find(out_hash) != buffers_.end())
+	{
+		return *buffers_[out_hash];
+	}
+
+	buffers_[out_hash] = std::make_unique<FrameBuffer>(width, height, num_samples,
+		descriptors, depth_stencil_descriptor);
+
+	return *buffers_[out_hash];
+}
+
+FrameBuffer & FrameBufferCache::GetFromName(const std::string & name)
+{
+	size_t hash = std::hash<std::string>{}(name);
+	return *buffers_[hash];
+}
+
+FrameBuffer & FrameBufferCache::GetFromHash(size_t hash)
+{
+	return *buffers_[hash];
 }
