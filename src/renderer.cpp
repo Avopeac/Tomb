@@ -5,20 +5,19 @@ using namespace graphics;
 Renderer::Renderer(GraphicsBase *graphics_base) :
 	graphics_base_(graphics_base)
 {
-
 	program_cache_ = std::make_unique<ProgramCache>();
 	texture_cache_ = std::make_unique<TextureCache>();
 	sampler_cache_ = std::make_unique<SamplerCache>();
 	blend_cache_ = std::make_unique<BlendCache>();
 	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
 
-	post_processing_ = std::make_unique<PostProcessing>(*texture_cache_,
+	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_, *texture_cache_,
 		*program_cache_, *sampler_cache_, *blend_cache_, *frame_buffer_cache_);
 
 	sprite_renderer_ = std::make_unique<SpriteRenderer>(SPRITE_INSTANCES_PER_BATCH,
 		*graphics_base_, *program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
-	font_renderer_ = std::make_unique<FontRendererIndividual>(*graphics_base,
+	font_renderer_ = std::make_unique<FontRendererIndividual>(*graphics_base_,
 		*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 
 	std::vector<FrameBufferAttachmentDescriptor> descriptors;
@@ -44,6 +43,8 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 		graphics_base_->GetBackbufferWidth(),
 		graphics_base_->GetBackbufferHeight(),
 		0, descriptors, &depth_stencil_descriptor);
+
+	post_processing_->Add(MsaaResolve());
 }
 
 Renderer::~Renderer()
@@ -72,10 +73,13 @@ void Renderer::Invoke()
 
 	// TODO: Font, GUI and post processing happens between here
 
-	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).Blit(0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(),
-		0, graphics_base_->GetBackbufferWidth(), 0, graphics_base_->GetBackbufferHeight(), nullptr);
+	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).Blit(
+		0, graphics_base_->GetBackbufferWidth(), 
+		0, graphics_base_->GetBackbufferHeight(),
+		0, graphics_base_->GetBackbufferWidth(),
+		0, graphics_base_->GetBackbufferHeight(), 
+		nullptr);
 
-
-	//post_processing_->Process(offscreen_buffer_resolved_.get());
+	// post_processing_->Process();
 }
 

@@ -96,6 +96,16 @@ void FrameBuffer::Blit(Sint32 sx0, Sint32 sx1, Sint32 sy0, Sint32 sy1,
 	}
 }
 
+void FrameBuffer::BindRead()
+{
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
+}
+
+void FrameBuffer::UnbindRead()
+{
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+}
+
 void FrameBuffer::BindDraw(GLbitfield clear_flags, float r, float g, float b, float a)
 {
 	GLint current_framebuffer;

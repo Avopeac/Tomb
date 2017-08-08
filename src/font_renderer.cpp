@@ -19,8 +19,11 @@ FontRenderer::FontRenderer(GraphicsBase & graphics_base, ProgramCache & program_
 	CreateObjects(graphics_base_.quad_vertices, sizeof(graphics_base_.quad_vertices) / sizeof(graphics_base_.quad_vertices[0]),
 		graphics_base_.quad_indices, sizeof(graphics_base_.quad_indices) / sizeof(graphics_base_.quad_indices[0]));
 
-	vertex_program_ = program_cache_.CompileFromFile(GL_VERTEX_SHADER, "assets/shaders/default_font.vert");
-	fragment_program_ = program_cache_.CompileFromFile(GL_FRAGMENT_SHADER, "assets/shaders/default_font.frag");
+	size_t v, f;
+	vertex_program_ = program_cache_.GetFromFile("default_font.vert", v, GL_VERTEX_SHADER, 
+		"assets/shaders/default_font.vert");
+	fragment_program_ = program_cache_.GetFromFile("default_font.frag", f, GL_FRAGMENT_SHADER, 
+		"assets/shaders/default_font.frag");
 
 	pipeline_.SetStages(vertex_program_);
 	pipeline_.SetStages(fragment_program_);

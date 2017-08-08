@@ -25,11 +25,14 @@ namespace graphics
 
 		~ProgramCache();
 
-		Program CompileFromFile(GLenum programType, const std::string &path);
+		//Program CompileFromFile(GLenum programType, const std::string &path);
 
-		const Program &GetProgramByName(const std::string &name);
+		const Program &GetFromFile(const std::string &name, size_t &out_hash, 
+			GLenum program_type, const std::string &path);
 
-		const Program &GetProgramByHash(size_t hash);
+		const Program &GetFromName(const std::string &name);
+
+		const Program &GetFromHash(size_t hash);
 
 	};
 

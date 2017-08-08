@@ -13,9 +13,14 @@ ProgramCache::ProgramCache()
 
 ProgramCache::~ProgramCache()
 {
+	for (auto &program : programs_)
+	{
+		glDeleteProgram(program.second.id);
+	}
 }
 
-Program ProgramCache::CompileFromFile(GLenum program_type, const std::string &path)
+const Program & ProgramCache::GetFromFile(const std::string & name, 
+	size_t & out_hash, GLenum program_type, const std::string & path)
 {
 	input::FileReader reader;
 	std::string source = reader.ReadTextFile(path);
@@ -39,18 +44,20 @@ Program ProgramCache::CompileFromFile(GLenum program_type, const std::string &pa
 	}
 
 	program.flag = program_type;
-	program.hash = std::hash<std::string>{}(path);
+	program.hash = std::hash<std::string>{}(name);
 	programs_.insert({ program.hash, program });
+
+	out_hash = program.hash;
 
 	return program;
 }
 
-const Program & ProgramCache::GetProgramByName(const std::string & name)
+const Program & ProgramCache::GetFromName(const std::string & name)
 {
 	return programs_[std::hash<std::string>{}(name)];
 }
 
-const Program & ProgramCache::GetProgramByHash(size_t hash)
+const Program & ProgramCache::GetFromHash(size_t hash)
 {
 	return programs_[hash];
 }

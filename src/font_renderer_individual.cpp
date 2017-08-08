@@ -20,8 +20,11 @@ FontRendererIndividual::FontRendererIndividual(GraphicsBase & graphics_base, Pro
 	CreateObjects_(graphics_base_.quad_vertices, sizeof(graphics_base_.quad_vertices) / sizeof(graphics_base_.quad_vertices[0]),
 		graphics_base_.quad_indices, sizeof(graphics_base_.quad_indices) / sizeof(graphics_base_.quad_indices[0]));
 
-	vertex_program_ = program_cache_.CompileFromFile(GL_VERTEX_SHADER, "assets/shaders/default_font_individual.vert");
-	fragment_program_ = program_cache_.CompileFromFile(GL_FRAGMENT_SHADER, "assets/shaders/default_font_individual.frag");
+	size_t v, f;
+	vertex_program_ = program_cache_.GetFromFile("default_font_individual.vert", v, GL_VERTEX_SHADER, 
+		"assets/shaders/default_font_individual.vert");
+	fragment_program_ = program_cache_.GetFromFile("default_font_individual.frag", f, GL_FRAGMENT_SHADER, 
+		"assets/shaders/default_font_individual.frag");
 
 	pipeline_.SetStages(vertex_program_);
 	pipeline_.SetStages(fragment_program_);
@@ -258,10 +261,9 @@ void FontRendererIndividual::GenerateGlyphTextures_()
 			glyphs_.insert({ characters_[i], glyph });
 
 
-			char log[512];
-			sprintf(log, "%c has advance %i", glyph.character, glyph.advance);
-			debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_RENDER, log);
-
+			//char log[512];
+			//sprintf(log, "%c has advance %i", glyph.character, glyph.advance);
+			//debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_RENDER, log);
 
 			SDL_FreeSurface(surface);
 		}

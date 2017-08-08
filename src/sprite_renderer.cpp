@@ -38,8 +38,9 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 		graphics_base_.quad_indices, sizeof(graphics_base_.quad_indices) / sizeof(graphics_base_.quad_indices[0])
 	);
 
-	vertex_program_ = program_cache_.CompileFromFile(GL_VERTEX_SHADER, "assets/shaders/default.vert");
-	fragment_program_ = program_cache_.CompileFromFile(GL_FRAGMENT_SHADER, "assets/shaders/default.frag");
+	size_t v, f;
+	vertex_program_ = program_cache_.GetFromFile("default.vert", v, GL_VERTEX_SHADER, "assets/shaders/default.vert");
+	fragment_program_ = program_cache_.GetFromFile("default.frag", f, GL_FRAGMENT_SHADER, "assets/shaders/default.frag");
 
 	pipeline_.SetStages(vertex_program_);
 	pipeline_.SetStages(fragment_program_);
@@ -196,7 +197,7 @@ void SpriteRenderer::CreateBatchObject_(SpriteRendererBatchObjects &objects, con
 	// Position attribute
 
 	glEnableVertexAttribArray(attrib_index);
-	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, vertex_size, 0);
+	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, (GLsizei)vertex_size, 0);
 	glVertexAttribDivisor(attrib_index, 0);
 	attrib_index++;
 

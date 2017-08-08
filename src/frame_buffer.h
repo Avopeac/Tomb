@@ -76,6 +76,10 @@ namespace graphics
 		void Blit(Sint32 sx0, Sint32 sx1, Sint32 sy0, Sint32 sy1,
 			Sint32 dx0, Sint32 dx1, Sint32  dy0, Sint32 dy1, FrameBuffer * fbo);
 
+		void BindRead();
+
+		void UnbindRead();
+
 		void BindDraw(GLbitfield clear_flags, float r, float g, float b, float a);
 
 		void UnbindDraw();
@@ -83,14 +87,39 @@ namespace graphics
 		// Inherited via Disposable
 		virtual void Free() override;
 
-		inline size_t GetColorAttachmentCount() const { return attachments_.size(); }
-
-		inline bool HasDepthStencil() const { return depth_stencil_attachment_ != nullptr; }
-
 		inline Uint32 GetWidth() const { return width_; }
 
 		inline Uint32 GetHeight() const { return height_; }
-		
+
+		inline size_t GetColorAttachmentCount() const 
+		{ 
+			return attachments_.size(); 
+		}
+
+		inline void BindColorAttachment(int attachment, int bind_point)
+		{
+			attachments_[attachment]->Bind(bind_point);
+		}
+
+		inline void UnbindColorAttachment(int attachment)
+		{
+			attachments_[attachment]->Unbind();
+		}
+
+		inline bool HasDepthStencil() const 
+		{ 
+			return depth_stencil_attachment_ != nullptr; 
+		}
+
+		inline void BindDepthStencilAttachment(int bind_point)
+		{
+			depth_stencil_attachment_->Bind(bind_point);
+		}
+
+		inline void UnbindDepthStencilAttachment()
+		{
+			depth_stencil_attachment_->Unbind();
+		}
 	};
 
 	class FrameBufferCache

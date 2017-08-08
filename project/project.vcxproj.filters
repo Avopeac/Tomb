@@ -56,6 +56,9 @@
     <ClCompile Include="..\src\mapmodel.cpp">
       <Filter>Source\Map</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\msaa_resolve.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -126,6 +129,9 @@
     </ClInclude>
     <ClInclude Include="..\src\mapview.h">
       <Filter>Source\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\msaa_resolve.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

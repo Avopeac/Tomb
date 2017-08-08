@@ -13,6 +13,9 @@
 #include "font_renderer_individual.h"
 #include "post_processing.h"
 
+// Post FX
+#include "msaa_resolve.h"
+
 #define SPRITE_INSTANCES_PER_BATCH 4000
 
 namespace graphics

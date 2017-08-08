@@ -4,18 +4,49 @@
 #include <vector>
 #include <algorithm>
 
+#include "graphics.h"
+
 #include "shader.h"
 #include "texture.h"
 #include "sampler.h"
 #include "blend_mode.h"
+#include "frame_buffer.h"
 
 namespace graphics
 {
 
+	class PostProcessEffect
+	{
+		static GLuint vao_, vbo_, ebo_;
+
+	public:
+
+		PostProcessEffect() = default;
+
+		~PostProcessEffect() = default;
+
+		virtual void Init(TextureCache &texture_cache,
+			ProgramCache &program_cache,
+			SamplerCache &sampler_cache,
+			BlendCache &blend_cache,
+			FrameBufferCache &frame_buffer_cache) = 0;
+ 
+		virtual FrameBuffer * Apply(TextureCache &texture_cache,
+			ProgramCache &program_cache,
+			SamplerCache &sampler_cache,
+			BlendCache &blend_cache,
+			FrameBufferCache &frame_buffer_cache) = 0;
+		
+		static void Init(const GraphicsBase &graphics_base);
+
+		static void Render();
+
+	};
+
 	class PostProcessing
 	{
-
-	private:
+		
+		GraphicsBase &graphics_base_;
 
 		TextureCache &texture_cache_;
 
@@ -27,16 +58,11 @@ namespace graphics
 
 		FrameBufferCache &frame_buffer_cache_;
 
-		std::vector<std::function<FrameBuffer *(FrameBuffer *source,
-			TextureCache &texture_cache,
-			ProgramCache &program_cache,
-			SamplerCache &sampler_cache,
-			BlendCache &blend_cache,
-			FrameBufferCache &frame_buffer_cache)>> effects_;
+		//std::vector<PostProcessEffect> effects_;
 
 	public:
 		
-		PostProcessing(TextureCache &texture_cache, 
+		PostProcessing(GraphicsBase &graphics_base, TextureCache &texture_cache, 
 			ProgramCache &program_cache, 
 			SamplerCache &sampler_cache, 
 			BlendCache &blend_cache,
@@ -44,18 +70,9 @@ namespace graphics
 
 		~PostProcessing();
 
-		void Add(std::function<FrameBuffer *(FrameBuffer *source,
-			TextureCache &texture_cache,
-			ProgramCache &program_cache,
-			SamplerCache &sampler_cache,
-			BlendCache &blend_cache,
-			FrameBufferCache &frame_buffer_cache)> effect);
+		void Add(const PostProcessEffect &effect);
 
-		FrameBuffer *Process(FrameBuffer *framebuffer);
-
-	private:
-
-		FrameBuffer *Process_(FrameBuffer * src, int i);
+		void Process();
 
 	};
 }
