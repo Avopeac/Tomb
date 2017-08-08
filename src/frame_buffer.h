@@ -91,6 +91,8 @@ namespace graphics
 
 		inline Uint32 GetHeight() const { return height_; }
 
+		inline Uint32 GetNumSamples() const { return num_samples_; }
+
 		inline size_t GetColorAttachmentCount() const 
 		{ 
 			return attachments_.size(); 

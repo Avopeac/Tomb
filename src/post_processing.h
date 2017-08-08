@@ -21,9 +21,9 @@ namespace graphics
 
 	public:
 
-		PostProcessEffect() = default;
+		PostProcessEffect() {};
 
-		~PostProcessEffect() = default;
+		virtual ~PostProcessEffect() {};
 
 		virtual void Init(TextureCache &texture_cache,
 			ProgramCache &program_cache,
@@ -58,7 +58,7 @@ namespace graphics
 
 		FrameBufferCache &frame_buffer_cache_;
 
-		//std::vector<PostProcessEffect> effects_;
+		std::vector<std::unique_ptr<PostProcessEffect>> effects_;
 
 	public:
 		
@@ -70,7 +70,7 @@ namespace graphics
 
 		~PostProcessing();
 
-		void Add(const PostProcessEffect &effect);
+		void Add(std::unique_ptr<PostProcessEffect> effect);
 
 		void Process();
 

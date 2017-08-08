@@ -21,19 +21,20 @@ PostProcessing::~PostProcessing()
 {
 }
 
-void PostProcessing::Add(const PostProcessEffect &effect)
+void PostProcessing::Add(std::unique_ptr<PostProcessEffect> effect)
 {
-	//effects_.push_back(effect);
-
-	//effects_.back().Init(graphics_base_);
+	effects_.push_back(std::move(effect));
+	effects_.back()->Init(texture_cache_, program_cache_,
+		sampler_cache_, blend_cache_, frame_buffer_cache_);
 }
 
 void PostProcessing::Process()
 {
-	/*for (auto &effect : effects_)
+	for (auto &effect : effects_)
 	{
-		effect.Apply(texture_cache_, program_cache_, sampler_cache_, blend_cache_, frame_buffer_cache_);
-	}*/
+		effect->Apply(texture_cache_, program_cache_, sampler_cache_, 
+			blend_cache_, frame_buffer_cache_);
+	}
 }
 
 GLuint PostProcessEffect::vao_ = 0;
@@ -71,7 +72,7 @@ void PostProcessEffect::Init(const GraphicsBase &graphics_base)
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 
 	// Position attribute
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray (0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, (GLsizei)vertex_size, 0);
 	glVertexAttribDivisor(0, 0);
 

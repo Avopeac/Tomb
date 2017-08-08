@@ -44,12 +44,18 @@ FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache,
 	
 	pipeline_.Bind();
 
+	glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
+		"u_num_samples"), fbo0.GetNumSamples());
+
+	glProgramUniform2iv(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
+		"u_resolution"), 1, glm::value_ptr(glm::ivec2(fbo0.GetWidth(), fbo0.GetHeight())));
+
 	size_t attachments = fbo0.GetColorAttachmentCount();
 
 	for (size_t i = 0; i < attachments; ++i)
 	{
 		fbo0.BindColorAttachment(i, i);
-		std::string name = "color_attach" + std::to_string(i);
+		std::string name = "u_color_attach" + std::to_string(i);
 		glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
 			name.c_str()), i);
 	}
@@ -57,7 +63,7 @@ FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache,
 	if (fbo0.HasDepthStencil())
 	{
 		fbo0.BindDepthStencilAttachment(attachments);
-		std::string name = "depth_attach";
+		std::string name = "u_depth_attach";
 		glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
 			name.c_str()), attachments);
 	}
