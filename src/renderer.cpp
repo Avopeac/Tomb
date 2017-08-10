@@ -79,10 +79,10 @@ void Renderer::Invoke()
 	// TODO: Font, GUI and post processing happens between here
 
 	/*frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).Blit(
-		0, graphics_base_->GetBackbufferWidth(), 
+		0, graphics_base_->GetBackbufferWidth(),
 		0, graphics_base_->GetBackbufferHeight(),
 		0, graphics_base_->GetBackbufferWidth(),
-		0, graphics_base_->GetBackbufferHeight(), 
+		0, graphics_base_->GetBackbufferHeight(),
 		nullptr);*/
 
 	glDisable(GL_DEPTH_TEST);
@@ -90,4 +90,3 @@ void Renderer::Invoke()
 
 	post_processing_->Process();
 }
-

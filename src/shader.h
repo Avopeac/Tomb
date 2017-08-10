@@ -5,6 +5,8 @@
 
 #include "GL/glew.h"
 
+#include "logger.h"
+
 namespace graphics
 {
 	struct Program
@@ -12,6 +14,22 @@ namespace graphics
 		GLenum flag;
 		GLuint id;
 		size_t hash;
+
+		inline bool IsValid()
+		{
+			glValidateProgram(id);
+
+			GLenum err = glGetError();
+
+			if (err != GL_NO_ERROR)
+			{
+				debug::Log(SDL_LOG_PRIORITY_DEBUG, 
+					SDL_LOG_CATEGORY_RENDER, 
+					(const char *)glewGetErrorString(err));
+			}
+
+			return err != GL_NO_ERROR;
+		}
 	};
 
 	class ProgramCache

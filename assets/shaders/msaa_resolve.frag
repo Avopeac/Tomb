@@ -8,6 +8,7 @@ in vec2 v_position;
 
 uniform sampler2DMS u_color_attach0;
 uniform sampler2DMS u_depth_attach;
+
 uniform ivec2 u_resolution;
 uniform int u_num_samples;
 
@@ -22,6 +23,6 @@ void main()
 		depth += texelFetch(u_depth_attach, ivec2(gl_FragCoord.xy), i).r;
 	}	
 
-	o_color = color;
-	o_depth = depth;
+	o_color = vec4(1,0,1,1); //color;
+	o_depth = 1.0; //depth;
 }

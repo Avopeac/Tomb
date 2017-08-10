@@ -36,10 +36,13 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
 	glGenFramebuffers(1, &id_);
 	glBindFramebuffer(GL_FRAMEBUFFER, id_);
 
+	std::vector<GLenum> attachment_enums{};
 	for (int i = 0; i < attachments_.size(); ++i)
 	{
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
 			target, attachments_[i]->GetId(), 0);
+
+		attachment_enums.push_back(GL_COLOR_ATTACHMENT0 + i);
 	}
 	
 	// TODO: No support for stencil buffer attachments yet.
@@ -50,8 +53,10 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
 			target, depth_stencil_attachment_->GetId(), 0);
 	}
 
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	glDrawBuffers((GLsizei)attachment_enums.size(), attachment_enums.data());
 
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	switch (status)
@@ -194,7 +199,7 @@ void FrameBufferAttachment::Bind(Uint32 bind_point)
 	}
 
 	glActiveTexture(GL_TEXTURE0 + bind_point);
-	glBindTexture(GL_TEXTURE_2D, id_);
+	glBindTexture(num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, id_);
 	bind_point_ = bind_point;
 }
 
@@ -206,7 +211,7 @@ void FrameBufferAttachment::Unbind()
 	}
 
 	glActiveTexture(GL_TEXTURE0 + bind_point_);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(num_samples_ > 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 0);
 	bind_point_ = -1;
 }
 

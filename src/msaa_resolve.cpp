@@ -24,6 +24,7 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 
 	pipeline_.SetStages(vertex_shader_);
 	pipeline_.SetStages(fragment_shader_);
+
 }
 
 FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache, 
@@ -40,19 +41,19 @@ FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache,
 	fbo1.UnbindRead();
 
 	fbo0.BindRead();
-	fbo1.BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
-	
+	fbo1.BindDraw(GL_COLOR_BUFFER_BIT, 0, 0, 0, 1);
+
 	pipeline_.Bind();
 
 	glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
-		"u_num_samples"), fbo0.GetNumSamples());
+		"u_num_samples"), fbo0.GetNumSamples()); 
 
 	glProgramUniform2iv(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
 		"u_resolution"), 1, glm::value_ptr(glm::ivec2(fbo0.GetWidth(), fbo0.GetHeight())));
 
 	size_t attachments = fbo0.GetColorAttachmentCount();
 
-	for (size_t i = 0; i < attachments; ++i)
+	for (int i = 0; i < (int)attachments; ++i)
 	{
 		fbo0.BindColorAttachment(i, i);
 		std::string name = "u_color_attach" + std::to_string(i);
@@ -62,10 +63,10 @@ FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache,
 	
 	if (fbo0.HasDepthStencil())
 	{
-		fbo0.BindDepthStencilAttachment(attachments);
+		fbo0.BindDepthStencilAttachment((int)attachments);
 		std::string name = "u_depth_attach";
 		glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
-			name.c_str()), attachments);
+			name.c_str()), (int)attachments);
 	}
 
 	this->Render();

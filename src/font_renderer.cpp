@@ -53,25 +53,25 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 		
 		RenderCharacterInstance char_instance; 
 		
-		char_instance.positions[0][0] = glyph.min_x;
-		char_instance.positions[0][1] = glyph.max_x;
-		char_instance.positions[0][2] = glyph.min_y;
-		char_instance.positions[0][3] = glyph.max_y;
+		char_instance.positions[0][0] = (float)glyph.min_x;
+		char_instance.positions[0][1] = (float)glyph.max_x;
+		char_instance.positions[0][2] = (float)glyph.min_y;
+		char_instance.positions[0][3] = (float)glyph.max_y;
 
 		char_instance.positions[1][0] = position.x;
 		char_instance.positions[1][1] = position.y;
 		char_instance.positions[1][2] = scale.x; 
 		char_instance.positions[1][3] = scale.y;
 
-		char_instance.positions[2][0] = font_height_;
-		char_instance.positions[2][1] = font_descent_;
-		char_instance.positions[2][2] = font_ascent_;
-		char_instance.positions[2][3] = font_line_skip_;
+		char_instance.positions[2][0] = (float)font_height_;
+		char_instance.positions[2][1] = (float)font_descent_;
+		char_instance.positions[2][2] = (float)font_ascent_;
+		char_instance.positions[2][3] = (float)font_line_skip_;
 
-		char_instance.positions[3][0] = advance_accumulation;
-		char_instance.positions[3][1] = glyph.texture_array_index;
-		char_instance.positions[3][2] = glyph.texture_w;
-		char_instance.positions[3][3] = glyph.texture_h; 
+		char_instance.positions[3][0] = (float)advance_accumulation;
+		char_instance.positions[3][1] = (float)glyph.texture_array_index;
+		char_instance.positions[3][2] = (float)glyph.texture_w;
+		char_instance.positions[3][3] = (float)glyph.texture_h;
 		     
 		text_instance.render_chars.push_back(char_instance);
 
@@ -82,7 +82,7 @@ void FontRenderer::Push(const std::string & string, const glm::ivec4 &color,
 			
 		}
 
-		advance_accumulation += kerning > 0 ? kerning : glyph.advance;
+		advance_accumulation += kerning > 0 ? kerning : (int)glyph.advance;
 	}
 
 	render_texts_.push_back(text_instance);
@@ -210,7 +210,7 @@ void FontRenderer::GenerateGlyphTextures()
 			#endif
 
 			surface = SDL_ConvertSurface(surface, &pixel_format, 0);
-			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i,
+			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, (GLint)i,
 				surface->w, surface->h, 1, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 
 			int min_x = 0;
@@ -290,7 +290,7 @@ void FontRenderer::CreateObjects(const glm::vec2 * const vertices,
 	// Position attribute
 
 	glEnableVertexAttribArray(attrib_index);
-	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, vertex_size, 0);
+	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, (GLsizei)vertex_size, 0);
 	glVertexAttribDivisor(attrib_index, 0);
 	attrib_index++;
 

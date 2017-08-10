@@ -149,7 +149,7 @@ void FontRendererIndividual::CreateObjects_(const glm::vec2 * const vertices, Ui
 	// Position attribute
 
 	glEnableVertexAttribArray(attrib_index);
-	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, vertex_size, 0);
+	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, (GLsizei)vertex_size, 0);
 	glVertexAttribDivisor(attrib_index, 0);
 	attrib_index++;
 
