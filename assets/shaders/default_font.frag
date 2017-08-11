@@ -1,4 +1,4 @@
-#version 410
+#version 440 core
 
 out vec4 o_color;
 

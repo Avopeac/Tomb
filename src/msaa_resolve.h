@@ -7,8 +7,8 @@ namespace graphics
 	class MsaaResolve : public PostProcessEffect
 	{
 
-		Program vertex_shader_;
-		Program fragment_shader_;
+		const Program * vertex_shader_;
+		const Program * fragment_shader_;
 		ProgramPipeline pipeline_;
 
 	public:

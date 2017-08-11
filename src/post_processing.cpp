@@ -39,7 +39,7 @@ void PostProcessing::Process()
 
 GLuint PostProcessEffect::vao_ = 0;
 GLuint PostProcessEffect::vbo_ = 0;
-GLuint PostProcessEffect::ebo_ = 0;
+GLuint PostProcessEffect::ebo_ = 0; 
 
 void PostProcessEffect::Init(const GraphicsBase &graphics_base)
 {

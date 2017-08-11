@@ -1,16 +1,10 @@
 #version 440 core
 
-out vec4 o_color;
+layout(location = 0) out vec4 o_color;
 
 in vec2 v_texcoord;
 
-in vec2 v_position;
-
 uniform sampler2D u_texture;
-
-uniform float u_time;
-
-uniform vec2 u_mouse;
 
 void main()
 {

@@ -1,4 +1,4 @@
-#version 410
+#version 440 core
 
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out float o_depth;
@@ -23,6 +23,6 @@ void main()
 		depth += texelFetch(u_depth_attach, ivec2(gl_FragCoord.xy), i).r;
 	}	
 
-	o_color = vec4(1,0,1,1); //color;
-	o_depth = 1.0; //depth;
+	o_color = color;
+	o_depth = depth;
 }

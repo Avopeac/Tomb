@@ -17,13 +17,13 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 	FrameBufferCache & frame_buffer_cache)
 {
 	size_t v, f;
-	vertex_shader_ = program_cache.GetFromFile("msaa_resolve.vert", v, GL_VERTEX_SHADER, 
+	vertex_shader_ = &program_cache.GetFromFile("msaa_resolve.vert", v, GL_VERTEX_SHADER, 
 		"assets/shaders/msaa_resolve.vert");
-	fragment_shader_ = program_cache.GetFromFile("msaa_resolve.frag", f, GL_FRAGMENT_SHADER, 
+	fragment_shader_ = &program_cache.GetFromFile("msaa_resolve.frag", f, GL_FRAGMENT_SHADER, 
 		"assets/shaders/msaa_resolve.frag");
 
-	pipeline_.SetStages(vertex_shader_);
-	pipeline_.SetStages(fragment_shader_);
+	pipeline_.SetStages(*vertex_shader_);
+	pipeline_.SetStages(*fragment_shader_);
 
 }
 
@@ -45,10 +45,10 @@ FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache,
 
 	pipeline_.Bind();
 
-	glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
+	glProgramUniform1i(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
 		"u_num_samples"), fbo0.GetNumSamples()); 
 
-	glProgramUniform2iv(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
+	glProgramUniform2iv(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
 		"u_resolution"), 1, glm::value_ptr(glm::ivec2(fbo0.GetWidth(), fbo0.GetHeight())));
 
 	size_t attachments = fbo0.GetColorAttachmentCount();
@@ -57,16 +57,19 @@ FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache,
 	{
 		fbo0.BindColorAttachment(i, i);
 		std::string name = "u_color_attach" + std::to_string(i);
-		glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
-			name.c_str()), i);
+
+		GLint location = glGetUniformLocation(fragment_shader_->id,
+			name.c_str());
+		glProgramUniform1i(fragment_shader_->id, location, i);
 	}
 	
 	if (fbo0.HasDepthStencil())
 	{
 		fbo0.BindDepthStencilAttachment((int)attachments);
 		std::string name = "u_depth_attach";
-		glProgramUniform1i(fragment_shader_.id, glGetUniformLocation(fragment_shader_.id,
-			name.c_str()), (int)attachments);
+		GLint location = glGetUniformLocation(fragment_shader_->id,
+			name.c_str());
+		glProgramUniform1i(fragment_shader_->id, location, (int)attachments);
 	}
 
 	this->Render();
