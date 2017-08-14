@@ -13,9 +13,6 @@
 #include "font_renderer_individual.h"
 #include "post_processing.h"
 
-// Post FX
-#include "msaa_resolve.h"
-
 #define SPRITE_INSTANCES_PER_BATCH 4000
 
 namespace graphics
@@ -35,10 +32,13 @@ namespace graphics
 		//std::unique_ptr<FontRenderer> font_renderer_;
 		std::unique_ptr<FontRendererIndividual> font_renderer_;
 
-		size_t offscreen_4x_msaa_hash_;
-		size_t offscreen_4x_resolve_hash_;
+		FrameBuffer * msaa_fb_;
+		FrameBuffer * resolve_fb_;
 
 	public:
+
+		static const std::string offscreen_msaa_name;
+		static const std::string offscreen_resolve_name;
 
 		Renderer(GraphicsBase *graphics_base);
 

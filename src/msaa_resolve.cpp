@@ -1,5 +1,7 @@
 #include "msaa_resolve.h"
 
+#include "renderer.h"
+
 using namespace graphics;
 
 MsaaResolve::MsaaResolve()
@@ -16,70 +18,70 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 	BlendCache & blend_cache,
 	FrameBufferCache & frame_buffer_cache)
 {
-	size_t v, f;
-	vertex_shader_ = &program_cache.GetFromFile("msaa_resolve.vert", v, GL_VERTEX_SHADER, 
-		"assets/shaders/msaa_resolve.vert");
-	fragment_shader_ = &program_cache.GetFromFile("msaa_resolve.frag", f, GL_FRAGMENT_SHADER, 
-		"assets/shaders/msaa_resolve.frag");
+	size_t h;
+	vertex_shader_ = &program_cache.GetFromFile(v_name_, h, GL_VERTEX_SHADER, v_path_);
+	fragment_shader_ = &program_cache.GetFromFile(f_name_, h, GL_FRAGMENT_SHADER, f_path_);
 
 	pipeline_.SetStages(*vertex_shader_);
 	pipeline_.SetStages(*fragment_shader_);
 
+	msaa_fb_ = &frame_buffer_cache.GetFromName(Renderer::offscreen_msaa_name);
+	resolve_fb_ = &frame_buffer_cache.GetFromName(Renderer::offscreen_resolve_name);
+
+	size_t num_attachments = msaa_fb_->GetColorAttachmentCount();
+
+	for (int i = 0; i < (int)num_attachments; ++i)
+	{
+		std::string name = "u_texture" + std::to_string(i);
+		glProgramUniform1i(fragment_shader_->id,
+			glGetUniformLocation(fragment_shader_->id, name.c_str()), i);
+	}
+
+	if (msaa_fb_->HasDepthStencil())
+	{
+		std::string name = "u_depth_texture";
+		glProgramUniform1i(fragment_shader_->id,
+			glGetUniformLocation(fragment_shader_->id, name.c_str()), (int)num_attachments);
+	}
+
+	glProgramUniform1i(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
+		"u_num_samples"), msaa_fb_->GetNumSamples());
+
+	glProgramUniform2i(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
+		"u_resolution"), msaa_fb_->GetWidth(), msaa_fb_->GetHeight());
 }
 
-FrameBuffer * MsaaResolve::Apply(TextureCache & texture_cache, 
+void MsaaResolve::Apply(TextureCache & texture_cache, 
 	ProgramCache & program_cache, 
 	SamplerCache & sampler_cache, 
 	BlendCache & blend_cache, 
 	FrameBufferCache & frame_buffer_cache)
 {
 
-	auto &fbo0 = frame_buffer_cache.GetFromName("offscreen_4x_msaa");
-	auto &fbo1 = frame_buffer_cache.GetFromName("offscreen_4x_resolve");
+	msaa_fb_->UnbindDraw();
+	msaa_fb_->BindRead();
 
-	fbo0.UnbindDraw();
-	fbo1.UnbindRead();
+	resolve_fb_->UnbindRead();
+	resolve_fb_->BindDraw(GL_COLOR_BUFFER_BIT, 0, 0, 0, 1);
 
-	fbo0.BindRead();
-	fbo1.BindDraw(GL_COLOR_BUFFER_BIT, 0, 0, 0, 1);
-
-	pipeline_.Bind();
-
-	glProgramUniform1i(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
-		"u_num_samples"), fbo0.GetNumSamples()); 
-
-	glProgramUniform2iv(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
-		"u_resolution"), 1, glm::value_ptr(glm::ivec2(fbo0.GetWidth(), fbo0.GetHeight())));
-
-	size_t attachments = fbo0.GetColorAttachmentCount();
+	size_t attachments = msaa_fb_->GetColorAttachmentCount();
 
 	for (int i = 0; i < (int)attachments; ++i)
 	{
-		fbo0.BindColorAttachment(i, i);
-		std::string name = "u_color_attach" + std::to_string(i);
-
-		GLint location = glGetUniformLocation(fragment_shader_->id,
-			name.c_str());
-		glProgramUniform1i(fragment_shader_->id, location, i);
+		msaa_fb_->BindColorAttachment(i, i);
 	}
-	
-	if (fbo0.HasDepthStencil())
+
+	if (msaa_fb_->HasDepthStencil())
 	{
-		fbo0.BindDepthStencilAttachment((int)attachments);
-		std::string name = "u_depth_attach";
-		GLint location = glGetUniformLocation(fragment_shader_->id,
-			name.c_str());
-		glProgramUniform1i(fragment_shader_->id, location, (int)attachments);
+		msaa_fb_->BindDepthStencilAttachment((int)attachments);
 	}
 
+	pipeline_.Bind();
 	this->Render();
-
 	pipeline_.Unbind();
 
-	fbo0.UnbindRead();
-	fbo1.UnbindDraw();
-
-	return &fbo1;
+	msaa_fb_->UnbindRead();
+	resolve_fb_->UnbindDraw();
 }
 
 

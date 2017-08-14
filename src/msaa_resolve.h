@@ -7,9 +7,18 @@ namespace graphics
 	class MsaaResolve : public PostProcessEffect
 	{
 
+		const std::string v_name_ = "msaa_resolve.vert";
+		const std::string f_name_ = "msaa_resolve.frag";
+		const std::string v_path_ = "assets/shaders/msaa_resolve.vert";
+		const std::string f_path_ = "assets/shaders/msaa_resolve.frag";
+
 		const Program * vertex_shader_;
 		const Program * fragment_shader_;
+
 		ProgramPipeline pipeline_;
+
+		FrameBuffer * msaa_fb_;
+		FrameBuffer * resolve_fb_;
 
 	public:
 
@@ -25,7 +34,7 @@ namespace graphics
 			FrameBufferCache & frame_buffer_cache) override;
 
 		// Inherited via PostProcessEffect
-		virtual FrameBuffer * Apply(TextureCache & texture_cache,
+		virtual void Apply(TextureCache & texture_cache,
 			ProgramCache & program_cache,
 			SamplerCache & sampler_cache,
 			BlendCache & blend_cache,

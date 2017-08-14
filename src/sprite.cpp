@@ -2,8 +2,8 @@
 
 using namespace graphics;
 
-Sprite::Sprite(glm::mat4 transform, size_t layer) :
-	transform_(transform), layer_(layer)
+Sprite::Sprite(glm::mat4 transform, size_t layer) :  
+	transform_(transform), layer_(layer) 
 {
 }
 

@@ -1,6 +1,12 @@
 #include "renderer.h"
 
+#include "msaa_resolve.h"
+#include "postfx.h"
+
 using namespace graphics;
+
+const std::string Renderer::offscreen_msaa_name = "offscreen_4x_msaa";
+const std::string Renderer::offscreen_resolve_name = "offscreen_4x_resolve";
 
 Renderer::Renderer(GraphicsBase *graphics_base) :
 	graphics_base_(graphics_base)
@@ -27,31 +33,32 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	descriptor.internal_format = GL_RGBA16F;
 	descriptor.type = GL_FLOAT;
 
-	descriptors.push_back(descriptor);
-
 	FrameBufferAttachmentDescriptor depth_stencil_descriptor;
 	depth_stencil_descriptor.format = GL_DEPTH_COMPONENT;
 	depth_stencil_descriptor.internal_format = GL_DEPTH_COMPONENT16;
 	depth_stencil_descriptor.type = GL_FLOAT;
-
-	frame_buffer_cache_->GetFromParameters("offscreen_4x_msaa", offscreen_4x_msaa_hash_,
-		graphics_base_->GetBackbufferWidth(),
-		graphics_base_->GetBackbufferHeight(),
-		4, descriptors, &depth_stencil_descriptor);
 
 	FrameBufferAttachmentDescriptor depth_stencil_color_descriptor;
 	depth_stencil_color_descriptor.format = GL_RED;
 	depth_stencil_color_descriptor.internal_format = GL_R16F;
 	depth_stencil_color_descriptor.type = GL_FLOAT;
 
+	descriptors.push_back(descriptor);
+
+	size_t h;
+
+	msaa_fb_ = &frame_buffer_cache_->GetFromParameters(offscreen_msaa_name, h,
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
+		4, descriptors, &depth_stencil_descriptor);
+	
 	descriptors.push_back(depth_stencil_color_descriptor);
 
-	frame_buffer_cache_->GetFromParameters("offscreen_4x_resolve", offscreen_4x_resolve_hash_,
-		graphics_base_->GetBackbufferWidth(),
-		graphics_base_->GetBackbufferHeight(),
+	resolve_fb_ = &frame_buffer_cache_->GetFromParameters(offscreen_resolve_name, h,
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
 		0, descriptors, nullptr);
 
 	post_processing_->Add(std::move(std::make_unique<MsaaResolve>()));
+	post_processing_->Add(std::move(std::make_unique<PostFx>()));
 }
 
 Renderer::~Renderer()
@@ -60,30 +67,16 @@ Renderer::~Renderer()
 
 void Renderer::Invoke()
 {
-	// Clear current framebuffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 	// Set depth test to false 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
 
 	// Draw sprites to MSAA offscreen buffer
-	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).BindDraw(
-		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
+	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
 	sprite_renderer_->Draw();
 	font_renderer_->Draw();
-	frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).UnbindDraw();
-
-	// TODO: Font, GUI and post processing happens between here
-
-	/*frame_buffer_cache_->GetFromHash(offscreen_4x_msaa_hash_).Blit(
-		0, graphics_base_->GetBackbufferWidth(),
-		0, graphics_base_->GetBackbufferHeight(),
-		0, graphics_base_->GetBackbufferWidth(),
-		0, graphics_base_->GetBackbufferHeight(),
-		nullptr);*/
+	msaa_fb_->UnbindDraw();
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);

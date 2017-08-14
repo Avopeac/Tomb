@@ -32,7 +32,7 @@ namespace graphics
 			BlendCache &blend_cache,
 			FrameBufferCache &frame_buffer_cache) = 0;
  
-		virtual FrameBuffer * Apply(TextureCache &texture_cache,
+		virtual void Apply(TextureCache &texture_cache,
 			ProgramCache &program_cache,
 			SamplerCache &sampler_cache,
 			BlendCache &blend_cache,

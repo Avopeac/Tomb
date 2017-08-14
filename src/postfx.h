@@ -4,24 +4,32 @@
 
 namespace graphics
 {
-	class Passthrough : public PostProcessEffect
+	class PostFx : public PostProcessEffect
 	{
+		const std::string v_name_ = "postfx.vert";
+		const std::string f_name_ = "postfx.frag";
+		const std::string v_path_ = "assets/shaders/postfx.vert";
+		const std::string f_path_ = "assets/shaders/postfx.frag";
+
 		const Program * vertex_shader_;
 		const Program * fragment_shader_;
+
 		ProgramPipeline pipeline_;
+
+		FrameBuffer * fbo0_;
 
 	public:
 
-		Passthrough();
+		PostFx();
 
-		~Passthrough();
+		~PostFx();
 
 		// Inherited via PostProcessEffect
 		virtual void Init(TextureCache & texture_cache, ProgramCache & program_cache, 
 			SamplerCache & sampler_cache, BlendCache & blend_cache,
 			FrameBufferCache & frame_buffer_cache) override;
 
-		virtual FrameBuffer * Apply(TextureCache & texture_cache, ProgramCache & program_cache, 
+		virtual void Apply(TextureCache & texture_cache, ProgramCache & program_cache, 
 			SamplerCache & sampler_cache, BlendCache & blend_cache, 
 			FrameBufferCache & frame_buffer_cache) override;
 

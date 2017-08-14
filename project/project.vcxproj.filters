@@ -59,7 +59,7 @@
     <ClCompile Include="..\src\msaa_resolve.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\passthrough.cpp">
+    <ClCompile Include="..\src\postfx.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,7 +136,7 @@
     <ClInclude Include="..\src\msaa_resolve.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\passthrough.h">
+    <ClInclude Include="..\src\postfx.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
