@@ -16,6 +16,7 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	sampler_cache_ = std::make_unique<SamplerCache>();
 	blend_cache_ = std::make_unique<BlendCache>();
 	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
+	mesh_cache_ = std::make_unique<MeshCache>();
 
 	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_, *texture_cache_,
 		*program_cache_, *sampler_cache_, *blend_cache_, *frame_buffer_cache_);
@@ -59,23 +60,34 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 
 	post_processing_->Add(std::move(std::make_unique<MsaaResolve>()));
 	post_processing_->Add(std::move(std::make_unique<PostFx>()));
+
+	//cube_ = std::make_unique<Cube>(*graphics_base_, *texture_cache_,
+		//*sampler_cache_, *frame_buffer_cache_, *program_cache_, *blend_cache_);
+
+	//cube_->Init();
+
+	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
+		*sampler_cache_, *blend_cache_, *mesh_cache_);
+
+	mesh_renderer_->Push("cube", "assets/models/sphere.obj");
 }
 
 Renderer::~Renderer()
 {
 }
 
-void Renderer::Invoke()
+void Renderer::Invoke(float frame_time)
 {
-	// Set depth test to false 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
 
 	// Draw sprites to MSAA offscreen buffer
 	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
-	sprite_renderer_->Draw();
-	font_renderer_->Draw();
+	mesh_renderer_->Draw(frame_time);
+	//cube_->Render(frame_time);
+	//sprite_renderer_->Draw();
+	//font_renderer_->Draw();
 	msaa_fb_->UnbindDraw();
 
 	glDisable(GL_DEPTH_TEST);

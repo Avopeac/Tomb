@@ -12,6 +12,9 @@
 //#include "font_renderer.h"
 #include "font_renderer_individual.h"
 #include "post_processing.h"
+#include "cube.h"
+#include "mesh.h"
+#include "mesh_renderer.h"
 
 #define SPRITE_INSTANCES_PER_BATCH 4000
 
@@ -29,11 +32,16 @@ namespace graphics
 		std::unique_ptr<BlendCache> blend_cache_;
 		std::unique_ptr<PostProcessing> post_processing_;
 		std::unique_ptr<SpriteRenderer> sprite_renderer_;
+		std::unique_ptr<MeshCache> mesh_cache_;
 		//std::unique_ptr<FontRenderer> font_renderer_;
 		std::unique_ptr<FontRendererIndividual> font_renderer_;
+		std::unique_ptr<MeshRenderer> mesh_renderer_;
 
 		FrameBuffer * msaa_fb_;
 		FrameBuffer * resolve_fb_;
+
+		// 3D test
+		//std::unique_ptr<Cube> cube_;
 
 	public:
 
@@ -50,7 +58,7 @@ namespace graphics
 
 		inline PostProcessing &GetPostProcessing() { return *post_processing_; }
 
-		void Invoke();
+		void Invoke(float frame_time);
 
 	};
 }

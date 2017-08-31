@@ -72,7 +72,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>tinyobjloader_deb.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
@@ -106,7 +106,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>tinyobjloader_rel.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
+    <ClCompile Include="..\src\cube.cpp" />
     <ClCompile Include="..\src\file.cpp" />
     <ClCompile Include="..\src\font_renderer.cpp" />
     <ClCompile Include="..\src\font_renderer_individual.cpp" />
@@ -132,6 +133,8 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\maplogic.cpp" />
     <ClCompile Include="..\src\mapmodel.cpp" />
+    <ClCompile Include="..\src\mesh.cpp" />
+    <ClCompile Include="..\src\mesh_renderer.cpp" />
     <ClCompile Include="..\src\msaa_resolve.cpp" />
     <ClCompile Include="..\src\postfx.cpp" />
     <ClCompile Include="..\src\post_processing.cpp" />
@@ -146,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\blend_mode.h" />
     <ClInclude Include="..\src\config.h" />
+    <ClInclude Include="..\src\cube.h" />
     <ClInclude Include="..\src\disposable.h" />
     <ClInclude Include="..\src\font_renderer.h" />
     <ClInclude Include="..\src\font_renderer_individual.h" />
@@ -158,6 +162,8 @@
     <ClInclude Include="..\src\maplogic.h" />
     <ClInclude Include="..\src\mapmodel.h" />
     <ClInclude Include="..\src\mapview.h" />
+    <ClInclude Include="..\src\mesh.h" />
+    <ClInclude Include="..\src\mesh_renderer.h" />
     <ClInclude Include="..\src\msaa_resolve.h" />
     <ClInclude Include="..\src\postfx.h" />
     <ClInclude Include="..\src\post_processing.h" />

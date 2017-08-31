@@ -39,7 +39,7 @@ namespace game
 				HexCoordinate hex = it->first;
 
 				glm::vec3 position = glm::vec3(glm::vec2(map_offset_x, map_offset_y) + logic_.AxialToCartesian(hex, size), 0);
-
+				   
 				auto transform = glm::translate(scale, position);
 
 				graphics::Sprite sprite(transform, 0);
@@ -47,9 +47,9 @@ namespace game
 					graphics::SpriteShape::SharpHex,
 					"assets/textures/sand/sand_08.png",
 					graphics::BlendMode::SrcAlpha,
-					graphics::BlendMode::OneMinusSrcAlpha,
+					graphics::BlendMode::OneMinusSrcAlpha,   
 					graphics::BlendMode::SrcAlpha, 
-					graphics::BlendMode::OneMinusSrcAlpha,
+					graphics::BlendMode::OneMinusSrcAlpha, 
 					graphics::MagnificationFiltering::Linear,
 					graphics::MinificationFiltering::LinearMipmapLinear,
 					graphics::Wrapping::ClampToEdge,

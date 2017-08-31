@@ -50,20 +50,20 @@ void PostFx::Apply(TextureCache & texture_cache, ProgramCache & program_cache,
 
 	for (int i = 0; i < (int)num_attachments; ++i)
 	{
-		fbo0_->BindColorAttachment(i, i);
+		fbo0_->BindColorAttachment(i, i); 
 	}
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDrawBuffer(GL_BACK);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);   
+	glDrawBuffer(GL_BACK); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
-	 
-	glProgramUniform1f(fragment_shader_->id,
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);  
+	   
+	glProgramUniform1f(fragment_shader_->id,  
 		glGetUniformLocation(fragment_shader_->id, "u_time"), (float)util::GetSeconds());
+	       
+	pipeline_.Bind();  
+	this->Render();   
+	pipeline_.Unbind();    
 	 
-	pipeline_.Bind();
-	this->Render();
-	pipeline_.Unbind();  
-
-	fbo0_->UnbindRead(); 
+	fbo0_->UnbindRead();     
 } 

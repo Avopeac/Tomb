@@ -31,13 +31,13 @@ namespace graphics
 			SamplerCache &sampler_cache,
 			BlendCache &blend_cache,
 			FrameBufferCache &frame_buffer_cache) = 0;
- 
+
 		virtual void Apply(TextureCache &texture_cache,
 			ProgramCache &program_cache,
 			SamplerCache &sampler_cache,
 			BlendCache &blend_cache,
 			FrameBufferCache &frame_buffer_cache) = 0;
-		
+
 		static void Init(const GraphicsBase &graphics_base);
 
 		static void Render();

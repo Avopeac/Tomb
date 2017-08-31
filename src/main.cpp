@@ -45,7 +45,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	while(running)
 	{
 		double current_time = util::GetSeconds();
-		double frame_time = 1000.0 * (current_time - previous_time);
+		double frame_time = current_time - previous_time;
 		previous_time = current_time;
 
 		SDL_Event event;
@@ -71,7 +71,7 @@ Sint32 main(Sint32 argc, char * argv[])
 		//renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
 			//glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
 
-		renderer.Invoke();
+		renderer.Invoke((float)frame_time);
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
 	}

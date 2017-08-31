@@ -70,7 +70,7 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 
 	width_ = config.GetWindowWidth();
 	height_ = config.GetWindowHeight();
-	near_ = 0.0f;
+	near_ = 0.01f;
 	far_ = 1.0f;
 
 	projection_ = glm::ortho(
@@ -81,9 +81,9 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 
 	// TODO: View matrix should be manipulated by camera later on
 	view_ = glm::mat4(1);
-	view_projection_ = projection_ * view_;
-}
-
+	view_projection_ = projection_ * view_;   
+}  
+ 
 GraphicsBase::~GraphicsBase()
 {
 	SDL_GL_DeleteContext(context_);

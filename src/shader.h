@@ -6,6 +6,7 @@
 #include "GL/glew.h"
 
 #include "logger.h"
+#include "graphics.h"
 
 namespace graphics
 {
@@ -41,9 +42,7 @@ namespace graphics
 
 		ProgramCache();
 
-		~ProgramCache();
-
-		//Program CompileFromFile(GLenum programType, const std::string &path);
+		~ProgramCache(); 
 
 		const Program &GetFromFile(const std::string &name, size_t &out_hash, 
 			GLenum program_type, const std::string &path);

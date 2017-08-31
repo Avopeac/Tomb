@@ -9,6 +9,7 @@ using namespace graphics;
 
 ProgramCache::ProgramCache()
 {
+
 }
 
 ProgramCache::~ProgramCache()
@@ -97,29 +98,6 @@ const Program & ProgramCache::GetFromFile(const std::string & name,
 	program.flag = program_type;
 	programs_.insert({ program.hash, program });
 	out_hash = program.hash;
-	
-	/*Program program;
-	program.id = glCreateShaderProgramv(program_type, 1, &source_ptr);
-
-	GLint link_status;
-	glGetProgramiv(program.id, GL_LINK_STATUS, &link_status);
-	if (link_status == GL_FALSE)
-	{
-		GLint info_log_length;
-		glGetProgramiv(program.id, GL_INFO_LOG_LENGTH, &info_log_length);
-		if (info_log_length > 0)
-		{
-			GLchar log[512];
-			glGetProgramInfoLog(program.id, info_log_length, 0, log);
-			debug::Log(SDL_LOG_PRIORITY_WARN, SDL_LOG_CATEGORY_RENDER, (const char *)log);
-		}
-	}
-
-	program.flag = program_type;
-	program.hash = std::hash<std::string>{}(name);
-	programs_.insert({ program.hash, program });
-
-	out_hash = program.hash;*/
 
 	return programs_[out_hash];
 }
