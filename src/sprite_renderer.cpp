@@ -117,7 +117,7 @@ void SpriteRenderer::Draw()
 	glProgramUniform2f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_mouse"), normalized_x, normalized_y);
 
 	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
-		GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
+		GL_FALSE, glm::value_ptr(graphics_base_.GetOrthoViewProj()));
 
 	DrawBatchObject_(sharp_hex_objects, sharp_hex_sprite_batches_);
 	DrawBatchObject_(flat_hex_objects, flat_hex_sprite_batches_);

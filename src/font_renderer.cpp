@@ -103,7 +103,7 @@ void FontRenderer::Draw()
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
 	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
 	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
-		GL_FALSE, glm::value_ptr(graphics_base_.GetViewProjection()));
+		GL_FALSE, glm::value_ptr(graphics_base_.GetOrthoViewProj()));
 
 
 	for (auto &text : render_texts_)

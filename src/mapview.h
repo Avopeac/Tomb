@@ -15,10 +15,15 @@ namespace game
 
 		const MapLogic &logic_;
 
+		size_t texture_hash_;
+
+		size_t hex_mesh_hash_;
+
+
 	public:
 
 		MapView(const MapModel &model, const MapLogic &logic) :
-			model_(model), logic_(logic)
+			model_(model), logic_(logic), texture_hash_(0), hex_mesh_hash_(0)
 		{
 		}
 
@@ -26,36 +31,18 @@ namespace game
 
 		void Update(graphics::Renderer &renderer, float delta_time)
 		{
-
-			const float size = 16.0f;
-			const float height = size * 2.0f;
-			const float width = glm::sqrt(3.0f) * 0.5f * height;
-			const float map_offset_x = 16.0f;
-			const float map_offset_y = 16.0f;
-
-			auto scale = glm::scale(glm::mat4(1), glm::vec3(width, height, 1));
-			for (auto it = model_.GetTileBeginIterator(); it != model_.GetTileEndIterator(); ++it)
+			if (texture_hash_ == 0 && hex_mesh_hash_ == 0)
 			{
-				HexCoordinate hex = it->first;
-
-				glm::vec3 position = glm::vec3(glm::vec2(map_offset_x, map_offset_y) + logic_.AxialToCartesian(hex, size), 0);
-				   
-				auto transform = glm::translate(scale, position);
-
-				graphics::Sprite sprite(transform, 0);
-				renderer.GetSpriteRenderer().Push(sprite,
-					graphics::SpriteShape::SharpHex,
-					"assets/textures/sand/sand_08.png",
-					graphics::BlendMode::SrcAlpha,
-					graphics::BlendMode::OneMinusSrcAlpha,   
-					graphics::BlendMode::SrcAlpha, 
-					graphics::BlendMode::OneMinusSrcAlpha, 
-					graphics::MagnificationFiltering::Linear,
-					graphics::MinificationFiltering::LinearMipmapLinear,
-					graphics::Wrapping::ClampToEdge,
-					graphics::Wrapping::ClampToEdge);
-
+				renderer.GetMeshCache().GetFromFile(hex_mesh_hash_, "hex", "assets/models/hex.obj");
+				renderer.GetTextureCache().GetFromFile(texture_hash_, "assets/textures/smiley.png");
 			}
+
+			for (int i = 0; i < 4; ++i)
+			{
+				glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(2.0f * i, 0, -5)) * glm::rotate(glm::mat4(1), glm::radians(45.0f), glm::vec3(1,0,0));
+				renderer.GetMeshRenderer().Push(hex_mesh_hash_, texture_hash_, model, glm::vec4(1, 0, 1, 1));
+			}
+
 		}
 	};
 }

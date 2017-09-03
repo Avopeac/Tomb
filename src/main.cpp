@@ -36,7 +36,7 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	// TESTING: Map shapes
 	game::MapLogic logic;
-	game::MapModel model(32, 32, game::MapShapeType::FlatHexagon, logic);
+	game::MapModel model(2, 2, game::MapShapeType::FlatHexagon, logic);
 	game::MapView view(model, logic);
 		
 	// Main loop
@@ -70,7 +70,7 @@ Sint32 main(Sint32 argc, char * argv[])
 
 		//renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
 			//glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
-
+				
 		renderer.Invoke((float)frame_time);
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());

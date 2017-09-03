@@ -13,6 +13,15 @@
 
 namespace graphics
 {
+
+	struct MeshRenderInstance
+	{
+		Texture * texture;
+		glm::mat4 model;
+		glm::vec4 color;
+		Mesh * mesh;
+	};
+
 	class MeshRenderer
 	{
 		const size_t max_instances_ = 2048;
@@ -35,10 +44,7 @@ namespace graphics
 
 		MeshCache & mesh_cache_;
 
-		std::vector<Mesh *> meshes_;
-
-		glm::mat4 view_;
-		glm::mat4 proj_;
+		std::vector<MeshRenderInstance> meshes_;
 
 	public:
 
@@ -47,8 +53,8 @@ namespace graphics
 
 		~MeshRenderer();
 
-		void Push(const std::string &name, const std::string &path);
+		void Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model, const glm::vec4 &color);
 
-		void Draw(float frame_time);
+		void Draw();
 	};
 }

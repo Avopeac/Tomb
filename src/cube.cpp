@@ -122,7 +122,7 @@ void Cube::Render(float frame_time)
 		1, GL_FALSE, glm::value_ptr(mvp));
 
 	glBindVertexArray(vao_);
-	glDrawElements(GL_TRIANGLES, num_indices_, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, (GLsizei)num_indices_, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0); 
 	pipeline_.Unbind();
 

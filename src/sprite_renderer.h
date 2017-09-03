@@ -36,7 +36,6 @@ namespace graphics
 		SharpHex
 	};
 
-
 	struct SpriteRendererBatchObjects
 	{
 		GLuint vertex_array = 0;

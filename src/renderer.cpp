@@ -61,15 +61,18 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	post_processing_->Add(std::move(std::make_unique<MsaaResolve>()));
 	post_processing_->Add(std::move(std::make_unique<PostFx>()));
 
-	//cube_ = std::make_unique<Cube>(*graphics_base_, *texture_cache_,
-		//*sampler_cache_, *frame_buffer_cache_, *program_cache_, *blend_cache_);
 
-	//cube_->Init();
+	size_t hex_hash;
+	mesh_cache_->GetFromFile(hex_hash, "hex", "assets/models/hex.obj");
+
+	size_t hex_texture_hash;
+	texture_cache_->GetFromFile(hex_texture_hash, "assets/textures/smiley.png");
 
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
 		*sampler_cache_, *blend_cache_, *mesh_cache_);
 
-	mesh_renderer_->Push("cube", "assets/models/sphere.obj");
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK); 
 }
 
 Renderer::~Renderer()
@@ -81,10 +84,10 @@ void Renderer::Invoke(float frame_time)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
-
+	
 	// Draw sprites to MSAA offscreen buffer
 	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
-	mesh_renderer_->Draw(frame_time);
+	mesh_renderer_->Draw();
 	//cube_->Render(frame_time);
 	//sprite_renderer_->Draw();
 	//font_renderer_->Draw();

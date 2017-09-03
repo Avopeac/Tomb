@@ -30,18 +30,15 @@ namespace graphics
 		std::unique_ptr<SamplerCache> sampler_cache_;
 		std::unique_ptr<ProgramCache> program_cache_;
 		std::unique_ptr<BlendCache> blend_cache_;
-		std::unique_ptr<PostProcessing> post_processing_;
-		std::unique_ptr<SpriteRenderer> sprite_renderer_;
 		std::unique_ptr<MeshCache> mesh_cache_;
-		//std::unique_ptr<FontRenderer> font_renderer_;
-		std::unique_ptr<FontRendererIndividual> font_renderer_;
+		
+		std::unique_ptr<SpriteRenderer> sprite_renderer_;
 		std::unique_ptr<MeshRenderer> mesh_renderer_;
+		std::unique_ptr<PostProcessing> post_processing_;
+		std::unique_ptr<FontRendererIndividual> font_renderer_;
 
 		FrameBuffer * msaa_fb_;
 		FrameBuffer * resolve_fb_;
-
-		// 3D test
-		//std::unique_ptr<Cube> cube_;
 
 	public:
 
@@ -54,9 +51,23 @@ namespace graphics
 
 		inline SpriteRenderer &GetSpriteRenderer() { return *sprite_renderer_; }
 
+		inline MeshRenderer &GetMeshRenderer() { return *mesh_renderer_; }
+
 		inline FontRendererIndividual &GetFontRenderer() { return *font_renderer_; }
 
 		inline PostProcessing &GetPostProcessing() { return *post_processing_; }
+
+		inline FrameBufferCache &GetFrameBufferCache() { return *frame_buffer_cache_; }
+
+		inline TextureCache &GetTextureCache() { return *texture_cache_; }
+
+		inline SamplerCache &GetSamplerCache() { return *sampler_cache_; }
+
+		inline ProgramCache &GetProgramCache() { return *program_cache_; }
+
+		inline BlendCache &GetBlendCache() { return *blend_cache_; }
+
+		inline MeshCache &GetMeshCache() { return *mesh_cache_; }
 
 		void Invoke(float frame_time);
 

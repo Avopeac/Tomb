@@ -70,18 +70,19 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 
 	width_ = config.GetWindowWidth();
 	height_ = config.GetWindowHeight();
-	near_ = 0.01f;
-	far_ = 1.0f;
+	
+	ortho_near_ = 0.01f;
+	ortho_far_ = 1.0f;
+	ortho_proj_ = glm::ortho(0.0f, (float)config.GetWindowWidth(), 0.0f, (float)config.GetWindowHeight(), ortho_near_, ortho_far_ );
+	ortho_view_ = glm::mat4(1);
+	ortho_view_proj_ = ortho_proj_ * ortho_view_;   
 
-	projection_ = glm::ortho(
-		0.0f, (float)config.GetWindowWidth(),
-		0.0f, (float)config.GetWindowHeight(),
-		near_, far_
-	);
+	persp_near_ = 0.01f;
+	persp_far_ = 1000.0f;
+	persp_proj_ = glm::perspective(glm::radians(60.0f), (float)config.GetWindowWidth() / config.GetWindowHeight(), persp_near_, persp_far_);
+	persp_view_ = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+	persp_view_proj_ = persp_proj_ * persp_view_;
 
-	// TODO: View matrix should be manipulated by camera later on
-	view_ = glm::mat4(1);
-	view_projection_ = projection_ * view_;   
 }  
  
 GraphicsBase::~GraphicsBase()

@@ -17,12 +17,18 @@ namespace graphics
 
 		Uint32 width_;
 		Uint32 height_;
-		float near_;
-		float far_;
+		
+		float ortho_near_;
+		float ortho_far_;
+		glm::mat4 ortho_proj_;
+		glm::mat4 ortho_view_;
+		glm::mat4 ortho_view_proj_;
 
-		glm::mat4 projection_;
-		glm::mat4 view_;
-		glm::mat4 view_projection_;
+		float persp_near_;
+		float persp_far_;
+		glm::mat4 persp_proj_;
+		glm::mat4 persp_view_;
+		glm::mat4 persp_view_proj_;
 
 	public:
 
@@ -71,7 +77,6 @@ namespace graphics
 			2, 1, 3
 		};
 
-
 		GraphicsBase(const input::Config &config);
 
 		~GraphicsBase();
@@ -82,11 +87,17 @@ namespace graphics
 
 		inline Uint32 GetBackbufferHeight() const { return height_; }
 
-		inline glm::mat4 GetProjection() const { return projection_; }
+		inline glm::mat4 GetOrthoProj() const { return ortho_proj_; }
 
-		inline glm::mat4 GetView() const { return view_; }
+		inline glm::mat4 GetOrthoView() const { return ortho_view_; }
 
-		inline glm::mat4 GetViewProjection() const { return view_projection_; }
+		inline glm::mat4 GetOrthoViewProj() const { return ortho_view_proj_; }
+
+		inline glm::mat4 GetPerspProj() const { return persp_proj_; }
+
+		inline glm::mat4 GetPerspView() const { return persp_view_; }
+
+		inline glm::mat4 GetPerspViewProj() const { return persp_view_proj_; }
 
 		void Log();
 

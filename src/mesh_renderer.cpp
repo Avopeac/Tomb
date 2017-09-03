@@ -22,69 +22,64 @@ MeshRenderer::MeshRenderer(GraphicsBase & graphics_base,
 
 	pipeline_.SetStages(vertex_program_);
 	pipeline_.SetStages(fragment_program_);
-
-	view_ = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
-	proj_ = glm::perspective(glm::radians(60.0f),
-		(float)graphics_base_.GetBackbufferWidth() / graphics_base_.GetBackbufferHeight(),
-		0.01f, 1000.0f);
 }
 
 MeshRenderer::~MeshRenderer()
 {
 }
 
-void MeshRenderer::Push(const std::string & name, const std::string & path)
+void MeshRenderer::Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model, const glm::vec4 &color)
 {
-	size_t h;
-	meshes_.push_back(&mesh_cache_.GetFromFile(h, name, path));
+	MeshRenderInstance instance;
+	instance.color = color;
+	instance.mesh = &mesh_cache_.GetFromHash(mesh_hash);
+	instance.model = model;
+	instance.texture = &texture_cache_.GetFromHash(texture_hash);
+
+	meshes_.push_back(instance);
 }
 
-void MeshRenderer::Draw(float frame_time)
+void MeshRenderer::Draw()
 {
-	static double angle = 0.0;
-	angle += frame_time;
-
 	pipeline_.Bind();
 
-	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0, 0, -5.0)) *
-		glm::rotate(glm::mat4(1), glm::two_pi<float>() * glm::sin(100.0f * (float)angle),
-			glm::vec3(0, 1, 0));
+	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_proj"), 
+		1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspProj()));
 
-	glm::mat4 mvp = proj_ * view_ * model;
-	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_mvp"),
-		1, GL_FALSE, glm::value_ptr(mvp));
+	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_view"), 
+		1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspView())); 
 
-	glFrontFace(GL_CW);
-	glCullFace(GL_BACK);
+	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_vp"),
+		1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspViewProj()));
 
 	for (int i = 0; i < meshes_.size(); ++i)
 	{
-		auto * mesh = meshes_[i];
+		auto &instance = meshes_[i];
 
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
-		//uint32_t * ptr = (uint32_t*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_READ_ONLY);
-		//glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		
+		glm::mat4 mvp = graphics_base_.GetPerspViewProj() * instance.model;
 
-		glBindVertexArray(mesh->vao);
+		glm::mat4 normal_matrix = glm::inverse(glm::transpose(graphics_base_.GetPerspView() * instance.model));
+
+		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_mvp"),
+			1, GL_FALSE, glm::value_ptr(mvp));
+
+		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_normal"),
+			1, GL_FALSE, glm::value_ptr(normal_matrix));
+
+		glProgramUniform4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_color"),
+			1, glm::value_ptr(instance.color));
+
+		glBindVertexArray(instance.mesh->vao);
 		size_t index_offset = 0;
-		for (Uint32 j = 0; j < mesh->num_meshes; ++j)
+		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)
 		{
-			glDrawElements(GL_TRIANGLES, (GLsizei)mesh->num_indices[j], GL_UNSIGNED_INT, (void*)index_offset);
-			//glDrawRangeElements(GL_TRIANGLES, index_offset, index_offset + mesh->num_indices[j], 
-				//mesh->num_indices[j], GL_UNSIGNED_INT, (void*)0);
-			//glDrawElements(GL_TRIANGLES, mesh->num_indices[j], GL_UNSIGNED_INT, (void*)0);
-			index_offset += meshes_[i]->num_indices[j] * sizeof(Uint32); 
-			//index_offset += meshes_[i]->num_indices[j];
+			glDrawElements(GL_TRIANGLES, (GLsizei)instance.mesh->num_indices[j], GL_UNSIGNED_INT, (void*)index_offset);
+			index_offset += instance.mesh->num_indices[j] * sizeof(Uint32); 
 		}
 	}
 	glBindVertexArray(0);
 
-	glCullFace(GL_NONE);
-	glFrontFace(GL_CCW);
-
 	pipeline_.Unbind();
 
-	
+	meshes_.clear();
 }
