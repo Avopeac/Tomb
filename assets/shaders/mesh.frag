@@ -17,13 +17,13 @@ void main()
 		vec3 h = normalize(v_direction - f_sun);
 		float ndoth = clamp(dot(f_normal, h), 0.0, 1.0);
 
-		intensity = pow(ndoth, 80.0);
+		intensity = pow(ndoth, 5.0);
 	}
 
 
 	vec3 ambient = f_color.rgb * 0.1;
 
-	vec3 specular_color = vec3(1,1,1);
+	vec3 specular_color = vec3(0.5, 0.01, 0.01);
 
 	o_color = vec4(ambient + ndotl * f_color.rgb + intensity * specular_color, f_color.a);
 }

@@ -77,12 +77,13 @@ void MeshRenderer::Draw()
 		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)
 		{
 			glDrawElements(GL_TRIANGLES, (GLsizei)instance.mesh->num_indices[j], GL_UNSIGNED_INT, (void*)index_offset);
-			index_offset += instance.mesh->num_indices[j] * sizeof(Uint32); 
-		}
-	}
+			index_offset += instance.mesh->num_indices[j] * sizeof(Uint32);
+		} 
+	} 
 	glBindVertexArray(0);
 
 	pipeline_.Unbind();
 
 	meshes_.clear();
+
 }

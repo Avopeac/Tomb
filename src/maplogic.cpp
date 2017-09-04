@@ -103,27 +103,27 @@ HexCubeCoordinate MapLogic::AxialToCube(HexCoordinate axial) const
 
 glm::vec2 MapLogic::AxialToCartesian(HexCoordinate axial, float size) const
 {
-	return { 2.0f * (axial.q + axial.r * 0.5f), 1.5f * axial.r };
+	return size * glm::vec2{ 2.0f * (axial.q + axial.r * 0.5f), 1.5f * axial.r };
 }
 
 glm::vec2 MapLogic::OddRowAxialToCartesian(HexCoordinate axial, float size) const
 {
-	return { sqrt3_ * (axial.q + 0.5 * (axial.r & 1)), 1.5f * axial.r };
+	return size * glm::vec2{ sqrt3_ * (axial.q + 0.5 * (axial.r & 1)), 1.5f * axial.r };
 }
 
 glm::vec2 MapLogic::OddColumnAxialToCartesian(HexCoordinate axial, float size) const
 {
-	return { size * 1.5f * axial.q, size * sqrt3_ * (axial.r + 0.5 * (axial.q & 1)) };
+	return size * glm::vec2{ 1.5f * axial.q, sqrt3_ * (axial.r + 0.5 * (axial.q & 1)) };
 }
 
 glm::vec2 MapLogic::EvenRowAxialToCartesian(HexCoordinate axial, float size) const
 {
-	return { size * sqrt3_ * (axial.q - 0.5 * (axial.r & 1)), size * 1.5f * axial.r };
+	return size * glm::vec2{ sqrt3_ * (axial.q - 0.5 * (axial.r & 1)), 1.5f * axial.r };
 }
 
 glm::vec2 MapLogic::EvenColumnAxialToCartesian(HexCoordinate axial, float size) const
 {
-	return { size * 1.5f * axial.q, size * sqrt3_ * (axial.r - 0.5 * (axial.q & 1)) };
+	return size * glm::vec2{ 1.5f * axial.q, sqrt3_ * (axial.r - 0.5 * (axial.q & 1)) };
 }
 
 HexCoordinate game::MapLogic::CartesianToAxial(glm::vec2, float size) const

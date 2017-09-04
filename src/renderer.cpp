@@ -82,11 +82,12 @@ Renderer::~Renderer()
 void Renderer::Invoke(float frame_time)
 {
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
 	
 	// Draw sprites to MSAA offscreen buffer
-	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
+	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 1, 0, 1);
+
 	mesh_renderer_->Draw();
 	//cube_->Render(frame_time);
 	//sprite_renderer_->Draw();
