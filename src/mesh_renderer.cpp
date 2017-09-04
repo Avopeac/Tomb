@@ -63,6 +63,9 @@ void MeshRenderer::Draw()
 		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_mvp"),
 			1, GL_FALSE, glm::value_ptr(mvp));
 
+		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_model"),
+			1, GL_FALSE, glm::value_ptr(instance.model));
+
 		glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_normal"),
 			1, GL_FALSE, glm::value_ptr(normal_matrix));
 

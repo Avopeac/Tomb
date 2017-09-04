@@ -78,7 +78,7 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 	ortho_view_proj_ = ortho_proj_ * ortho_view_;   
 
 	persp_near_ = 0.01f;
-	persp_far_ = 1000.0f;
+	persp_far_ = 100.0f;
 	persp_proj_ = glm::perspective(glm::radians(60.0f), (float)config.GetWindowWidth() / config.GetWindowHeight(), persp_near_, persp_far_);
 	persp_view_ = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
 	persp_view_proj_ = persp_proj_ * persp_view_;
