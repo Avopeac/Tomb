@@ -49,6 +49,10 @@ namespace game
 
 		void Update(graphics::Renderer &renderer, float delta_time)
 		{
+
+			static float angle = 0.0f;
+			angle += 500.0f * delta_time;
+
 			if (hex_texture_hash_ == 0 && hex_mesh_hash_ == 0 && hex_vertex_hash_ == 0 && hex_fragment_hash_ == 0)
 			{
 				renderer.GetMeshCache().GetFromFile(hex_mesh_hash_, "hex", "assets/models/hex_1.obj");
@@ -68,8 +72,12 @@ namespace game
 				renderer.GetProgramCache().GetFromFile("ocean_mesh.frag", ocean_fragment_hash_, GL_FRAGMENT_SHADER, "assets/shaders/ocean_mesh.frag");
 			}
 
+			glm::mat4 rot_time = glm::rotate(glm::mat4(1), glm::radians(glm::two_pi<float>() * angle), glm::vec3(1, 0, 0));
+
+
 			glm::mat4 model =
 				glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, -1.0f)) *
+				rot_time *
 				glm::scale(glm::mat4(1), glm::vec3(1.0f));
 
 			renderer.GetMeshRenderer().Push(ocean_mesh_hash_, ocean_texture_hash_, ocean_vertex_hash_, ocean_fragment_hash_, model, glm::vec4(1));
@@ -80,6 +88,7 @@ namespace game
 				glm::vec2 pos = logic_.AxialToCartesian(hex, 0.05f);
 				glm::mat4 model = 
 					glm::translate(glm::mat4(1), glm::vec3(pos, -1.0f)) * 
+					rot_time *
 					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(0, 0, 1)) *
 					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)) * 
 					glm::scale(glm::mat4(1), glm::vec3(0.049f) * glm::vec3(1.0f, 1.0f, 1.0f));
