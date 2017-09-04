@@ -44,12 +44,12 @@ namespace graphics
 
 		~ProgramCache(); 
 
-		const Program &GetFromFile(const std::string &name, size_t &out_hash, 
+		Program &GetFromFile(const std::string &name, size_t &out_hash, 
 			GLenum program_type, const std::string &path);
 
-		const Program &GetFromName(const std::string &name);
+		Program &GetFromName(const std::string &name);
 
-		const Program &GetFromHash(size_t hash);
+		Program &GetFromHash(size_t hash);
 
 	};
 

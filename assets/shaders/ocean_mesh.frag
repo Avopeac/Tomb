@@ -3,8 +3,8 @@
 in vec3 v_direction;
 in vec2 v_texcoord;
 in flat vec3 f_sun;
-in flat vec3 f_normal;
-in flat vec4 f_color;
+in vec3 f_normal;
+in vec4 f_color;
 
 out vec4 o_color;
 

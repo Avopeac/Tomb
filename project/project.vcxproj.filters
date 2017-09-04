@@ -71,6 +71,9 @@
     <ClCompile Include="..\src\mesh_renderer.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\grid.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="..\src\mesh.h">
       <Filter>Source\Graphics.Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\grid.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

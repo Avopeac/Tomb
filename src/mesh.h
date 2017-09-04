@@ -52,6 +52,11 @@ namespace graphics
 		Mesh &GetFromFile(size_t &hash, const std::string &name, const std::string &file_path);
 
 		Mesh &GetFromHash(size_t hash);
+
+		Mesh &GetFromName(const std::string &name);
+
+		Mesh &GetFromData(size_t &hash, const std::string &name, 
+			const std::vector<Uint32> &indices, const std::vector<MeshVertex> &vertices);
 	};
 }
 

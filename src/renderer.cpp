@@ -61,13 +61,6 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	post_processing_->Add(std::move(std::make_unique<MsaaResolve>()));
 	post_processing_->Add(std::move(std::make_unique<PostFx>()));
 
-
-	size_t hex_hash;
-	mesh_cache_->GetFromFile(hex_hash, "hex", "assets/models/hex.obj");
-
-	size_t hex_texture_hash;
-	texture_cache_->GetFromFile(hex_texture_hash, "assets/textures/smiley.png");
-
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
 		*sampler_cache_, *blend_cache_, *mesh_cache_);
 
@@ -86,7 +79,7 @@ void Renderer::Invoke(float frame_time)
 	glDisable(GL_BLEND);
 	
 	// Draw sprites to MSAA offscreen buffer
-	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 1, 0, 1);
+	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.40f, 0.28f, 0.20f, 1.0f);
 
 	mesh_renderer_->Draw();
 	//cube_->Render(frame_time);

@@ -18,7 +18,7 @@ namespace graphics
 	{
 		glm::mat4 transform;
 		Uint32 layer;
-	};
+	}; 
 
 	struct SpriteBatch
 	{

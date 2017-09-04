@@ -141,3 +141,74 @@ Mesh & MeshCache::GetFromHash(size_t hash)
 
 	return meshes_[hash];
 }
+
+Mesh & MeshCache::GetFromName(const std::string & name)
+{
+	auto hash = std::hash<std::string>{}(name);
+	if (meshes_.find(hash) != meshes_.end())
+	{
+		return meshes_[hash];
+	}
+
+	assert(false);
+}
+
+Mesh & MeshCache::GetFromData(size_t &hash, const std::string &name,
+	const std::vector<Uint32> &indices, const std::vector<MeshVertex> &vertices)
+{
+	hash = std::hash<std::string>{}(name);
+	if (meshes_.find(hash) != meshes_.end())
+	{
+		return meshes_[hash];
+	}
+
+	meshes_.insert({ hash, Mesh() });
+
+	auto &mesh = meshes_[hash];
+	mesh.num_meshes = 1;
+	mesh.num_indices.push_back((Uint32)indices.size());
+
+	for (auto index : indices)
+	{
+		mesh.indices.push_back(index);
+	}
+
+	glGenBuffers(1, &mesh.vbo);
+	glGenBuffers(1, &mesh.ebo);
+	glGenVertexArrays(1, &mesh.vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Uint32) * mesh.indices.size(), mesh.indices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	Uint32 attrib_index = 0;
+
+	glBindVertexArray(mesh.vao);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(MeshVertex), (void*)offsetof(MeshVertex, position));
+	glVertexAttribDivisor(attrib_index, 0);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 3, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(MeshVertex), (void*)offsetof(MeshVertex, normal));
+	glVertexAttribDivisor(attrib_index, 0);
+	attrib_index++;
+
+	glEnableVertexAttribArray(attrib_index);
+	glVertexAttribPointer(attrib_index, 2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(MeshVertex), (void*)offsetof(MeshVertex, texcoord));
+	glVertexAttribDivisor(attrib_index, 0);
+	attrib_index++;
+
+	glBindVertexArray(0);
+
+	return meshes_[hash];
+}

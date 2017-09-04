@@ -129,6 +129,7 @@
     <ClCompile Include="..\src\font_renderer_individual.cpp" />
     <ClCompile Include="..\src\frame_buffer.cpp" />
     <ClCompile Include="..\src\graphics.cpp" />
+    <ClCompile Include="..\src\grid.cpp" />
     <ClCompile Include="..\src\json.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\maplogic.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\src\font_renderer_individual.h" />
     <ClInclude Include="..\src\frame_buffer.h" />
     <ClInclude Include="..\src\graphics.h" />
+    <ClInclude Include="..\src\grid.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\file.h" />

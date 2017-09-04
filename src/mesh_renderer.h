@@ -17,9 +17,23 @@ namespace graphics
 	struct MeshRenderInstance
 	{
 		Texture * texture;
+		Mesh * mesh;
+		Program * vertex;
+		Program * fragment;
 		glm::mat4 model;
 		glm::vec4 color;
-		Mesh * mesh;
+
+		bool operator<(const MeshRenderInstance &other) const
+		{
+			if (other.mesh == 0 || other.texture == 0 || other.vertex == 0 || other.fragment == 0)
+				return false;
+
+			return vertex->id < other.vertex->id &&
+				fragment->id < other.fragment->id &&
+				mesh->vao < other.mesh->vao;
+		
+			return false;
+		}
 	};
 
 	class MeshRenderer
@@ -53,7 +67,8 @@ namespace graphics
 
 		~MeshRenderer();
 
-		void Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model, const glm::vec4 &color);
+		void Push(size_t mesh_hash, size_t texture_hash, 
+			size_t vertex_hash, size_t fragment_hash, const glm::mat4 &model, const glm::vec4 &color);
 
 		void Draw();
 	};

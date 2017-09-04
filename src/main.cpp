@@ -38,7 +38,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	game::MapLogic logic;
 	game::MapModel model(4, 4, game::MapShapeType::FlatHexagon, logic);
 	game::MapView view(model, logic);
-		
+	
 	// Main loop
 	bool running = true;
 	double previous_time = util::GetSeconds();

@@ -19,7 +19,7 @@ SpriteRenderer::SpriteRenderer(size_t instances_per_batch, GraphicsBase & graphi
 	program_cache_(program_cache),
 	texture_cache_(texture_cache),
 	sampler_cache_(sampler_cache),
-	blend_cache_(blend_cache)
+	blend_cache_(blend_cache) 
 {
 
 
