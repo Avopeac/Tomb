@@ -64,14 +64,14 @@ void FontRendererIndividual::Draw()
 
 	pipeline_.Bind();
 
-	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
+	glProgramUniform1f(fragment_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_time"), static_cast<float>(util::GetSeconds()));
+	glProgramUniform1f(fragment_program_.GetId(), glGetUniformLocation(fragment_program_.GetId(), "u_time"), static_cast<float>(util::GetSeconds()));
+	glProgramUniformMatrix4fv(vertex_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_viewproj"), 1,
 		GL_FALSE, glm::value_ptr(graphics_base_.GetOrthoViewProj()));
 
 	for (auto &text : batch_)
 	{
-		glProgramUniform4fv(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_color"), 1,
+		glProgramUniform4fv(fragment_program_.GetId(), glGetUniformLocation(fragment_program_.GetId(), "u_color"), 1,
 			glm::value_ptr(text.color));
 
 		float offset = 0.0f;
@@ -90,11 +90,11 @@ void FontRendererIndividual::Draw()
 
 			glActiveTexture(GL_TEXTURE0 + 0);
 			glBindTexture(GL_TEXTURE_2D, glyph_textures_[glyph->texture_index]);
-			glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
-			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_position"), 1,
+			glProgramUniform1i(fragment_program_.GetId(), glGetUniformLocation(fragment_program_.GetId(), "u_texture"), 0);
+			glProgramUniform2fv(vertex_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_position"), 1,
 				glm::value_ptr(text.position));
-			glProgramUniform1f(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_xoffset"), offset);
-			glProgramUniform2fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_size"), 1,
+			glProgramUniform1f(vertex_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_xoffset"), offset);
+			glProgramUniform2fv(vertex_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_size"), 1,
 				glm::value_ptr(glyph_size));
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -102,9 +102,9 @@ void SpriteRenderer::Draw()
 
 	// Set standard uniforms
 	// TODO: Cache uniform locations at program creation
-	glProgramUniform1i(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_texture"), 0);
-	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(vertex_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
-	glProgramUniform1f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_time"), static_cast<float>(util::GetSeconds()));
+	glProgramUniform1i(fragment_program_.GetId(), glGetUniformLocation(fragment_program_.GetId(), "u_texture"), 0);
+	glProgramUniform1f(fragment_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_time"), static_cast<float>(util::GetSeconds()));
+	glProgramUniform1f(fragment_program_.GetId(), glGetUniformLocation(fragment_program_.GetId(), "u_time"), static_cast<float>(util::GetSeconds()));
 
 	int x, y;
 	SDL_GetMouseState(&x, &y);
@@ -114,9 +114,9 @@ void SpriteRenderer::Draw()
 	//std::string coordinate = std::to_string(normalized_x);
 	//coordinate.append(" " + std::to_string(normalized_y));
 	//debug::Log(SDL_LOG_PRIORITY_DEBUG, SDL_LOG_CATEGORY_INPUT, coordinate.c_str());
-	glProgramUniform2f(fragment_program_.id, glGetUniformLocation(fragment_program_.id, "u_mouse"), normalized_x, normalized_y);
+	glProgramUniform2f(fragment_program_.GetId(), glGetUniformLocation(fragment_program_.GetId(), "u_mouse"), normalized_x, normalized_y);
 
-	glProgramUniformMatrix4fv(vertex_program_.id, glGetUniformLocation(vertex_program_.id, "u_viewproj"), 1,
+	glProgramUniformMatrix4fv(vertex_program_.GetId(), glGetUniformLocation(vertex_program_.GetId(), "u_viewproj"), 1,
 		GL_FALSE, glm::value_ptr(graphics_base_.GetOrthoViewProj()));
 
 	DrawBatchObject_(sharp_hex_objects, sharp_hex_sprite_batches_);

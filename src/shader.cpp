@@ -9,14 +9,13 @@ using namespace graphics;
 
 ProgramCache::ProgramCache()
 {
-
 }
 
 ProgramCache::~ProgramCache()
 {
 	for (auto &program : programs_)
 	{
-		glDeleteProgram(program.second.id);
+		glDeleteProgram(program.second.GetId());
 	}
 }
 
@@ -92,13 +91,8 @@ Program & ProgramCache::GetFromFile(const std::string & name,
 		glDeleteShader(shader_id);
 	}
 
-	Program program;
-	program.id = program_id;
-	program.hash = std::hash<std::string>{}(name);
-	program.flag = program_type;
-	programs_.insert({ program.hash, program });
-	out_hash = program.hash;
-
+	out_hash = std::hash<std::string>{}(name);
+	programs_.insert({ out_hash, Program(out_hash, program_id, program_type) });
 	return programs_[out_hash];
 }
 
@@ -136,7 +130,7 @@ void ProgramPipeline::SetStages(const Program & program)
 {
 	GLbitfield flags;
 
-	switch (program.flag)
+	switch (program.GetFlag())
 	{
 		case GL_VERTEX_SHADER: 
 		{ 
@@ -174,5 +168,137 @@ void ProgramPipeline::SetStages(const Program & program)
 		}
 	}
 
-	glUseProgramStages(id_, flags, program.id);
+	glUseProgramStages(id_, flags, program.GetId());
+}
+
+Program::Program() :
+	hash_(0), id_(0), flag_(0)
+{
+}
+
+Program::Program(size_t hash, GLuint id, GLenum flag) :
+	hash_(hash), id_(id), flag_(flag)
+{
+	int num_uniforms;
+	glGetProgramiv(id_, GL_ACTIVE_UNIFORMS, &num_uniforms);
+
+	int max_length;
+	glGetProgramiv(id_, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_length);
+
+	int length;
+	int size;
+	GLenum type;
+	GLchar * name = (GLchar*)SDL_malloc(max_length);
+
+	for (int i = 0; i < num_uniforms; ++i)
+	{
+		glGetActiveUniform(id_, i, max_length, &length, &size, &type, name);
+		std::string name_str(name);
+
+		uniforms_.insert({ name, ProgramUniformData{} });
+		auto &uniform = uniforms_[name];
+		uniform.location = i;
+		uniform.size = size;
+		uniform.type = type;
+	}
+
+	SDL_free(name);
+}
+
+Program::~Program()
+{
+}
+
+Program::Program(const Program &other) :
+	hash_(other.hash_), id_(other.id_), flag_(other.flag_), uniforms_(other.uniforms_)
+{
+}
+
+Program::Program(Program &&other) :
+	hash_(other.hash_), id_(other.id_), flag_(other.flag_), uniforms_(other.uniforms_)
+{
+}
+
+void Program::SetUniform(const std::string & name, void * data)
+{
+	auto &uniform = uniforms_[name];
+	
+	SDL_assert(data);
+
+	switch (uniform.type)
+	{
+
+		case GL_FLOAT:
+		case GL_FLOAT_VEC2:
+		case GL_FLOAT_VEC3:
+		case GL_FLOAT_VEC4:
+		{
+			uniform.data_float[0] = ((float*)data)[0];
+			if (uniform.type == GL_FLOAT_VEC2)
+				uniform.data_float[1] = ((float*)data)[1];
+			if (uniform.type == GL_FLOAT_VEC3)
+				uniform.data_float[2] = ((float*)data)[2];
+			if (uniform.type == GL_FLOAT_VEC4)
+				uniform.data_float[3] = ((float*)data)[3];
+		} break;
+
+		case GL_INT:
+		case GL_INT_VEC2:
+		case GL_INT_VEC3:
+		case GL_INT_VEC4:
+		{
+			uniform.data_int[0] = ((Sint32*)data)[0];
+			if (uniform.type == GL_FLOAT_VEC2)
+				uniform.data_int[1] = ((Sint32*)data)[1];
+			if (uniform.type == GL_FLOAT_VEC3)
+				uniform.data_int[2] = ((Sint32*)data)[2];
+			if (uniform.type == GL_FLOAT_VEC4)
+				uniform.data_int[3] = ((Sint32*)data)[3];
+		} break;
+
+		case GL_UNSIGNED_INT:
+		case GL_UNSIGNED_INT_VEC2:
+		case GL_UNSIGNED_INT_VEC3:
+		case GL_UNSIGNED_INT_VEC4:
+		{
+			uniform.data_uint[0] = ((Uint32*)data)[0];
+			if (uniform.type == GL_FLOAT_VEC2)
+				uniform.data_uint[1] = ((Uint32*)data)[1];
+			if (uniform.type == GL_FLOAT_VEC3)
+				uniform.data_uint[2] = ((Uint32*)data)[2];
+			if (uniform.type == GL_FLOAT_VEC4)
+				uniform.data_uint[3] = ((Uint32*)data)[3];
+		} break;
+
+		case GL_FLOAT_MAT2:
+		{
+			for (int i = 0; i < 4; ++i) 
+			{
+				uniform.data_float[i] = ((float*)data)[i];
+			}
+		} break;
+
+		case GL_FLOAT_MAT3:
+		{
+			for (int i = 0; i < 9; ++i)
+			{
+				uniform.data_float[i] = ((float*)data)[i];
+			}
+		} break;
+
+		case GL_FLOAT_MAT4:
+		{
+			for (int i = 0; i < 16; ++i)
+			{
+				uniform.data_float[i] = ((float*)data)[i];
+			}
+		} break;
+
+		// TODO: Add more uniform types!
+
+		default:
+		{
+			SDL_assert(false);
+		}
+	}
 }

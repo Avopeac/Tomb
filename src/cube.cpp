@@ -117,8 +117,8 @@ void Cube::Render(float frame_time)
 
 	glm::mat4 mvp = proj_ * view_ * model;
 
-	glProgramUniformMatrix4fv(vertex_shader_->id,
-		glGetUniformLocation(vertex_shader_->id, "u_viewproj"),
+	glProgramUniformMatrix4fv(vertex_shader_->GetId(),
+		glGetUniformLocation(vertex_shader_->GetId(), "u_viewproj"),
 		1, GL_FALSE, glm::value_ptr(mvp));
 
 	glBindVertexArray(vao_);

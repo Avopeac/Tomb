@@ -28,8 +28,8 @@ namespace graphics
 			if (other.mesh == 0 || other.texture == 0 || other.vertex == 0 || other.fragment == 0)
 				return false;
 
-			return vertex->id < other.vertex->id &&
-				fragment->id < other.fragment->id &&
+			return vertex->GetId() < other.vertex->GetId() &&
+				fragment->GetId() < other.fragment->GetId() &&
 				mesh->vao < other.mesh->vao;
 		
 			return false;

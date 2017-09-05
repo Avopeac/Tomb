@@ -33,21 +33,21 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 	for (int i = 0; i < (int)num_attachments; ++i)
 	{
 		std::string name = "u_texture" + std::to_string(i);
-		glProgramUniform1i(fragment_shader_->id,
-			glGetUniformLocation(fragment_shader_->id, name.c_str()), i);
+		glProgramUniform1i(fragment_shader_->GetId(),
+			glGetUniformLocation(fragment_shader_->GetId(), name.c_str()), i);
 	}
 
 	if (msaa_fb_->HasDepthStencil())
 	{
 		std::string name = "u_depth_texture";
-		glProgramUniform1i(fragment_shader_->id,
-			glGetUniformLocation(fragment_shader_->id, name.c_str()), (int)num_attachments);
+		glProgramUniform1i(fragment_shader_->GetId(),
+			glGetUniformLocation(fragment_shader_->GetId(), name.c_str()), (int)num_attachments);
 	}
 
-	glProgramUniform1i(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
+	glProgramUniform1i(fragment_shader_->GetId(), glGetUniformLocation(fragment_shader_->GetId(),
 		"u_num_samples"), msaa_fb_->GetNumSamples());
 
-	glProgramUniform2i(fragment_shader_->id, glGetUniformLocation(fragment_shader_->id,
+	glProgramUniform2i(fragment_shader_->GetId(), glGetUniformLocation(fragment_shader_->GetId(),
 		"u_resolution"), msaa_fb_->GetWidth(), msaa_fb_->GetHeight());
 }
 

@@ -59,23 +59,23 @@ void MeshRenderer::Draw()
 		pipeline_.SetStages(v);
 		pipeline_.SetStages(f);
 
-		glProgramUniformMatrix4fv(v.id, glGetUniformLocation(v.id, "u_proj"),
+		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_proj"),
 			1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspProj()));
-		glProgramUniformMatrix4fv(v.id, glGetUniformLocation(v.id, "u_view"),
+		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_view"),
 			1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspView()));
-		glProgramUniformMatrix4fv(v.id, glGetUniformLocation(v.id, "u_vp"),
+		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_vp"),
 			1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspViewProj()));
 
 		glm::mat4 mvp = graphics_base_.GetPerspViewProj() * instance.model;
 		glm::mat4 normal_matrix = glm::inverse(glm::transpose(graphics_base_.GetPerspView() * instance.model));
 
-		glProgramUniformMatrix4fv(v.id, glGetUniformLocation(v.id, "u_mvp"),
+		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_mvp"),
 			1, GL_FALSE, glm::value_ptr(mvp));
-		glProgramUniformMatrix4fv(v.id, glGetUniformLocation(v.id, "u_model"),
+		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_model"),
 			1, GL_FALSE, glm::value_ptr(instance.model));
-		glProgramUniformMatrix4fv(v.id, glGetUniformLocation(v.id, "u_normal"),
+		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_normal"),
 			1, GL_FALSE, glm::value_ptr(normal_matrix));
-		glProgramUniform4fv(v.id, glGetUniformLocation(v.id, "u_color"),
+		glProgramUniform4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_color"),
 			1, glm::value_ptr(instance.color));
 
 		glBindVertexArray(instance.mesh->vao);

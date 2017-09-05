@@ -10,15 +10,81 @@
 
 namespace graphics
 {
-	struct Program
+	struct ProgramUniformData
 	{
-		GLenum flag;
-		GLuint id;
-		size_t hash;
+		GLint size;
+		GLenum type;
+		int location;
+
+		// Max amount of data per uniform per respective type
+		Sint32 data_int[4];
+		Uint32 data_uint[4];
+		float data_float[16];
+	};
+
+	class Program
+	{
+		GLenum flag_;
+		GLuint id_;
+		size_t hash_;
+
+		std::unordered_map<std::string, ProgramUniformData> uniforms_;
+
+	public:
+
+		Program();
+
+		Program(size_t hash, GLuint id, GLenum flag);
+
+		~Program();
+
+		Program(const Program &);
+
+		Program(Program &&);
+
+		Program &operator=(Program &&other)
+		{
+			if (this == &other)
+			{
+				assert(false);
+			}
+
+			hash_ = other.hash_;
+			id_ = other.id_;
+			flag_ = other.flag_;
+			uniforms_ = other.uniforms_;
+
+			return *this;
+		}
+
+		Program &operator=(const Program &other)
+		{
+			if (this == &other)
+			{
+				assert(false);
+			}
+				
+			hash_ = other.hash_;
+			id_ = other.id_;
+			flag_ = other.flag_;
+			uniforms_ = other.uniforms_;
+			
+			return *this;
+		}
+
+		void SetUniform(const std::string &name, void * data);
+
+		inline GLuint GetId() const { return id_; }
+
+		inline size_t GetHash() const { return hash_; }
+
+		inline GLenum GetFlag() const { return flag_; }
+
+		inline bool HasUniform(const std::string &name) const { return uniforms_.find(name) != uniforms_.end(); }
 
 		inline bool IsValid()
 		{
-			glValidateProgram(id);
+			glValidateProgram(id_);
 
 			GLenum err = glGetError();
 
