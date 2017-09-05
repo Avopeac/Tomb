@@ -221,84 +221,302 @@ Program::Program(Program &&other) :
 
 void Program::SetUniform(const std::string & name, void * data)
 {
-	auto &uniform = uniforms_[name];
-	
 	SDL_assert(data);
 
+	if (uniforms_.find(name) == uniforms_.end())
+	{
+		return;
+	}
+
+	auto &uniform = uniforms_[name];
+	
 	switch (uniform.type)
 	{
-
 		case GL_FLOAT:
-		case GL_FLOAT_VEC2:
+		{
+			if (uniform.data_float[0] != ((float*)data)[0])
+			{
+				uniform.data_float[0] = ((float*)data)[0];
+				glProgramUniform1fv(id_, uniform.location, 1, &uniform.data_float[0]);
+			}
+			
+		} break;
+	
+		case GL_FLOAT_VEC2: 
+		{
+			if (!(uniform.data_float[0] == ((float*)data)[0] &&
+				uniform.data_float[1] == ((float*)data)[1]))
+			{
+				uniform.data_float[0] = ((float*)data)[0];
+				uniform.data_float[1] = ((float*)data)[1];
+				glProgramUniform2fv(id_, uniform.location, 1, &uniform.data_float[0]);
+			}
+			
+		} break;
+
 		case GL_FLOAT_VEC3:
+		{
+			if (!(uniform.data_float[0] == ((float*)data)[0] &&
+				uniform.data_float[1] == ((float*)data)[1] &&
+				uniform.data_float[2] == ((float*)data)[2]))
+			{
+				uniform.data_float[0] = ((float*)data)[0];
+				uniform.data_float[1] = ((float*)data)[1];
+				uniform.data_float[2] = ((float*)data)[2];
+				glProgramUniform3fv(id_, uniform.location, 1, &uniform.data_float[0]);
+			}
+			
+		} break;
+
 		case GL_FLOAT_VEC4:
 		{
-			uniform.data_float[0] = ((float*)data)[0];
-			if (uniform.type == GL_FLOAT_VEC2)
+			if (!(uniform.data_float[0] == ((float*)data)[0] &&
+				uniform.data_float[1] == ((float*)data)[1] &&
+				uniform.data_float[2] == ((float*)data)[2] &&
+				uniform.data_float[3] == ((float*)data)[3]))
+			{
+				uniform.data_float[0] = ((float*)data)[0];
 				uniform.data_float[1] = ((float*)data)[1];
-			if (uniform.type == GL_FLOAT_VEC3)
 				uniform.data_float[2] = ((float*)data)[2];
-			if (uniform.type == GL_FLOAT_VEC4)
 				uniform.data_float[3] = ((float*)data)[3];
+				glProgramUniform4fv(id_, uniform.location, 1, &uniform.data_float[0]);
+			}
+			
 		} break;
 
 		case GL_INT:
-		case GL_INT_VEC2:
-		case GL_INT_VEC3:
-		case GL_INT_VEC4:
 		{
-			uniform.data_int[0] = ((Sint32*)data)[0];
-			if (uniform.type == GL_FLOAT_VEC2)
-				uniform.data_int[1] = ((Sint32*)data)[1];
-			if (uniform.type == GL_FLOAT_VEC3)
-				uniform.data_int[2] = ((Sint32*)data)[2];
-			if (uniform.type == GL_FLOAT_VEC4)
-				uniform.data_int[3] = ((Sint32*)data)[3];
+			if (uniform.data_int[0] != ((Sint32*)data)[0])
+			{
+				uniform.data_int[0] = ((Sint32*)data)[0];
+				glProgramUniform1iv(id_, uniform.location, 1, &uniform.data_int[0]);
+			}
+			
 		} break;
 
+		case GL_INT_VEC2:
+		{
+			if (!(uniform.data_int[0] == ((Sint32*)data)[0] &&
+				uniform.data_int[1] == ((Sint32*)data)[1]))
+			{
+				uniform.data_int[0] = ((Sint32*)data)[0];
+				uniform.data_int[1] = ((Sint32*)data)[1];
+				glProgramUniform2iv(id_, uniform.location, 1, &uniform.data_int[0]);
+			}
+			
+		} break;
+
+		case GL_INT_VEC3:
+		{
+			if (!(uniform.data_int[0] == ((Sint32*)data)[0] &&
+				uniform.data_int[1] == ((Sint32*)data)[1] &&
+				uniform.data_int[2] == ((Sint32*)data)[2]))
+			{
+				uniform.data_int[0] = ((Sint32*)data)[0];
+				uniform.data_int[1] = ((Sint32*)data)[1];
+				uniform.data_int[2] = ((Sint32*)data)[2];
+				glProgramUniform3iv(id_, uniform.location, 1, &uniform.data_int[0]);
+			}
+			
+		} break;
+
+		case GL_INT_VEC4:
+		{
+			if (!(uniform.data_int[0] == ((Sint32*)data)[0] &&
+				uniform.data_int[1] == ((Sint32*)data)[1] &&
+				uniform.data_int[2] == ((Sint32*)data)[2] &&
+				uniform.data_int[3] == ((Sint32*)data)[3]))
+			{
+				uniform.data_int[0] = ((Sint32*)data)[0];
+				uniform.data_int[1] = ((Sint32*)data)[1];
+				uniform.data_int[2] = ((Sint32*)data)[2];
+				uniform.data_int[3] = ((Sint32*)data)[3];
+				glProgramUniform4iv(id_, uniform.location, 1, &uniform.data_int[0]);
+			}
+			
+		} break;
+		
 		case GL_UNSIGNED_INT:
+		{
+			if (uniform.data_uint[0] != ((Uint32*)data)[0])
+			{
+				uniform.data_uint[0] = ((Uint32*)data)[0];
+				glProgramUniform1uiv(id_, uniform.location, 1, &uniform.data_uint[0]);
+			}
+			
+		} break;
+
 		case GL_UNSIGNED_INT_VEC2:
+		{
+			if (!(uniform.data_uint[0] == ((Uint32*)data)[0] &&
+				uniform.data_uint[1] == ((Uint32*)data)[1]))
+			{
+				uniform.data_uint[0] = ((Uint32*)data)[0];
+				uniform.data_uint[1] = ((Uint32*)data)[1];
+				glProgramUniform2uiv(id_, uniform.location, 1, &uniform.data_uint[0]);
+			}
+			
+		} break;
+
 		case GL_UNSIGNED_INT_VEC3:
+		{
+			if (!(uniform.data_uint[0] == ((Uint32*)data)[0] &&
+				uniform.data_uint[1] == ((Uint32*)data)[1] &&
+				uniform.data_uint[2] == ((Uint32*)data)[2]))
+			{
+				uniform.data_uint[0] = ((Uint32*)data)[0];
+				uniform.data_uint[1] = ((Uint32*)data)[1];
+				uniform.data_uint[2] = ((Uint32*)data)[2];
+				glProgramUniform3uiv(id_, uniform.location, 1, &uniform.data_uint[0]);
+			}
+			
+		} break;
+
 		case GL_UNSIGNED_INT_VEC4:
 		{
-			uniform.data_uint[0] = ((Uint32*)data)[0];
-			if (uniform.type == GL_FLOAT_VEC2)
+			if (!(uniform.data_uint[0] == ((Uint32*)data)[0] &&
+				uniform.data_uint[1] == ((Uint32*)data)[1] &&
+				uniform.data_uint[2] == ((Uint32*)data)[2] &&
+				uniform.data_uint[3] == ((Uint32*)data)[3]))
+			{
+				uniform.data_uint[0] = ((Uint32*)data)[0];
 				uniform.data_uint[1] = ((Uint32*)data)[1];
-			if (uniform.type == GL_FLOAT_VEC3)
 				uniform.data_uint[2] = ((Uint32*)data)[2];
-			if (uniform.type == GL_FLOAT_VEC4)
 				uniform.data_uint[3] = ((Uint32*)data)[3];
+				glProgramUniform4uiv(id_, uniform.location, 1, &uniform.data_uint[0]);
+			}
+
+		} break;
+
+		case GL_FLOAT_MAT3x2:
+		case GL_FLOAT_MAT2x3:
+		{
+			bool equal = true;
+
+			for (int i = 0; i < 6; ++i)
+			{
+				if (uniform.data_float[i] = ((float*)data)[i])
+					equal = false;
+
+				uniform.data_float[i] = ((float*)data)[i];
+			}
+
+			if (!equal)
+			{
+				uniform.type == GL_FLOAT_MAT3x2 ? glProgramUniformMatrix3x4fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]) :
+					glProgramUniformMatrix2x3fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]);
+			}
+
+		} break;
+
+		case GL_FLOAT_MAT4x2:
+		case GL_FLOAT_MAT2x4:
+		{
+			bool equal = true;
+
+			for (int i = 0; i < 8; ++i)
+			{
+				if (uniform.data_float[i] != ((float*)data)[i])
+					equal = false;
+
+				uniform.data_float[i] = ((float*)data)[i];
+			}
+
+			if (!equal)
+			{
+				uniform.type == GL_FLOAT_MAT4x2 ? glProgramUniformMatrix4x2fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]) :
+					glProgramUniformMatrix2x4fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]);
+			}
+
+		} break;
+
+		case GL_FLOAT_MAT3x4:
+		case GL_FLOAT_MAT4x3:
+		{
+			bool equal = true;
+
+			for (int i = 0; i < 12; ++i)
+			{
+				if (uniform.data_float[i] != ((float*)data)[i])
+					equal = false;
+
+				uniform.data_float[i] = ((float*)data)[i];
+			}
+
+			if (!equal)
+			{
+				uniform.type == GL_FLOAT_MAT3x4 ? glProgramUniformMatrix3x4fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]) :
+					glProgramUniformMatrix4x3fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]);
+			}
+
 		} break;
 
 		case GL_FLOAT_MAT2:
 		{
-			for (int i = 0; i < 4; ++i) 
+			bool equal = true;
+
+			for (int i = 0; i < 4; ++i)
 			{
+				if (uniform.data_float[i] != ((float*)data)[i])
+					equal = false;
+
 				uniform.data_float[i] = ((float*)data)[i];
 			}
+
+			if (!equal)
+			{
+				glProgramUniformMatrix2fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]);
+			}
+
 		} break;
 
 		case GL_FLOAT_MAT3:
 		{
+			bool equal = true;
+
 			for (int i = 0; i < 9; ++i)
 			{
+				if (uniform.data_float[i] != ((float*)data)[i])
+					equal = false;
+
 				uniform.data_float[i] = ((float*)data)[i];
 			}
+
+			if (!equal)
+			{
+				glProgramUniformMatrix3fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]);
+			}
+
 		} break;
 
 		case GL_FLOAT_MAT4:
 		{
+			bool equal = true;
+
 			for (int i = 0; i < 16; ++i)
 			{
+				if (uniform.data_float[i] != ((float*)data)[i])
+					equal = false;
+
 				uniform.data_float[i] = ((float*)data)[i];
 			}
+
+			if (!equal)
+			{
+				glProgramUniformMatrix4fv(id_, uniform.location, 1, GL_FALSE, &uniform.data_float[0]);
+			}
+			
 		} break;
 
 		// TODO: Add more uniform types!
 
 		default:
 		{
-			SDL_assert(false);
+			if (uniform.data_int[0] != ((Sint32*)data)[0])
+			{
+				uniform.data_int[0] = ((Sint32*)data)[0];
+				glProgramUniform1i(id_, uniform.location, uniform.data_int[0]);
+			}
 		}
 	}
 }

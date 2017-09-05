@@ -17,9 +17,12 @@ namespace graphics
 		int location;
 
 		// Max amount of data per uniform per respective type
-		Sint32 data_int[4];
-		Uint32 data_uint[4];
-		float data_float[16];
+		union
+		{
+			Sint32 data_int[4];
+			Uint32 data_uint[4];
+			float data_float[16];
+		};
 	};
 
 	class Program

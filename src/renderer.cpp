@@ -80,9 +80,7 @@ void Renderer::Invoke(float frame_time)
 	
 	// Draw sprites to MSAA offscreen buffer
 	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.40f, 0.28f, 0.20f, 1.0f);
-
 	mesh_renderer_->Draw();
-	//cube_->Render(frame_time);
 	//sprite_renderer_->Draw();
 	//font_renderer_->Draw();
 	msaa_fb_->UnbindDraw();

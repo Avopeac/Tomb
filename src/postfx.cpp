@@ -32,9 +32,7 @@ void PostFx::Init(TextureCache & texture_cache, ProgramCache & program_cache,
 
 	for (int i = 0; i < (int)num_attachments; ++i)
 	{
-		std::string name = "u_texture" + std::to_string(i);
-		glProgramUniform1i(fragment_shader_->GetId(),
-			glGetUniformLocation(fragment_shader_->GetId(), name.c_str()), i);
+		fragment_shader_->SetUniform("u_texture" + std::to_string(i), (void*)&i);
 	}
 }
 
@@ -57,10 +55,10 @@ void PostFx::Apply(TextureCache & texture_cache, ProgramCache & program_cache,
 	glDrawBuffer(GL_BACK); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);  
-	   
-	glProgramUniform1f(fragment_shader_->GetId(),  
-		glGetUniformLocation(fragment_shader_->GetId(), "u_time"), (float)util::GetSeconds());
-	       
+	 
+	float time = (float)util::GetSeconds();
+	fragment_shader_->SetUniform("u_time", (void*)&time);
+
 	pipeline_.Bind();  
 	this->Render();   
 	pipeline_.Unbind();    

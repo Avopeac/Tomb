@@ -51,7 +51,10 @@ void MeshRenderer::Draw()
 		
 	for (int i = 0; i < meshes_.size(); ++i)
 	{
+
 		auto &instance = meshes_[i];
+		glm::mat4 mvp = graphics_base_.GetPerspViewProj() * instance.model;
+		glm::mat4 normal_matrix = glm::inverse(glm::transpose(graphics_base_.GetPerspView() * instance.model));
 
 		auto &v = *instance.vertex;
 		auto &f = *instance.fragment;
@@ -59,25 +62,14 @@ void MeshRenderer::Draw()
 		pipeline_.SetStages(v);
 		pipeline_.SetStages(f);
 
-		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_proj"),
-			1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspProj()));
-		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_view"),
-			1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspView()));
-		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_vp"),
-			1, GL_FALSE, glm::value_ptr(graphics_base_.GetPerspViewProj()));
-
-		glm::mat4 mvp = graphics_base_.GetPerspViewProj() * instance.model;
-		glm::mat4 normal_matrix = glm::inverse(glm::transpose(graphics_base_.GetPerspView() * instance.model));
-
-		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_mvp"),
-			1, GL_FALSE, glm::value_ptr(mvp));
-		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_model"),
-			1, GL_FALSE, glm::value_ptr(instance.model));
-		glProgramUniformMatrix4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_normal"),
-			1, GL_FALSE, glm::value_ptr(normal_matrix));
-		glProgramUniform4fv(v.GetId(), glGetUniformLocation(v.GetId(), "u_color"),
-			1, glm::value_ptr(instance.color));
-
+		v.SetUniform("u_proj", (void*)glm::value_ptr(graphics_base_.GetPerspProj()));
+		v.SetUniform("u_view", (void*)glm::value_ptr(graphics_base_.GetPerspView()));
+		v.SetUniform("u_vp", (void*)glm::value_ptr(graphics_base_.GetPerspViewProj()));
+		v.SetUniform("u_mvp", (void*)glm::value_ptr(mvp));
+		v.SetUniform("u_model", (void*)glm::value_ptr(instance.model));
+		v.SetUniform("u_normal", (void*)glm::value_ptr(normal_matrix));
+		v.SetUniform("u_color", (void*)glm::value_ptr(instance.color));
+	
 		glBindVertexArray(instance.mesh->vao);
 		size_t index_offset = 0;
 		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)

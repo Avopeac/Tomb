@@ -32,9 +32,7 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 
 	for (int i = 0; i < (int)num_attachments; ++i)
 	{
-		std::string name = "u_texture" + std::to_string(i);
-		glProgramUniform1i(fragment_shader_->GetId(),
-			glGetUniformLocation(fragment_shader_->GetId(), name.c_str()), i);
+		fragment_shader_->SetUniform("u_texture" + std::to_string(i), (void *)&i);
 	}
 
 	if (msaa_fb_->HasDepthStencil())

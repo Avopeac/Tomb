@@ -12,8 +12,8 @@ namespace graphics
 		const std::string v_path_ = "assets/shaders/msaa_resolve.vert";
 		const std::string f_path_ = "assets/shaders/msaa_resolve.frag";
 
-		const Program * vertex_shader_;
-		const Program * fragment_shader_;
+		Program * vertex_shader_;
+		Program * fragment_shader_;
 
 		ProgramPipeline pipeline_;
 
