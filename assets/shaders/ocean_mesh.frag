@@ -26,7 +26,7 @@ void main()
 	if (sun > 0.0) {
 		vec3 half_vec = normalize(v_direction + sun_dir);
 		float ndoth = clamp(dot(f_normal, half_vec), 0.0, 1.0);
-		specularity = pow(ndoth, 1.0);
+		specularity = pow(ndoth, 80.0);
 	}
 
 	o_color = vec4(lin * (f_color.rgb + vec3(specularity)), f_color.a);

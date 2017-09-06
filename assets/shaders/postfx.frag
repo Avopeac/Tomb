@@ -76,25 +76,9 @@ float snoise(vec2 v)
   return 130.0 * dot(m, g);
 }
 
-vec3 water(vec2 uv, float t) 
-{
-	float noise = 0.5 + 0.5 * snoise(vec2(20.0 * uv.x + 0.1 * t, 20.0 * uv.y));
-	vec3 col0 = vec3(0.1, 0.5, 0.6);
-	vec3 col1 = vec3(0.2, 0.7, 0.9);
-	return mix(col0, col1, noise);
-}
-
-vec3 clouds(vec3 bg, vec2 uv, float t)
-{
-	float noise = 0.5 + 0.5 * snoise(vec2(0.01 * t + 4.0 * uv.x, 4.0 * uv.y));
-	vec3 col0 = vec3(1.0, 1.0, 1.0);
-	vec3 col1 = vec3(0.4, 0.4, 0.4);
-	return mix(bg, col1, noise);
-}
-
 vec3 reinhardt_tonemap(vec3 hdr)
 {
-	return hdr; //hdr / (1 + hdr);
+	return hdr / (1 + hdr);
 }
 
 vec3 gamma_correction(vec3 ldr)
@@ -113,23 +97,8 @@ uniform sampler2D u_texture1;
 void main()
 {
 	vec4 tex_col = texture(u_texture0, v_texcoord); 
-
-	//float tex_depth = texture(u_texture1, v_texcoord).r;
-	//if (tex_depth > 0.9)
-	//{
-		//tex_col.rgb = water(v_texcoord, u_time);
-	//}
-
-
-	//if (abs(dFdx(tex_depth)) > 0.1 || abs(dFdy(tex_depth)) > 0.1) {
-		//tex_col.rgb = vec3(1);
-	//}
-
-
-	//tex_col.rgb += clouds(tex_col.rgb, v_texcoord, u_time);
-
-	//o_color.rgb = reinhardt_tonemap(tex_col.rgb);
-	//o_color.rgb = gamma_correction(o_color.rgb);
-	o_color.rgb = tex_col.rgb;
-	o_color.a = tex_col.a;
+	o_color.rgb = reinhardt_tonemap(tex_col.rgb);
+	o_color.rgb = gamma_correction(o_color.rgb);
+	//o_color.rgb = tex_col.rgb;
+	//o_color.a = tex_col.a;
 }

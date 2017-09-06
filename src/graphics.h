@@ -95,8 +95,8 @@ namespace graphics
 
 		inline glm::mat4 GetPerspProj() const { return persp_proj_; }
 
-		inline glm::mat4 GetPerspView() const { return persp_view_; }
-
+		inline glm::mat4 GetPerspView() const { return persp_view_; } 
+		 
 		inline glm::mat4 GetPerspViewProj() const { return persp_view_proj_; }
 
 		void Log();

@@ -54,12 +54,13 @@ void MeshRenderer::Draw()
 	{
 
 		auto &instance = meshes_[i];
+		int texture_id = 0;
 		glm::mat4 mvp = graphics_base_.GetPerspViewProj() * instance.model;
 		glm::mat4 normal_matrix = glm::inverse(glm::transpose(graphics_base_.GetPerspView() * instance.model));
 
 		auto &v = *instance.vertex;
 		auto &f = *instance.fragment;
-
+		 
 		pipeline_.SetStages(v);
 		pipeline_.SetStages(f);
 
@@ -69,18 +70,21 @@ void MeshRenderer::Draw()
 		v.SetUniform("u_mvp", (void*)glm::value_ptr(mvp));
 		v.SetUniform("u_model", (void*)glm::value_ptr(instance.model));
 		v.SetUniform("u_normal", (void*)glm::value_ptr(normal_matrix));
+		f.SetUniform("u_texture", (void*)&texture_id);
+		
+		instance.texture->Bind(0);
 
 		if (instance.update)
 			instance.update(&v, &f);
 
-		glBindVertexArray(instance.mesh->vao);
+		glBindVertexArray(instance.mesh->vao); 
 		size_t index_offset = 0;
 		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)
 		{
 			glDrawElements(GL_TRIANGLES, (GLsizei)instance.mesh->num_indices[j], GL_UNSIGNED_INT, (void*)index_offset);
 			index_offset += instance.mesh->num_indices[j] * sizeof(Uint32);
 		} 
-	} 
+	}  
 	glBindVertexArray(0);
 
 	pipeline_.Unbind();

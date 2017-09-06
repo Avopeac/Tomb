@@ -59,7 +59,7 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 		0, descriptors, nullptr);
 
 	post_processing_->Add(std::move(std::make_unique<MsaaResolve>()));
-	post_processing_->Add(std::move(std::make_unique<PostFx>()));
+	post_processing_->Add(std::move(std::make_unique<PostFx>())); 
 
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
 		*sampler_cache_, *blend_cache_, *mesh_cache_);

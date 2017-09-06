@@ -26,7 +26,7 @@ void main()
 	gl_Position = u_mvp * vec4(i_position, 1);
 
 	v_direction = normalize((u_view * vec4(i_position, 1)).xyz);
-	v_texcoord = i_texcoord;
+	v_texcoord = vec2(i_texcoord.x, 1 - i_texcoord.y);
 	f_color = u_color;
 	f_sun = normalize((u_view * vec4(0, 1, -0.5, 0.0)).xyz);
 	f_normal = normalize((u_normal * vec4(i_normal, 0)).xyz);

@@ -8,6 +8,8 @@ in flat vec4 f_color;
 
 out vec4 o_color;
 
+uniform sampler2D u_texture;
+
 void main()
 {
 
@@ -29,5 +31,9 @@ void main()
 		specularity = pow(ndoth, 1.0);
 	}
 
-	o_color = vec4(lin * (f_color.rgb + vec3(specularity)), f_color.a);
+	vec4 texcol = texture(u_texture, v_texcoord);
+
+	//o_color = vec4(lin * (texcol.rgb * f_color.rgb + vec3(specularity)), f_color.a);
+
+	o_color = vec4(lin * (texcol.rgb + vec3(specularity)), f_color.a);
 }

@@ -7,6 +7,7 @@ namespace util
 	static double GetSeconds()
 	{
 		static Uint64 frequency = SDL_GetPerformanceFrequency();
-		return ((double)SDL_GetPerformanceCounter() / frequency) / 1000.0;
+		static double start = (double)SDL_GetPerformanceCounter() / frequency;
+		return (double)SDL_GetPerformanceCounter() / frequency - start;
 	}
 }

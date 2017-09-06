@@ -32,9 +32,9 @@ void main()
 	vec2 d2 = normalize(vec2(1,0));
 	vec2 d3 = normalize(vec2(-1,0));
 
-	vec4 w = vec4(22.0, 20.0, 34.0, 18.0);
-	vec4 a = vec4(0.002, 0.003, 0.001, 0.009);
-	vec4 p = vec4(200.0, 100.5, 100.9, 100.4);
+	vec4 w = vec4(50.0, 20.0, 34.0, 18.0);
+	vec4 a = vec4(0.001, 0.003, 0.001, 0.009);
+	vec4 p = vec4(2.0, 1.5, 1.9, 1.4);
 
 	vec4 cd = vec4(cos(dot(d0, wave_pos.xy) * w[0] + u_time * p[0]),
 				   cos(dot(d1, wave_pos.xy) * w[1] + u_time * p[1]),
@@ -65,6 +65,6 @@ void main()
 	v_direction = normalize((u_view * vec4(wave_pos, 1)).xyz);
 	v_texcoord = i_texcoord;
 	f_color = u_color;
-	f_sun = normalize((u_view * vec4(0, 1, -0.5, 0.0)).xyz);
+	f_sun = normalize((u_view * vec4(-1, 1, -1, 0.0)).xyz);
 	f_normal = normalize((u_normal * vec4(n, 0)).xyz);
 }

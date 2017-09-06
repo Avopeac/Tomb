@@ -80,7 +80,7 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 	persp_near_ = 0.01f;
 	persp_far_ = 100.0f;
 	persp_proj_ = glm::perspective(glm::radians(60.0f), (float)config.GetWindowWidth() / config.GetWindowHeight(), persp_near_, persp_far_);
-	persp_view_ = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+	persp_view_ = glm::lookAt(glm::vec3(0, 1, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	persp_view_proj_ = persp_proj_ * persp_view_;
 
 }  
@@ -90,8 +90,9 @@ GraphicsBase::~GraphicsBase()
 	SDL_GL_DeleteContext(context_);
 	SDL_DestroyWindow(window_);
 }
-
+  
 void GraphicsBase::Log()
 {
 	debug::Log(SDL_LOG_PRIORITY_INFO, SDL_LOG_CATEGORY_RENDER, (const char *)glewGetErrorString(glGetError()));
 }
+ 
