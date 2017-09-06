@@ -1,7 +1,6 @@
 #pragma once
 
-#include <chrono>
-
+#include <functional>
 #include "mapmodel.h"
 #include "maplogic.h"
 #include "renderer.h"
@@ -47,6 +46,20 @@ namespace game
 
 		~MapView() {}
 
+		void UpdateHexPillar(graphics::Program * vertex, graphics::Program * fragment)
+		{
+			glm::vec4 color{ 1,0,0,1 };
+			vertex->SetUniform("u_color", (void*)glm::value_ptr(color));
+		}
+
+		void UpdateWater(graphics::Program * vertex, graphics::Program * fragment)
+		{
+			glm::vec4 color{ 0.01, 0.4, 0.99, 1 };
+			float time = util::GetSeconds();
+			vertex->SetUniform("u_color", (void*)glm::value_ptr(color));
+			vertex->SetUniform("u_time", (void*)&time);   
+		} 
+
 		void Update(graphics::Renderer &renderer, float delta_time)
 		{
 
@@ -76,24 +89,28 @@ namespace game
 
 
 			glm::mat4 model =
-				glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, -1.0f)) *
-				rot_time *
-				glm::scale(glm::mat4(1), glm::vec3(1.0f));
-
-			renderer.GetMeshRenderer().Push(ocean_mesh_hash_, ocean_texture_hash_, ocean_vertex_hash_, ocean_fragment_hash_, model, glm::vec4(1));
+				glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, -10.0f)) *
+				//rot_time *
+				glm::scale(glm::mat4(1), glm::vec3(10.0f));  
+			 
+			renderer.GetMeshRenderer().Push(ocean_mesh_hash_, ocean_texture_hash_,  
+				ocean_vertex_hash_, ocean_fragment_hash_, model,
+				std::bind(&MapView::UpdateWater, this, std::placeholders::_1, std::placeholders::_2));  
 
 			for (auto hex_it = model_.GetTileBeginIterator(); hex_it != model_.GetTileEndIterator(); ++hex_it)
 			{
 				HexCoordinate hex = hex_it->first;
-				glm::vec2 pos = logic_.AxialToCartesian(hex, 0.05f);
+				glm::vec2 pos = logic_.AxialToCartesian(hex, 0.5f);
 				glm::mat4 model = 
-					glm::translate(glm::mat4(1), glm::vec3(pos, -1.0f)) * 
-					rot_time *
+					glm::translate(glm::mat4(1), glm::vec3(pos, -10.0f)) * 
+					//rot_time *
 					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(0, 0, 1)) *
 					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)) * 
-					glm::scale(glm::mat4(1), glm::vec3(0.049f) * glm::vec3(1.0f, 1.0f, 1.0f));
+					glm::scale(glm::mat4(1), glm::vec3(0.49f) * glm::vec3(1.0f, 1.0f, 1.0f));
 
-				renderer.GetMeshRenderer().Push(hex_mesh_hash_, hex_texture_hash_, hex_vertex_hash_, hex_fragment_hash_, model, glm::vec4(1, 0, 0, 1));
+				renderer.GetMeshRenderer().Push(hex_mesh_hash_, hex_texture_hash_, 
+					hex_vertex_hash_, hex_fragment_hash_, model, 
+					std::bind(&MapView::UpdateHexPillar, this, std::placeholders::_1, std::placeholders::_2));
 			}
 		}
 	};

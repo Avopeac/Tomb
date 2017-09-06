@@ -22,6 +22,7 @@ namespace graphics
 		Program * fragment;
 		glm::mat4 model;
 		glm::vec4 color;
+		std::function<void(Program * vertex, Program * fragment)> update;
 
 		bool operator<(const MeshRenderInstance &other) const
 		{
@@ -68,7 +69,8 @@ namespace graphics
 		~MeshRenderer();
 
 		void Push(size_t mesh_hash, size_t texture_hash, 
-			size_t vertex_hash, size_t fragment_hash, const glm::mat4 &model, const glm::vec4 &color);
+			size_t vertex_hash, size_t fragment_hash, 
+			const glm::mat4 &model, const std::function<void(Program *, Program *)> &update);
 
 		void Draw();
 	};

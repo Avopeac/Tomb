@@ -28,6 +28,8 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 	msaa_fb_ = &frame_buffer_cache.GetFromName(Renderer::offscreen_msaa_name);
 	resolve_fb_ = &frame_buffer_cache.GetFromName(Renderer::offscreen_resolve_name);
 
+	int num_samples = msaa_fb_->GetNumSamples();
+	glm::ivec2 resolution{ msaa_fb_->GetWidth(), msaa_fb_->GetHeight() };
 	size_t num_attachments = msaa_fb_->GetColorAttachmentCount();
 
 	for (int i = 0; i < (int)num_attachments; ++i)
@@ -37,16 +39,12 @@ void MsaaResolve::Init(TextureCache & texture_cache,
 
 	if (msaa_fb_->HasDepthStencil())
 	{
-		std::string name = "u_depth_texture";
-		glProgramUniform1i(fragment_shader_->GetId(),
-			glGetUniformLocation(fragment_shader_->GetId(), name.c_str()), (int)num_attachments);
+		fragment_shader_->SetUniform("u_depth_texture", (void*)&num_attachments);
 	}
 
-	glProgramUniform1i(fragment_shader_->GetId(), glGetUniformLocation(fragment_shader_->GetId(),
-		"u_num_samples"), msaa_fb_->GetNumSamples());
-
-	glProgramUniform2i(fragment_shader_->GetId(), glGetUniformLocation(fragment_shader_->GetId(),
-		"u_resolution"), msaa_fb_->GetWidth(), msaa_fb_->GetHeight());
+	
+	fragment_shader_->SetUniform("u_num_samples", (void*)&num_samples);
+	fragment_shader_->SetUniform("u_resolution", (void*)glm::value_ptr(resolution));
 }
 
 void MsaaResolve::Apply(TextureCache & texture_cache, 

@@ -30,15 +30,16 @@ MeshRenderer::~MeshRenderer()
 }
 
 void MeshRenderer::Push(size_t mesh_hash, size_t texture_hash, 
-	size_t vertex_hash, size_t fragment_hash, const glm::mat4 &model, const glm::vec4 &color)
+	size_t vertex_hash, size_t fragment_hash, 
+	const glm::mat4 &model, const std::function<void(Program *, Program *)> &update)
 {
 	MeshRenderInstance instance;
 	instance.mesh = &mesh_cache_.GetFromHash(mesh_hash);
 	instance.vertex = &program_cache_.GetFromHash(vertex_hash);
 	instance.fragment = &program_cache_.GetFromHash(fragment_hash);
 	instance.texture = &texture_cache_.GetFromHash(texture_hash);
-	instance.color = color;
 	instance.model = model;
+	instance.update = update;
 
 	meshes_.push_back(instance);
 }
@@ -68,8 +69,10 @@ void MeshRenderer::Draw()
 		v.SetUniform("u_mvp", (void*)glm::value_ptr(mvp));
 		v.SetUniform("u_model", (void*)glm::value_ptr(instance.model));
 		v.SetUniform("u_normal", (void*)glm::value_ptr(normal_matrix));
-		v.SetUniform("u_color", (void*)glm::value_ptr(instance.color));
-	
+
+		if (instance.update)
+			instance.update(&v, &f);
+
 		glBindVertexArray(instance.mesh->vao);
 		size_t index_offset = 0;
 		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)
