@@ -26,7 +26,7 @@ void PostFx::Init(TextureCache & texture_cache, ProgramCache & program_cache,
 	pipeline_.SetStages(*vertex_shader_);
 	pipeline_.SetStages(*fragment_shader_);
 
-	fbo0_ = &frame_buffer_cache.GetFromName(Renderer::offscreen_resolve_name);
+	fbo0_ = &frame_buffer_cache.GetFromName(Renderer::gbuffer_composition_name);
 
 	size_t num_attachments = fbo0_->GetColorAttachmentCount();
 

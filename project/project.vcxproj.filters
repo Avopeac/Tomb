@@ -56,13 +56,7 @@
     <ClCompile Include="..\src\mapmodel.cpp">
       <Filter>Source\Map</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\msaa_resolve.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\postfx.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cube.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mesh.cpp">
@@ -72,6 +66,9 @@
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\grid.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gbuffer_comp.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -142,17 +139,11 @@
     <ClInclude Include="..\src\mapview.h">
       <Filter>Source\Map</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\msaa_resolve.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\postfx.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\blend_mode.h">
       <Filter>Source\Graphics.Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cube.h">
-      <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mesh_renderer.h">
       <Filter>Source\Graphics</Filter>
@@ -161,6 +152,9 @@
       <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\src\grid.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gbuffer_comp.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

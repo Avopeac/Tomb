@@ -56,7 +56,7 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
 	glDrawBuffers((GLsizei)attachment_enums.size(), attachment_enums.data());
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	 
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	switch (status)

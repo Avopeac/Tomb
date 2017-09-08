@@ -12,7 +12,6 @@
 //#include "font_renderer.h"
 #include "font_renderer_individual.h"
 #include "post_processing.h"
-#include "cube.h"
 #include "mesh.h"
 #include "mesh_renderer.h"
 
@@ -37,13 +36,13 @@ namespace graphics
 		std::unique_ptr<PostProcessing> post_processing_;
 		std::unique_ptr<FontRendererIndividual> font_renderer_;
 
-		FrameBuffer * msaa_fb_;
-		FrameBuffer * resolve_fb_;
+		FrameBuffer * gbuffer_;
+		FrameBuffer * gbuffer_comp_;
 
 	public:
 
-		static const std::string offscreen_msaa_name;
-		static const std::string offscreen_resolve_name;
+		static const std::string gbuffer_name;
+		static const std::string gbuffer_composition_name;
 
 		Renderer(GraphicsBase *graphics_base);
 
@@ -71,5 +70,10 @@ namespace graphics
 
 		void Invoke(float frame_time);
 
+	private:
+
+		FrameBuffer * MakeGbuffer();
+		
+		FrameBuffer * MakeGbufferComposition();
 	};
 }

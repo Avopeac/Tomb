@@ -1,12 +1,12 @@
 #include "renderer.h"
 
-#include "msaa_resolve.h"
+#include "gbuffer_comp.h"
 #include "postfx.h"
 
 using namespace graphics;
 
-const std::string Renderer::offscreen_msaa_name = "offscreen_4x_msaa";
-const std::string Renderer::offscreen_resolve_name = "offscreen_4x_resolve";
+const std::string Renderer::gbuffer_name = "gbuffer_comp";
+const std::string Renderer::gbuffer_composition_name = "gbuffer_comp";
 
 Renderer::Renderer(GraphicsBase *graphics_base) :
 	graphics_base_(graphics_base)
@@ -15,56 +15,26 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	texture_cache_ = std::make_unique<TextureCache>();
 	sampler_cache_ = std::make_unique<SamplerCache>();
 	blend_cache_ = std::make_unique<BlendCache>();
-	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
 	mesh_cache_ = std::make_unique<MeshCache>();
+	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
 
 	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_, *texture_cache_,
 		*program_cache_, *sampler_cache_, *blend_cache_, *frame_buffer_cache_);
-
 	sprite_renderer_ = std::make_unique<SpriteRenderer>(SPRITE_INSTANCES_PER_BATCH,
 		*graphics_base_, *program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
-
 	font_renderer_ = std::make_unique<FontRendererIndividual>(*graphics_base_,
 		*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
-
-	std::vector<FrameBufferAttachmentDescriptor> descriptors;
-
-	FrameBufferAttachmentDescriptor descriptor;
-	descriptor.format = GL_RGBA;
-	descriptor.internal_format = GL_RGBA16F;
-	descriptor.type = GL_FLOAT;
-
-	FrameBufferAttachmentDescriptor depth_stencil_descriptor;
-	depth_stencil_descriptor.format = GL_DEPTH_COMPONENT;
-	depth_stencil_descriptor.internal_format = GL_DEPTH_COMPONENT16;
-	depth_stencil_descriptor.type = GL_FLOAT;
-
-	FrameBufferAttachmentDescriptor depth_stencil_color_descriptor;
-	depth_stencil_color_descriptor.format = GL_RED;
-	depth_stencil_color_descriptor.internal_format = GL_R16F;
-	depth_stencil_color_descriptor.type = GL_FLOAT;
-
-	descriptors.push_back(descriptor);
-
-	size_t h;
-
-	msaa_fb_ = &frame_buffer_cache_->GetFromParameters(offscreen_msaa_name, h,
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
-		4, descriptors, &depth_stencil_descriptor);
-	
-	descriptors.push_back(depth_stencil_color_descriptor);
-
-	resolve_fb_ = &frame_buffer_cache_->GetFromParameters(offscreen_resolve_name, h,
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
-		0, descriptors, nullptr);
-
-	post_processing_->Add(std::move(std::make_unique<MsaaResolve>()));
-	post_processing_->Add(std::move(std::make_unique<PostFx>())); 
-
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
 		*sampler_cache_, *blend_cache_, *mesh_cache_);
 
+	gbuffer_ = MakeGbuffer();
+	gbuffer_comp_ = MakeGbufferComposition();
+
+	post_processing_->Add(std::move(std::make_unique<GbufferComp>()));
+	post_processing_->Add(std::move(std::make_unique<PostFx>())); 
+
 	glEnable(GL_CULL_FACE);
+	glDisable(GL_MULTISAMPLE);
 	glCullFace(GL_BACK); 
 }
 
@@ -78,14 +48,61 @@ void Renderer::Invoke(float frame_time)
 	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
 	
-	// Draw sprites to MSAA offscreen buffer
-	msaa_fb_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.40f, 0.28f, 0.20f, 1.0f);
+	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f);
 	mesh_renderer_->Draw();
-	//sprite_renderer_->Draw();
-	//font_renderer_->Draw();
-	msaa_fb_->UnbindDraw();
+	gbuffer_->UnbindDraw();
 
 	glDisable(GL_DEPTH_TEST);
 
 	post_processing_->Process();
+}
+
+FrameBuffer * Renderer::MakeGbuffer()
+{
+	std::vector<FrameBufferAttachmentDescriptor> descriptors;
+
+	FrameBufferAttachmentDescriptor albedo;
+	albedo.format = GL_RGB;
+	albedo.internal_format = GL_RGB16F;
+	albedo.type = GL_FLOAT;
+
+	FrameBufferAttachmentDescriptor position;
+	position.format = GL_RGB;
+	position.internal_format = GL_RGB16F;
+	position.type = GL_FLOAT;
+
+	FrameBufferAttachmentDescriptor normals;
+	normals.format = GL_RGB;
+	normals.internal_format = GL_RGB16F;
+	normals.type = GL_FLOAT;
+
+	FrameBufferAttachmentDescriptor depth;
+	depth.format = GL_DEPTH_COMPONENT;
+	depth.internal_format = GL_DEPTH_COMPONENT24;
+	depth.type = GL_FLOAT;
+
+	descriptors.push_back(albedo);
+	descriptors.push_back(position);
+	descriptors.push_back(normals);
+
+	size_t hash;
+	return &frame_buffer_cache_->GetFromParameters(gbuffer_name, hash,
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 0, descriptors, &depth);
+
+}
+
+FrameBuffer * graphics::Renderer::MakeGbufferComposition()
+{
+	std::vector<FrameBufferAttachmentDescriptor> descriptors;
+
+	FrameBufferAttachmentDescriptor composition;
+	composition.format = GL_RGB;
+	composition.internal_format = GL_RGB16F;
+	composition.type = GL_FLOAT;
+
+	descriptors.push_back(composition);
+
+	size_t hash;
+	return &frame_buffer_cache_->GetFromParameters(gbuffer_composition_name, hash,
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 0, descriptors, nullptr);
 }
