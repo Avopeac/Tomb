@@ -71,7 +71,7 @@ void SpriteRenderer::Push(const Sprite & sprite,
 	instance.transform = sprite.GetTransform();
 
 	size_t sampler_hash, blend_hash, texture_hash;
-	texture_cache_.GetFromFile(texture_hash, texture_path);
+	texture_cache_.GetFromFile(texture_hash, texture_path, true);
 	sampler_cache_.GetFromParameters(sampler_hash, mag, min, s, t);
 	blend_cache_.GetFromParameters(blend_hash, src_color_blend, src_alpha_blend,
 		dst_color_blend, dst_alpha_blend);

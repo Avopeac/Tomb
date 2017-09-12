@@ -66,11 +66,11 @@ namespace graphics
 
 		~TextureCache();
 
-		Texture &GetFromFile(size_t &hash, const std::string &path);
+		Texture &GetFromFile(size_t &hash, const std::string &path, bool mips);
 
 		Texture &GetFromHash(size_t hash);
 
-		Texture &GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name);
+		Texture &GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name, bool mips);
 
 	};
 }

@@ -24,9 +24,9 @@ namespace graphics
 		bool operator==(const MeshVertex &other) const
 		{
 			return position == other.position &&
-				normal == other.normal &&
+				normal == other.normal && 
 				texcoord == other.texcoord;
-		}
+		} 
 	};
 
 	struct Mesh

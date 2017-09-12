@@ -62,8 +62,13 @@ void MeshRenderer::Draw()
 		vertex_program_.SetUniform("u_model", (void*)glm::value_ptr(instance.model));
 		vertex_program_.SetUniform("u_normal", (void*)glm::value_ptr(normal_matrix));
 		fragment_program_.SetUniform("u_texture", (void*)&texture_id);
-		
-		instance.texture->Bind(0);
+
+		size_t h;
+		auto &sampler = sampler_cache_.GetFromParameters(h, graphics::MagnificationFiltering::Linear,
+			graphics::MinificationFiltering::LinearMipmapLinear, graphics::Wrapping::ClampToEdge, graphics::Wrapping::ClampToEdge);
+
+		sampler.Bind(texture_id);
+		instance.texture->Bind(texture_id);
 
 		if (instance.update)
 		{

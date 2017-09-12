@@ -5,7 +5,7 @@
 
 using namespace graphics;
 
-const std::string Renderer::gbuffer_name = "gbuffer_comp";
+const std::string Renderer::gbuffer_name = "gbuffer";
 const std::string Renderer::gbuffer_composition_name = "gbuffer_comp";
 
 Renderer::Renderer(GraphicsBase *graphics_base) :
@@ -53,7 +53,6 @@ void Renderer::Invoke(float frame_time)
 	gbuffer_->UnbindDraw();
 
 	glDisable(GL_DEPTH_TEST);
-
 	post_processing_->Process();
 }
 

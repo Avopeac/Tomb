@@ -130,7 +130,7 @@ Texture & TextureCache::GetFromHash(size_t hash)
 	return textures_[hash];
 }
 
-Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path)
+Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path, bool mips)
 {
 
 	hash = std::hash<std::string>{}(path);
@@ -138,7 +138,7 @@ Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path)
 	if (textures_.find(hash) == textures_.end())
 	{
 		Texture texture;
-		texture.Create(path, true);
+		texture.Create(path, mips);
 		textures_.insert({ hash, std::move(texture) });
 	}
 
@@ -146,14 +146,14 @@ Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path)
 
 }
 
-Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name)
+Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name, bool mips)
 {
 	hash = std::hash<std::string>{}(name);
 
 	if (textures_.find(hash) == textures_.end())
 	{
 		Texture texture;
-		texture.Create(surface, true);
+		texture.Create(surface, mips);
 		textures_.insert({ hash, std::move(texture) });
 	}
 	else

@@ -42,7 +42,6 @@ void PostFx::Apply(TextureCache & texture_cache, ProgramCache & program_cache,
 {
 	
 	fbo0_->UnbindDraw();
-	fbo0_->BindRead();
 
 	size_t num_attachments = fbo0_->GetColorAttachmentCount();
 
@@ -63,5 +62,4 @@ void PostFx::Apply(TextureCache & texture_cache, ProgramCache & program_cache,
 	this->Render();   
 	pipeline_.Unbind();    
 	 
-	fbo0_->UnbindRead();     
 } 

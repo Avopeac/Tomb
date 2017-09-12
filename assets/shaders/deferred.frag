@@ -1,8 +1,7 @@
 #version 440 core
 
-in vec3 v_direction;
-in vec3 v_position;
 in vec2 v_texcoord;
+in vec3 v_position;
 in vec3 v_normal;
 in vec3 v_color;
 

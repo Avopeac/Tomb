@@ -73,13 +73,6 @@ namespace graphics
 		
 		~FrameBuffer();
 
-		void Blit(Sint32 sx0, Sint32 sx1, Sint32 sy0, Sint32 sy1,
-			Sint32 dx0, Sint32 dx1, Sint32  dy0, Sint32 dy1, FrameBuffer * fbo);
-
-		void BindRead();
-
-		void UnbindRead();
-
 		void BindDraw(GLbitfield clear_flags, float r, float g, float b, float a);
 
 		void UnbindDraw();

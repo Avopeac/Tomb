@@ -39,9 +39,6 @@ void GbufferComp::Apply(TextureCache & texture_cache, ProgramCache & program_cac
 {
 
 	gbuffer_->UnbindDraw();
-	gbuffer_->BindRead();
-
-	gbuffer_comp_->UnbindRead();
 	gbuffer_comp_->BindDraw(GL_COLOR_BUFFER_BIT, 0, 0, 0, 1);
 
 	int32_t albedo_index = 0;
@@ -54,7 +51,9 @@ void GbufferComp::Apply(TextureCache & texture_cache, ProgramCache & program_cac
 	gbuffer_->BindColorAttachment(normal_index, normal_index);
 	gbuffer_->BindDepthStencilAttachment(depth_index);
 
-	pipeline_.Bind();
+	vertex_shader_->SetUniform("u_view", (void *)glm::value_ptr(graphics_base_->GetPerspView()));
+
+	pipeline_.Bind(); 
 	this->Render();
 	pipeline_.Unbind();
 
@@ -63,6 +62,5 @@ void GbufferComp::Apply(TextureCache & texture_cache, ProgramCache & program_cac
 	gbuffer_->UnbindColorAttachment(normal_index);
 	gbuffer_->UnbindDepthStencilAttachment();
 
-	gbuffer_->UnbindRead();
 	gbuffer_comp_->UnbindDraw();
 }

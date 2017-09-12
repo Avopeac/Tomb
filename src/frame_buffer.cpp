@@ -53,7 +53,14 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
 			target, depth_stencil_attachment_->GetId(), 0);
 	}
 
-	glDrawBuffers((GLsizei)attachment_enums.size(), attachment_enums.data());
+	if (attachment_enums.size() > 1)
+	{
+		glDrawBuffers((GLsizei)attachment_enums.size(), attachment_enums.data());
+	}
+	else
+	{
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	}
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	
@@ -75,40 +82,6 @@ FrameBuffer::FrameBuffer(Uint32 width, Uint32 height, Uint32 num_samples,
 
 FrameBuffer::~FrameBuffer()
 {
-}
-
-void FrameBuffer::Blit(Sint32 sx0, Sint32 sx1, Sint32 sy0, Sint32 sy1, 
-	Sint32 dx0, Sint32 dx1, Sint32  dy0, Sint32 dy1, FrameBuffer * fbo)
-{
-	if (fbo)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo->id_);
-	}
-	else
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	}
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
-	
-	GLenum buffer_bits = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-
-	glBlitFramebuffer(sx0, sy0, sx1, sy1, dx0, dy0, dx1, dy1, buffer_bits, GL_NEAREST);
-
-	if (glGetError() == GL_INVALID_OPERATION)
-	{
-		debug::Log(SDL_LOG_PRIORITY_WARN, SDL_LOG_CATEGORY_RENDER, "Could not blit to framebuffer properly.");
-	}
-}
-
-void FrameBuffer::BindRead()
-{
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
-}
-
-void FrameBuffer::UnbindRead()
-{
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
 void FrameBuffer::BindDraw(GLbitfield clear_flags, float r, float g, float b, float a)
@@ -236,10 +209,10 @@ FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name, size
 
 	out_hash = std::hash<std::string>{}(name);
 
-	if (buffers_.find(out_hash) != buffers_.end())
+	if (buffers_.find(out_hash) != buffers_.end()) 
 	{
-		return *buffers_[out_hash];
-	}
+		return *buffers_[out_hash]; 
+	} 
 
 	buffers_[out_hash] = std::make_unique<FrameBuffer>(width, height, num_samples,
 		descriptors, depth_stencil_descriptor);

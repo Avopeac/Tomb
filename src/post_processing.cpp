@@ -2,6 +2,8 @@
 
 using namespace graphics;
 
+const GraphicsBase * PostProcessEffect::graphics_base_ = nullptr;
+
 PostProcessing::PostProcessing(GraphicsBase &graphics_base, TextureCache & texture_cache, 
 	ProgramCache & program_cache, 
 	SamplerCache & sampler_cache, 
@@ -15,7 +17,7 @@ PostProcessing::PostProcessing(GraphicsBase &graphics_base, TextureCache & textu
 	frame_buffer_cache_(frame_buffer_cache)
 {
 	PostProcessEffect::Init(graphics_base_);
-}
+} 
 
 PostProcessing::~PostProcessing()
 {
@@ -43,6 +45,9 @@ GLuint PostProcessEffect::ebo_ = 0;
 
 void PostProcessEffect::Init(const GraphicsBase &graphics_base)
 {
+
+	graphics_base_ = &graphics_base;
+
 	size_t num_vertices = sizeof(graphics_base.quad_vertices) / sizeof(graphics_base.quad_vertices[0]);
 	size_t num_indices = sizeof(graphics_base.quad_indices) / sizeof(graphics_base.quad_indices[0]);
 

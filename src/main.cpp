@@ -2,8 +2,7 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 
-#include "glm/gtc/random.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include "keymap.h"
 
 #include "shader.h"
 #include "graphics.h"
@@ -55,6 +54,8 @@ Sint32 main(Sint32 argc, char * argv[])
 			{
 				running = false;
 			}
+
+			input::Keymap::Get().UpdateCurrentInput(event);
 		}
 
 		view.Update(renderer, (float)frame_time);
@@ -70,10 +71,17 @@ Sint32 main(Sint32 argc, char * argv[])
 
 		//renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
 			//glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
-				
+
+		if (input::Keymap::Get().KeyDown(input::Key::KeyK))
+		{
+			std::cout << "hello" << std::endl;
+		}
+				 
 		renderer.Invoke((float)frame_time);
 
 		SDL_GL_SwapWindow(graphics_base.GetWindow());
+
+		input::Keymap::Get().CarryCurrentInput();
 	}
 
 	TTF_Quit();

@@ -71,6 +71,12 @@
     <ClCompile Include="..\src\gbuffer_comp.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\debug_camera.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keymap.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -156,6 +162,15 @@
     </ClInclude>
     <ClInclude Include="..\src\gbuffer_comp.h">
       <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\abstract_camera.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\debug_camera.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keymap.h">
+      <Filter>Source\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

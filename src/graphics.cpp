@@ -75,7 +75,7 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 	ortho_far_ = 1.0f;
 	ortho_proj_ = glm::ortho(0.0f, (float)config.GetWindowWidth(), 0.0f, (float)config.GetWindowHeight(), ortho_near_, ortho_far_ );
 	ortho_view_ = glm::mat4(1);
-	ortho_view_proj_ = ortho_proj_ * ortho_view_;   
+	ortho_view_proj_ = ortho_proj_ * ortho_view_;
 
 	persp_near_ = 0.01f;
 	persp_far_ = 100.0f;
