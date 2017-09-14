@@ -16,6 +16,8 @@
 namespace graphics
 {
 
+	class Renderer;
+
 	class PostProcessEffect
 	{
 		static GLuint vao_, vbo_, ebo_;
@@ -38,7 +40,7 @@ namespace graphics
 			BlendCache &blend_cache,
 			FrameBufferCache &frame_buffer_cache) = 0;
 
-		static void Init(const GraphicsBase &graphics_base);
+		static void Init(const GraphicsBase &graphics_base, Renderer * renderer);
 
 		static void Render();
 
@@ -46,10 +48,12 @@ namespace graphics
 
 		static const GraphicsBase * graphics_base_;
 
+		static Renderer * renderer_;
 	};
 
 	class PostProcessing
 	{
+		Renderer * renderer_;
 		
 		GraphicsBase &graphics_base_;
 
@@ -67,7 +71,7 @@ namespace graphics
 
 	public:
 		
-		PostProcessing(GraphicsBase &graphics_base, TextureCache &texture_cache, 
+		PostProcessing(Renderer * renderer, GraphicsBase &graphics_base, TextureCache &texture_cache, 
 			ProgramCache &program_cache, 
 			SamplerCache &sampler_cache, 
 			BlendCache &blend_cache,

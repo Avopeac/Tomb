@@ -11,7 +11,6 @@
 #include "blend_mode.h"
 #include "logger.h"
 #include "timing.h"
-#include "sprite_renderer.h"
 #include "renderer.h"
 
 #include "maplogic.h"

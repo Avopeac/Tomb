@@ -8,14 +8,9 @@
 #include "texture.h"
 #include "sampler.h"
 #include "blend_mode.h"
-#include "sprite_renderer.h"
-//#include "font_renderer.h"
-#include "font_renderer_individual.h"
 #include "post_processing.h"
 #include "mesh.h"
 #include "mesh_renderer.h"
-
-#define SPRITE_INSTANCES_PER_BATCH 4000
 
 namespace graphics
 {
@@ -31,10 +26,8 @@ namespace graphics
 		std::unique_ptr<BlendCache> blend_cache_;
 		std::unique_ptr<MeshCache> mesh_cache_;
 		
-		std::unique_ptr<SpriteRenderer> sprite_renderer_;
 		std::unique_ptr<MeshRenderer> mesh_renderer_;
 		std::unique_ptr<PostProcessing> post_processing_;
-		std::unique_ptr<FontRendererIndividual> font_renderer_;
 
 		FrameBuffer * gbuffer_;
 		FrameBuffer * gbuffer_comp_;
@@ -48,11 +41,7 @@ namespace graphics
 
 		~Renderer();
 
-		inline SpriteRenderer &GetSpriteRenderer() { return *sprite_renderer_; }
-
 		inline MeshRenderer &GetMeshRenderer() { return *mesh_renderer_; }
-
-		inline FontRendererIndividual &GetFontRenderer() { return *font_renderer_; }
 
 		inline PostProcessing &GetPostProcessing() { return *post_processing_; }
 

@@ -18,12 +18,8 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	mesh_cache_ = std::make_unique<MeshCache>();
 	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
 
-	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_, *texture_cache_,
+	post_processing_ = std::make_unique<PostProcessing>(this, *graphics_base_, *texture_cache_,
 		*program_cache_, *sampler_cache_, *blend_cache_, *frame_buffer_cache_);
-	sprite_renderer_ = std::make_unique<SpriteRenderer>(SPRITE_INSTANCES_PER_BATCH,
-		*graphics_base_, *program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
-	font_renderer_ = std::make_unique<FontRendererIndividual>(*graphics_base_,
-		*program_cache_, *texture_cache_, *sampler_cache_, *blend_cache_);
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
 		*sampler_cache_, *blend_cache_, *mesh_cache_);
 
@@ -49,7 +45,7 @@ void Renderer::Invoke(float frame_time)
 	glDisable(GL_BLEND);
 	
 	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f);
-	mesh_renderer_->Draw();
+	mesh_renderer_->Draw(frame_time);
 	gbuffer_->UnbindDraw();
 
 	glDisable(GL_DEPTH_TEST);

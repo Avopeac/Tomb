@@ -5,12 +5,6 @@
     <ClCompile Include="..\src\graphics.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\sprite.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\sprite_renderer.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\third_party\jsmn.c">
       <Filter>Source\ThirdParty</Filter>
     </ClCompile>
@@ -44,12 +38,6 @@
     <ClCompile Include="..\src\renderer.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\font_renderer.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\font_renderer_individual.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\maplogic.cpp">
       <Filter>Source\Map</Filter>
     </ClCompile>
@@ -65,27 +53,18 @@
     <ClCompile Include="..\src\mesh_renderer.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\grid.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\gbuffer_comp.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\debug_camera.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\keymap.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\debug_camera.cpp">
+      <Filter>Source\Graphics.Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sprite.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sprite_renderer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\third_party\jsmn.h">
@@ -127,12 +106,6 @@
     <ClInclude Include="..\src\renderer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\font_renderer.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\font_renderer_individual.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\maplogic.h">
       <Filter>Source\Map</Filter>
     </ClInclude>
@@ -157,20 +130,17 @@
     <ClInclude Include="..\src\mesh.h">
       <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\grid.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\gbuffer_comp.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\abstract_camera.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\debug_camera.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keymap.h">
       <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\abstract_camera.h">
+      <Filter>Source\Graphics.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\debug_camera.h">
+      <Filter>Source\Graphics.Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +170,9 @@
     </Filter>
     <Filter Include="Source\Map">
       <UniqueIdentifier>{b35a8f34-2909-4be1-ac47-7b96855f9826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics.Camera">
+      <UniqueIdentifier>{9efc4032-0f25-43b0-ab35-812b272626f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

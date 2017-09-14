@@ -11,6 +11,8 @@
 #include "texture.h"
 #include "mesh.h"
 
+#include "debug_camera.h"
+
 namespace graphics
 {
 
@@ -55,6 +57,8 @@ namespace graphics
 
 		std::vector<MeshRenderInstance> meshes_;
 
+		DebugCamera camera_;
+
 	public:
 
 		MeshRenderer(GraphicsBase & graphics_base, ProgramCache & program_cache, TextureCache & texture_cache, 
@@ -64,6 +68,8 @@ namespace graphics
 
 		void Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model, const std::function<void(Program *, Program *)> &update);
 
-		void Draw();
+		void Draw(float delta_time);
+
+		DebugCamera &GetCamera() { return camera_; }
 	};
 }

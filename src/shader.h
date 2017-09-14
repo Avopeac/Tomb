@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "SDL_assert.h"
 #include "GL/glew.h"
 
 #include "logger.h"
@@ -49,7 +50,7 @@ namespace graphics
 		{
 			if (this == &other)
 			{
-				assert(false);
+				SDL_assert(false);
 			}
 
 			hash_ = other.hash_;
@@ -64,7 +65,7 @@ namespace graphics
 		{
 			if (this == &other)
 			{
-				assert(false);
+				SDL_assert(false);
 			}
 				
 			hash_ = other.hash_;

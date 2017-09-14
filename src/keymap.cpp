@@ -14,7 +14,7 @@ void Keymap::UpdateCurrentInput(SDL_Event & e)
 
 void Keymap::CarryCurrentInput()
 {
-	SDL_memcpy(previous_, current_, sizeof(Uint16) * (Uint16)Key::KeyCount);
+	SDL_memcpy(previous_, current_, sizeof(Keystate) * (Uint16)Key::KeyCount);
 }
 
 bool Keymap::KeyDown(Key key)
@@ -39,13 +39,13 @@ void Keymap::UpdateKey(SDL_Keysym &keysym, Keystate state)
 {
 	switch (keysym.mod)
 	{
-		case SDL_Keymod::KMOD_CAPS: { current_[(Uint16)Key::KeyModCapsLock] = state; }
-		case SDL_Keymod::KMOD_LALT: { current_[(Uint16)Key::KeyModLeftAlt] = state; }
-		case SDL_Keymod::KMOD_RALT: { current_[(Uint16)Key::KeyModRightAlt] = state; }
-		case SDL_Keymod::KMOD_LCTRL: { current_[(Uint16)Key::KeyModLeftCtrl] = state; }
-		case SDL_Keymod::KMOD_RCTRL: { current_[(Uint16)Key::KeyModRightCtrl] = state; }
-		case SDL_Keymod::KMOD_LSHIFT: { current_[(Uint16)Key::KeyModLeftShift] = state; }
-		case SDL_Keymod::KMOD_RSHIFT: { current_[(Uint16)Key::KeyModRightShift] = state; }
+		case SDL_Keymod::KMOD_CAPS: { current_[(Uint16)Key::KeyModCapsLock] = state; } break;
+		case SDL_Keymod::KMOD_LALT: { current_[(Uint16)Key::KeyModLeftAlt] = state; }  break;
+		case SDL_Keymod::KMOD_RALT: { current_[(Uint16)Key::KeyModRightAlt] = state; }  break;
+		case SDL_Keymod::KMOD_LCTRL: { current_[(Uint16)Key::KeyModLeftCtrl] = state; }  break;
+		case SDL_Keymod::KMOD_RCTRL: { current_[(Uint16)Key::KeyModRightCtrl] = state; }  break;
+		case SDL_Keymod::KMOD_LSHIFT: { current_[(Uint16)Key::KeyModLeftShift] = state; }  break;
+		case SDL_Keymod::KMOD_RSHIFT: { current_[(Uint16)Key::KeyModRightShift] = state; }  break;
 		default: break;
 	}
 
@@ -94,6 +94,7 @@ void Keymap::UpdateKey(SDL_Keysym &keysym, Keystate state)
 		case SDLK_SPACE: { current_[(Uint16)Key::KeySpace] = state; } break;
 		case SDLK_RETURN: { current_[(Uint16)Key::KeyEnter] = state; } break;
 		case SDLK_DELETE: { current_[(Uint16)Key::KeyDelete] = state; } break;
+		case SDLK_TAB: { current_[(Uint16)Key::KeyTab] = state; } break;
 		default: break;
 	}
 }
