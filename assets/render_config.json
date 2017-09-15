@@ -1,0 +1,82 @@
+{
+	"resources" : 
+	{
+
+		"render_target" : 
+		{ 
+			"name" : "gbuffer",
+			"attachment" : { "name" : "albedo", "width" : "config_window_width", "height" : "config_window_height", "format" : "rgba16f" },
+			"attachment" : { "name" : "position", "width" : "config_window_width", "height" : "config_window_height", "format" : "rgba16f" },
+			"attachment" : { "name" : "normal", "width" : "config_window_width", "height" : "config_window_height", "format" : "rgba16f" },
+			"attachment" : { "name" : "depth", "width" : "config_window_width", "height" : "config_window_height", "format" : "d24" }
+		},
+
+		"render_target" :
+		{
+			"name" : "shadow_map",
+			"attachment" : { "name" : "depth", "width" : "config_window_width", "height" : "config_window_height", "format" : "d24" }
+		},
+
+		"render_target" :
+		{
+			"name" : "gbuffer_lighting",
+			"attachment" : { "name" : "color", "width" : "config_window_width", "height" : "config_window_height", "format" : "rgba16f" }
+		}
+	},
+
+	"passes" :
+	{
+		"pass" :
+		{
+			"name" : "deferred",
+			"camera" : "main_camera",
+			"mesh" : "all",
+			"input" : "mesh::albedo",
+			"input" : "mesh::specular",
+			"input" : "mesh::normal",
+			"input" : "mesh::alpha",
+			"target" : "gbuffer::albedo",
+			"target" : "gbuffer::position",
+			"target" : "gbuffer::normal",
+			"target" : "gbuffer::depth",
+			"vertex_shader" : "deferred.vert",
+			"fragment_shader" : "deferred.frag"
+		},
+
+		"pass" :
+		{
+			"name" : "shadows",
+			"camera" : "sun_camera",
+			"mesh" : "all",
+			"target" : "shadow_map::depth",
+			"vertex_shader" : "depth_pass.vert",
+			"fragment_shader" : "depth_pass.frag"
+		},
+
+		"pass" : 
+		{
+			"name" : "lighting",
+			"camera" : "none",
+			"mesh" : "quad",
+			"input" : "gbuffer::albedo",
+			"input" : "gbuffer::position",
+			"input" : "gbuffer::normal",
+			"input" : "gbuffer::depth",
+			"input" : "shadow_map::depth",
+			"target" : "gbuffer_lighting::color",
+			"vertex_shader" : "gbuffer_comp.vert",
+			"fragment_shader" : "gbuffer_comp.frag"
+		},
+
+		"pass" : 
+		{
+			"name" : "post_processing",
+			"camera" : "none",
+			"mesh" : "quad",
+			"input" : "gbuffer_lighting::color",
+			"target" : "back_buffer",
+			"vertex_shader" : "post_fx.vert",
+			"fragment_shader" : "post_fx.frag"
+		}
+	}
+}

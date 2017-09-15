@@ -27,7 +27,7 @@ namespace game
 			logic_(logic), 
 			hex_texture_hash_(0),
 			hex_mesh_hash_(0)
-		{
+		{ 
 
 		}
 
@@ -45,10 +45,10 @@ namespace game
 			static float angle = 0.0f;
 			angle += 500.0f * delta_time;
 
-			if (hex_texture_hash_ == 0 && hex_mesh_hash_ == 0)
+			if (hex_texture_hash_ == 0 && hex_mesh_hash_ == 0) 
 			{
 				renderer.GetMeshCache().GetFromFile(hex_mesh_hash_, "hex", "assets/models/hex_1.obj");
-				renderer.GetTextureCache().GetFromFile(hex_texture_hash_, "assets/textures/hex_tex.png", true);
+				renderer.GetTextureCache().GetFromFile(hex_texture_hash_, "assets/textures/white_dot.png", true);
 			}
 			
 			glm::mat4 model =

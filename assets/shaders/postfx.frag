@@ -21,6 +21,7 @@ uniform sampler2D u_texture1;
 void main()
 {
 	vec4 tex_col = texture(u_texture0, v_texcoord); 
-	o_color.rgb = reinhardt_tonemap(tex_col.rgb);
-	o_color.rgb = gamma_correction(o_color.rgb);
+	//o_color.rgb = reinhardt_tonemap(tex_col.rgb);
+	//o_color.rgb = gamma_correction(o_color.rgb);
+	o_color.rgb = tex_col.rgb;
 }

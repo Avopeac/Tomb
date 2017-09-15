@@ -18,7 +18,7 @@ MeshRenderer::MeshRenderer(GraphicsBase & graphics_base,
 	blend_cache_(blend_cache),
 	mesh_cache_(mesh_cache),
 	camera_(graphics_base, "Debug camera",
-		glm::vec4(0, 0, 5, 1), glm::vec4(0, 0, -1, 0), glm::vec4(0, 1, 0, 0))
+		glm::vec4(0, 0, 0, 1), glm::vec4(0, 0, -1, 0), glm::vec4(0, 1, 0, 0))
 {
 	size_t h;
 	vertex_program_ = program_cache_.GetFromFile("deferred.vert", h, GL_VERTEX_SHADER, "assets/shaders/deferred.vert");

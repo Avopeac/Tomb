@@ -51,7 +51,10 @@ void GbufferComp::Apply(TextureCache & texture_cache, ProgramCache & program_cac
 	gbuffer_->BindColorAttachment(normal_index, normal_index);
 	gbuffer_->BindDepthStencilAttachment(depth_index);
 
-	vertex_shader_->SetUniform("u_view", 
+	vertex_shader_->SetUniform("u_view",
+		(void *)glm::value_ptr(renderer_->GetMeshRenderer().GetCamera().GetView()));
+
+	fragment_shader_->SetUniform("u_view",
 		(void *)glm::value_ptr(renderer_->GetMeshRenderer().GetCamera().GetView()));
 
 	pipeline_.Bind(); 
