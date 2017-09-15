@@ -30,41 +30,27 @@ void DebugCamera::Update(float delta_time)
 	using namespace input;
 	auto &keymap = Keymap::Get();
 
-	bool relative_mouse = SDL_GetRelativeMouseMode() == 0 ? true : false;
+	float look_speed = 15.0f;
+	if (keymap.KeyPressed(Key::KeyUp)) { euler_angles_.y += look_speed * delta_time / graphics_base_.GetBackbufferHeight(); }
+	if (keymap.KeyPressed(Key::KeyDown)) { euler_angles_.y -= look_speed * delta_time / graphics_base_.GetBackbufferHeight(); }
+	if (keymap.KeyPressed(Key::KeyLeft)) { euler_angles_.x -= look_speed * delta_time  / graphics_base_.GetBackbufferWidth(); }
+	if (keymap.KeyPressed(Key::KeyRight)) { euler_angles_.x += look_speed * delta_time / graphics_base_.GetBackbufferWidth(); }
 
-	if (relative_mouse)
-	{
-		int x, y;
-		float mouse_speed = 15.0f;
-		SDL_GetRelativeMouseState(&x, &y);
-		euler_angles_.x += mouse_speed * delta_time * (float)x / graphics_base_.GetBackbufferWidth();
-		euler_angles_.y += mouse_speed * delta_time * (float)y / graphics_base_.GetBackbufferHeight();
-		euler_angles_.z += 0.0f;
-	}
-
-	std::cout << euler_angles_.x << " " << euler_angles_.y << std::endl;
-
-	if (keymap.KeyDown(Key::KeyTab))
-	{
-		SDL_bool is_relative = relative_mouse ? SDL_TRUE : SDL_FALSE;
-		int show_cursor = relative_mouse ? 0 : 1;
-		SDL_SetRelativeMouseMode(is_relative);
-		SDL_ShowCursor(show_cursor);
-	}
-	
 	glm::mat4 rotation = glm::eulerAngleYXZ(
-		glm::radians(360.0f * euler_angles_.x),
-		glm::radians(euler_angles_.y),
+		glm::two_pi<float>() - glm::radians(1000.0f * euler_angles_.x),
+		glm::two_pi<float>() - glm::radians(1000.0f * euler_angles_.y),
 		glm::radians(euler_angles_.z));
-
+	 
 	glm::vec4 velocity{};
 	glm::vec4 initial_right = glm::normalize(glm::vec4(glm::cross(glm::vec3(initial_forward_), 
-		glm::vec3(initial_up_)), 0));
-
+		glm::vec3(initial_up_)), 0)); 
+	 
 	if (keymap.KeyPressed(Key::KeyW)) { velocity += initial_forward_; }
 	if (keymap.KeyPressed(Key::KeyS)) {	velocity -= initial_forward_; }
 	if (keymap.KeyPressed(Key::KeyA)) {	velocity -= initial_right; }
 	if (keymap.KeyPressed(Key::KeyD)) {	velocity += initial_right; }
+	if (keymap.KeyPressed(Key::KeyQ)) { velocity += initial_up_; }
+	if (keymap.KeyPressed(Key::KeyE)) { velocity -= initial_up_; }
 
 	forward_ = rotation * initial_forward_;
 	up_ = rotation * initial_up_;

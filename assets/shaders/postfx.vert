@@ -14,5 +14,4 @@ void main()
 
 	gl_Position = vec4(2.0 * i_position - 1.0, 0, 1);
 	v_texcoord = 0.5 + 0.5 * gl_Position.xy;
-	v_texcoord.y = 1.0 - v_texcoord.y;
 }

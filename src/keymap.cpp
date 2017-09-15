@@ -95,6 +95,10 @@ void Keymap::UpdateKey(SDL_Keysym &keysym, Keystate state)
 		case SDLK_RETURN: { current_[(Uint16)Key::KeyEnter] = state; } break;
 		case SDLK_DELETE: { current_[(Uint16)Key::KeyDelete] = state; } break;
 		case SDLK_TAB: { current_[(Uint16)Key::KeyTab] = state; } break;
+		case SDLK_UP: { current_[(Uint16)Key::KeyUp] = state; } break;
+		case SDLK_DOWN: { current_[(Uint16)Key::KeyDown] = state; } break;
+		case SDLK_LEFT: { current_[(Uint16)Key::KeyLeft] = state; } break;
+		case SDLK_RIGHT: { current_[(Uint16)Key::KeyRight] = state; } break;
 		default: break;
 	}
 }

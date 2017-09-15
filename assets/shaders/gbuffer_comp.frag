@@ -14,15 +14,16 @@ uniform sampler2D u_depth;
 
 void main()
 {
+  vec3 sun = normalize(v_sun);
+
 	vec3 albedo = texture(u_albedo, v_texcoord).rgb; 
-  vec3 normal = texture(u_normal, v_texcoord).rgb; 
+  vec3 normal = normalize(texture(u_normal, v_texcoord).rgb);
+  float ndotl = max(0.0, dot(normal, sun));
+
   vec3 direction = -normalize(texture(u_position, v_texcoord).rgb);
-
-  float ndotl = max(0.0, dot(normal, v_sun));
-
-  vec3 half_vec = normalize(direction + v_sun);
+  vec3 half_vec = normalize(direction + sun);
   float ndoth = max(0.0, dot(normal, half_vec));
-  float specularity = pow(ndoth, 70.0);
+  float specularity = pow(ndoth, 90.0);
 
-	o_color = albedo * ndotl; //+ vec3(specularity);
+	o_color = albedo * ndotl + vec3(specularity);
 }
