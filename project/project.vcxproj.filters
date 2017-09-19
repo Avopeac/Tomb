@@ -65,6 +65,12 @@
     <ClCompile Include="..\src\resource_manager.cpp">
       <Filter>Source\Graphics.Resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\scene_node.cpp">
+      <Filter>Source\Graphics.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scene_manager.cpp">
+      <Filter>Source\Graphics.Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -148,6 +154,12 @@
     <ClInclude Include="..\src\resource_manager.h">
       <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\scene_manager.h">
+      <Filter>Source\Graphics.Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scene_node.h">
+      <Filter>Source\Graphics.Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -179,6 +191,9 @@
     </Filter>
     <Filter Include="Source\Graphics.Camera">
       <UniqueIdentifier>{9efc4032-0f25-43b0-ab35-812b272626f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics.Scene">
+      <UniqueIdentifier>{81aff054-673d-4d70-b4b4-edc32de5ec23}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -140,6 +140,8 @@
     <ClCompile Include="..\src\renderer.cpp" />
     <ClCompile Include="..\src\resource_manager.cpp" />
     <ClCompile Include="..\src\sampler.cpp" />
+    <ClCompile Include="..\src\scene_manager.cpp" />
+    <ClCompile Include="..\src\scene_node.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
     <ClCompile Include="..\src\third_party\jsmn.c" />
@@ -168,6 +170,8 @@
     <ClInclude Include="..\src\renderer.h" />
     <ClInclude Include="..\src\resource_manager.h" />
     <ClInclude Include="..\src\sampler.h" />
+    <ClInclude Include="..\src\scene_manager.h" />
+    <ClInclude Include="..\src\scene_node.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\texture.h" />
     <ClInclude Include="..\src\third_party\jsmn.h" />
