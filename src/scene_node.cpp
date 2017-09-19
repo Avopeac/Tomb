@@ -19,6 +19,10 @@ SceneNode::~SceneNode()
 
 void SceneNode::Update(float delta_time)
 {
+	for (auto &it : child_nodes_)
+	{
+		it.second->Update(delta_time);
+	}
 }
 
 size_t SceneNode::AddChild(SceneNode * child_node)
