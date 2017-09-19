@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "SDL.h"
 
 #include "glm/glm.hpp"
@@ -7,6 +9,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "config.h"
+#include "debug_camera.h"
 
 namespace graphics
 {
@@ -32,6 +35,8 @@ namespace graphics
 			2, 1, 3
 		};
 
+		std::unique_ptr<DebugCamera> camera_;
+
 	public:
 
 		GraphicsBase(const input::Config &config);
@@ -51,5 +56,7 @@ namespace graphics
 		inline const Uint32 * const GetQuadIndices() const { return quad_indices_; }
 
 		inline const glm::vec2 * const GetQuadVertices() const { return quad_vertices_; }
+
+		inline DebugCamera &GetCamera() const { return *camera_.get(); }
 	};
 }

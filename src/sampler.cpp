@@ -6,7 +6,6 @@ Sampler::Sampler() :
 	unit_(0), id_(0)
 {
 	glGenSamplers(1, &id_);
-	//glCreateSamplers(1, &id_);
 }
 
 Sampler::~Sampler()
@@ -60,21 +59,26 @@ SamplerCache::~SamplerCache()
 	}
 }
 
-Sampler &SamplerCache::GetFromParameters(size_t &hash, MagnificationFiltering mag,
-	MinificationFiltering min, Wrapping s, Wrapping t)
+Sampler &SamplerCache::GetFromParameters(MagnificationFiltering mag,
+	MinificationFiltering min, Wrapping s, Wrapping t, size_t * hash)
 {
-	hash = static_cast<GLint>(mag) | static_cast<GLint>(min);
-	hash ^= static_cast<GLint>(s) | static_cast<GLint>(t);
+	size_t parameter_hash = static_cast<GLint>(mag) | static_cast<GLint>(min);
+	parameter_hash ^= static_cast<GLint>(s) | static_cast<GLint>(t);
 
-	if (samplers_.find(hash) == samplers_.end())
+	if (samplers_.find(parameter_hash) == samplers_.end())
 	{
 		Sampler sampler;
 		sampler.SetFiltering(mag, min);
 		sampler.SetWrap(s, t);
-		samplers_.insert({ hash, std::move(sampler) });
+		samplers_.insert({ parameter_hash, std::move(sampler) });
 	}
 
-	return samplers_[hash];
+	if (hash)
+	{
+		*hash = parameter_hash;
+	}
+
+	return samplers_[parameter_hash];
 }
 
 Sampler & graphics::SamplerCache::GetFromHash(size_t hash)

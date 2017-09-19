@@ -51,27 +51,32 @@ BlendCache::~BlendCache()
 {
 }
 
-Blend &BlendCache::GetFromParameters(size_t & hash, BlendMode src_color_blend, BlendMode src_alpha_blend, 
-	BlendMode dst_color_blend, BlendMode dst_alpha_blend)
+Blend &BlendCache::GetFromParameters(BlendMode src_color_blend, BlendMode src_alpha_blend, 
+	BlendMode dst_color_blend, BlendMode dst_alpha_blend, size_t * hash)
 {
-	hash = static_cast<GLenum>(src_color_blend) | static_cast<GLenum>(dst_color_blend);
-	hash ^= static_cast<GLenum>(src_alpha_blend) | static_cast<GLenum>(dst_alpha_blend);
+	size_t name_hash = static_cast<GLenum>(src_color_blend) | static_cast<GLenum>(dst_color_blend);
+	name_hash ^= static_cast<GLenum>(src_alpha_blend) | static_cast<GLenum>(dst_alpha_blend);
 
-	if (blends_.find(hash) == blends_.end())
+	if (blends_.find(name_hash) == blends_.end())
 	{
 		Blend blend(src_color_blend, dst_color_blend,
 			src_alpha_blend, dst_alpha_blend);
 
-		blends_.insert({ hash, std::move(blend) });
+		blends_.insert({ name_hash , std::move(blend) });
 
 	}
 
-	return blends_[hash];
+	if (hash)
+	{
+		*hash = name_hash;
+	}
+
+	return blends_[name_hash];
 }
 
-Blend & BlendCache::GetFromParameters(size_t & hash, BlendMode src_blend, BlendMode dst_blend)
+Blend & BlendCache::GetFromParameters(BlendMode src_blend, BlendMode dst_blend, size_t * hash)
 {
-	return GetFromParameters(hash, src_blend, src_blend, dst_blend, dst_blend);
+	return GetFromParameters(src_blend, src_blend, dst_blend, dst_blend, hash);
 }
 
 Blend & BlendCache::GetFromHash(size_t hash)

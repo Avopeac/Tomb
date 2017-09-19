@@ -8,7 +8,6 @@
 #include "GL/glew.h"
 
 #include "disposable.h"
-#include "frame_buffer.h"
 
 namespace graphics
 {
@@ -66,11 +65,11 @@ namespace graphics
 
 		~TextureCache();
 
-		Texture &GetFromFile(size_t &hash, const std::string &path, bool mips);
+		Texture &GetFromFile(const std::string &path, bool mips, size_t * hash = nullptr);
 
 		Texture &GetFromHash(size_t hash);
 
-		Texture &GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name, bool mips);
+		Texture &GetFromSurface(SDL_Surface * surface, const std::string &name, bool mips, size_t * hash = nullptr);
 
 	};
 }

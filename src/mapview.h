@@ -5,6 +5,7 @@
 #include "mapmodel.h"
 #include "maplogic.h"
 #include "renderer.h"
+#include "resource_manager.h"
 
 #include "grid.h"
 
@@ -47,8 +48,10 @@ namespace game
 
 			if (hex_texture_hash_ == 0 && hex_mesh_hash_ == 0) 
 			{
-				renderer.GetMeshCache().GetFromFile(hex_mesh_hash_, "hex", "assets/models/hex_1.obj");
-				renderer.GetTextureCache().GetFromFile(hex_texture_hash_, "assets/textures/white_dot.png", true);
+				auto &mesh_cache = graphics::ResourceManager::Get().GetMeshCache();
+				auto &texture_cache = graphics::ResourceManager::Get().GetTextureCache();
+				mesh_cache.GetFromFile("hex", "assets/models/hex_1.obj", &hex_mesh_hash_);
+				texture_cache.GetFromFile("assets/textures/white_dot.png", true, &hex_texture_hash_);
 			}
 			
 			glm::mat4 model =

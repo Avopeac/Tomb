@@ -4,20 +4,13 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <GL/glew.h>
 
 #include "graphics.h"
-
-#include "shader.h"
-#include "texture.h"
-#include "sampler.h"
-#include "blend_mode.h"
-#include "frame_buffer.h"
+#include "resource_manager.h"
 
 namespace graphics
 {
-
-	class Renderer;
-
 	class PostProcessEffect
 	{
 		static GLuint vao_, vbo_, ebo_;
@@ -28,19 +21,11 @@ namespace graphics
 
 		virtual ~PostProcessEffect() {};
 
-		virtual void Init(TextureCache &texture_cache,
-			ProgramCache &program_cache,
-			SamplerCache &sampler_cache,
-			BlendCache &blend_cache,
-			FrameBufferCache &frame_buffer_cache) = 0;
+		virtual void Init() = 0;
 
-		virtual void Apply(TextureCache &texture_cache, 
-			ProgramCache &program_cache,
-			SamplerCache &sampler_cache,
-			BlendCache &blend_cache,
-			FrameBufferCache &frame_buffer_cache) = 0;
+		virtual void Apply() = 0;
 
-		static void Init(const GraphicsBase &graphics_base, Renderer * renderer);
+		static void Init(const GraphicsBase &graphics_base);
 
 		static void Render();
 
@@ -48,34 +33,17 @@ namespace graphics
 
 		static const GraphicsBase * graphics_base_;
 
-		static Renderer * renderer_;
 	};
 
 	class PostProcessing
-	{
-		Renderer * renderer_;
-		
+	{		
 		GraphicsBase &graphics_base_;
-
-		TextureCache &texture_cache_;
-
-		ProgramCache &program_cache_;
-
-		SamplerCache &sampler_cache_;
-
-		BlendCache &blend_cache_;
-
-		FrameBufferCache &frame_buffer_cache_;
 
 		std::vector<std::unique_ptr<PostProcessEffect>> effects_;
 
 	public:
 		
-		PostProcessing(Renderer * renderer, GraphicsBase &graphics_base, TextureCache &texture_cache, 
-			ProgramCache &program_cache, 
-			SamplerCache &sampler_cache, 
-			BlendCache &blend_cache,
-			FrameBufferCache &frame_buffer_cache);
+		PostProcessing(GraphicsBase &graphics_base);
 
 		~PostProcessing();
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "post_processing.h"
 
 namespace graphics
@@ -27,13 +25,9 @@ namespace graphics
 		~GbufferComp();
 
 		// Inherited via PostProcessEffect
-		virtual void Init(TextureCache & texture_cache, ProgramCache & program_cache,
-			SamplerCache & sampler_cache, BlendCache & blend_cache,
-			FrameBufferCache & frame_buffer_cache) override;
+		virtual void Init() override;
 
-		virtual void Apply(TextureCache & texture_cache, ProgramCache & program_cache,
-			SamplerCache & sampler_cache, BlendCache & blend_cache,
-			FrameBufferCache & frame_buffer_cache) override;
+		virtual void Apply() override;
 
 	};
 }

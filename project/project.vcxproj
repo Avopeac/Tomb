@@ -138,6 +138,7 @@
     <ClCompile Include="..\src\postfx.cpp" />
     <ClCompile Include="..\src\post_processing.cpp" />
     <ClCompile Include="..\src\renderer.cpp" />
+    <ClCompile Include="..\src\resource_manager.cpp" />
     <ClCompile Include="..\src\sampler.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="..\src\postfx.h" />
     <ClInclude Include="..\src\post_processing.h" />
     <ClInclude Include="..\src\renderer.h" />
+    <ClInclude Include="..\src\resource_manager.h" />
     <ClInclude Include="..\src\sampler.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\texture.h" />

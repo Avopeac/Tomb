@@ -1,5 +1,5 @@
 #include "renderer.h"
-
+#include "resource_manager.h"
 #include "gbuffer_comp.h"
 #include "postfx.h"
 
@@ -11,17 +11,9 @@ const std::string Renderer::gbuffer_composition_name = "gbuffer_comp";
 Renderer::Renderer(GraphicsBase *graphics_base) :
 	graphics_base_(graphics_base)
 {
-	program_cache_ = std::make_unique<ProgramCache>();
-	texture_cache_ = std::make_unique<TextureCache>();
-	sampler_cache_ = std::make_unique<SamplerCache>();
-	blend_cache_ = std::make_unique<BlendCache>();
-	mesh_cache_ = std::make_unique<MeshCache>();
-	frame_buffer_cache_ = std::make_unique<FrameBufferCache>();
 
-	post_processing_ = std::make_unique<PostProcessing>(this, *graphics_base_, *texture_cache_,
-		*program_cache_, *sampler_cache_, *blend_cache_, *frame_buffer_cache_);
-	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_, *program_cache_, *texture_cache_,
-		*sampler_cache_, *blend_cache_, *mesh_cache_);
+	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_);
+	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_);
 
 	gbuffer_ = MakeGbuffer();
 	gbuffer_comp_ = MakeGbufferComposition();
@@ -43,6 +35,9 @@ void Renderer::Invoke(float frame_time)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
+
+	auto &camera = graphics_base_->GetCamera();
+	camera.Update(frame_time);
 	
 	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f);
 	mesh_renderer_->Draw(frame_time);
@@ -80,9 +75,11 @@ FrameBuffer * Renderer::MakeGbuffer()
 	descriptors.push_back(position);
 	descriptors.push_back(normals);
 
-	size_t hash;
-	return &frame_buffer_cache_->GetFromParameters(gbuffer_name, hash,
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 0, descriptors, &depth);
+
+	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
+	return &frame_buffer_cache.GetFromParameters(gbuffer_name,
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
+		0, descriptors, &depth);
 
 }
 
@@ -97,7 +94,8 @@ FrameBuffer * graphics::Renderer::MakeGbufferComposition()
 
 	descriptors.push_back(composition);
 
-	size_t hash;
-	return &frame_buffer_cache_->GetFromParameters(gbuffer_composition_name, hash,
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 0, descriptors, nullptr);
+	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
+	return &frame_buffer_cache.GetFromParameters(gbuffer_composition_name, 
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
+		0, descriptors, nullptr);
 }

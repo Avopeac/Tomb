@@ -62,6 +62,9 @@
     <ClCompile Include="..\src\debug_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\resource_manager.cpp">
+      <Filter>Source\Graphics.Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -141,6 +144,9 @@
     </ClInclude>
     <ClInclude Include="..\src\debug_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\resource_manager.h">
+      <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

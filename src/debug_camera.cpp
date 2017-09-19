@@ -1,20 +1,24 @@
 #include "debug_camera.h"
-#include "keymap.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include <iostream>
+#include "keymap.h"
 
 using namespace graphics;
 
-DebugCamera::DebugCamera(const GraphicsBase &graphics_base, const std::string & name, 
+DebugCamera::DebugCamera(const std::string & name, float aspect_ratio, float fov, 
+	float near, float far,
 	const glm::vec4 &position,
 	const glm::vec4 &forward,
 	const glm::vec4 &up) :
 	AbstractCamera(name, position, forward, up),
-	graphics_base_(graphics_base),
+	aspect_ratio_(aspect_ratio),
+	fov_(fov),
+	near_(near),
+	far_(far),
 	initial_position(position),
 	initial_forward_(forward),
 	initial_up_(up)
@@ -30,11 +34,11 @@ void DebugCamera::Update(float delta_time)
 	using namespace input;
 	auto &keymap = Keymap::Get();
 
-	float look_speed = 15.0f;
-	if (keymap.KeyPressed(Key::KeyUp)) { euler_angles_.y += look_speed * delta_time / graphics_base_.GetBackbufferHeight(); }
-	if (keymap.KeyPressed(Key::KeyDown)) { euler_angles_.y -= look_speed * delta_time / graphics_base_.GetBackbufferHeight(); }
-	if (keymap.KeyPressed(Key::KeyLeft)) { euler_angles_.x -= look_speed * delta_time  / graphics_base_.GetBackbufferWidth(); }
-	if (keymap.KeyPressed(Key::KeyRight)) { euler_angles_.x += look_speed * delta_time / graphics_base_.GetBackbufferWidth(); }
+	float look_speed = 0.001f;
+	if (keymap.KeyPressed(Key::KeyUp)) { euler_angles_.y += look_speed * delta_time; }
+	if (keymap.KeyPressed(Key::KeyDown)) { euler_angles_.y -= look_speed * delta_time; }
+	if (keymap.KeyPressed(Key::KeyLeft)) { euler_angles_.x -= look_speed * delta_time; }
+	if (keymap.KeyPressed(Key::KeyRight)) { euler_angles_.x += look_speed * delta_time; }
 
 	glm::mat4 rotation = glm::eulerAngleYXZ(
 		glm::two_pi<float>() - glm::radians(1000.0f * euler_angles_.x),
@@ -61,10 +65,10 @@ void DebugCamera::Update(float delta_time)
 	}
 
 	view_ = glm::lookAt(glm::vec3(position_), glm::vec3(position_) + glm::vec3(forward_), glm::vec3(up_));
-	inv_view_ = glm::inverse(view_);
-	proj_ = glm::perspective(glm::radians(60.0f), (float)graphics_base_.GetBackbufferWidth() / graphics_base_.GetBackbufferHeight(), 0.01f, 100.0f);
-	inv_proj_ = glm::inverse(proj_);
+	proj_ = glm::perspective(fov_, aspect_ratio_, near_, far_);
 	viewproj_ = proj_ * view_;
+	inv_view_ = glm::inverse(view_);
+	inv_proj_ = glm::inverse(proj_);
 	inv_viewproj_ = glm::inverse(viewproj_);
 }
 

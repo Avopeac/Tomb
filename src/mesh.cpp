@@ -15,26 +15,25 @@ MeshCache::~MeshCache()
 {
 }
 
-Mesh & MeshCache::GetFromFile(size_t & hash, const std::string &name, const std::string & file_path)
+Mesh & MeshCache::GetFromFile(const std::string &name, const std::string & file_path, size_t * hash)
 {
 	std::string error;
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes{};
 	std::vector<tinyobj::material_t> materials{};
 
-	hash = std::hash<std::string>{}(name);
-	if (meshes_.find(hash) != meshes_.end())
+	size_t name_hash = std::hash<std::string>{}(name);
+	if (meshes_.find(name_hash) != meshes_.end())
 	{
-		return meshes_[hash];
+		return meshes_[name_hash];
 	}
-
 
 	if (tinyobj::LoadObj(&attrib, &shapes, &materials, &error, file_path.c_str()))
 	{
 
-		meshes_.insert({ hash, Mesh() });
+		meshes_.insert({ name_hash, Mesh() });
 
-		auto &mesh = meshes_[hash];
+		auto &mesh = meshes_[name_hash];
 		mesh.num_meshes = (Uint32)shapes.size();
 		mesh.num_indices.reserve(shapes.size());
 
@@ -129,7 +128,12 @@ Mesh & MeshCache::GetFromFile(size_t & hash, const std::string &name, const std:
 		assert(false && "Could not load mesh from file.");
 	}
 
-	return meshes_[hash];
+	if (hash)
+	{
+		*hash = name_hash;
+	}
+
+	return meshes_[name_hash];
 }
 
 Mesh & MeshCache::GetFromHash(size_t hash)

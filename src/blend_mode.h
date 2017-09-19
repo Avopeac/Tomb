@@ -82,10 +82,10 @@ namespace graphics
 
 		~BlendCache();
 
-		Blend &GetFromParameters(size_t &hash, BlendMode src_color_blend, BlendMode src_alpha_blend,
-			BlendMode dst_color_blend, BlendMode dst_alpha_blend);
+		Blend &GetFromParameters(BlendMode src_color_blend, BlendMode src_alpha_blend,
+			BlendMode dst_color_blend, BlendMode dst_alpha_blend, size_t * hash = nullptr);
 
-		Blend &GetFromParameters(size_t &hash, BlendMode src_blend, BlendMode dst_blend);
+		Blend &GetFromParameters(BlendMode src_blend, BlendMode dst_blend, size_t * hash = nullptr);
 
 		Blend &GetFromHash(size_t hash);
 

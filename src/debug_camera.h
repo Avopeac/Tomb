@@ -2,23 +2,22 @@
 
 #include "abstract_camera.h"
 
-#include "graphics.h"
-
 namespace graphics
 {
 	class DebugCamera : public AbstractCamera
 	{
-
-		const GraphicsBase &graphics_base_;
-
 		glm::vec3 euler_angles_;
 		glm::vec4 initial_position;
 		glm::vec4 initial_forward_;
 		glm::vec4 initial_up_;
+		float aspect_ratio_;
+		float fov_;
+		float near_, far_;
 
 	public:
 
-		DebugCamera(const GraphicsBase &graphics_base, const std::string &name, 
+		DebugCamera(const std::string &name, float aspect_ratio, float fov,
+			float near, float far,
 			const glm::vec4 &position,
 			const glm::vec4 &direction,
 			const glm::vec4 &up);

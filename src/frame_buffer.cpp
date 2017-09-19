@@ -200,24 +200,30 @@ FrameBufferCache::~FrameBufferCache()
 	}
 }
 
-FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name, size_t & out_hash, 
+FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name,
 	Uint32 width, Uint32 height, Uint32 num_samples, 
 	const std::vector<FrameBufferAttachmentDescriptor>& descriptors, 
-	const FrameBufferAttachmentDescriptor * const depth_stencil_descriptor)
+	const FrameBufferAttachmentDescriptor * const depth_stencil_descriptor,
+	size_t * hash)
 {
 	SDL_assert(!name.empty());
 
-	out_hash = std::hash<std::string>{}(name);
+	size_t name_hash = std::hash<std::string>{}(name);
 
-	if (buffers_.find(out_hash) != buffers_.end()) 
+	if (buffers_.find(name_hash) != buffers_.end()) 
 	{
-		return *buffers_[out_hash]; 
+		return *buffers_[name_hash]; 
 	} 
 
-	buffers_[out_hash] = std::make_unique<FrameBuffer>(width, height, num_samples,
+	buffers_[name_hash] = std::make_unique<FrameBuffer>(width, height, num_samples,
 		descriptors, depth_stencil_descriptor);
 
-	return *buffers_[out_hash];
+	if (hash)
+	{
+		*hash = name_hash;
+	}
+
+	return *buffers_[name_hash];
 }
 
 FrameBuffer & FrameBufferCache::GetFromName(const std::string & name)

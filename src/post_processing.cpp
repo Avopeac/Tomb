@@ -6,22 +6,10 @@ using namespace graphics;
 
 const GraphicsBase * PostProcessEffect::graphics_base_ = nullptr;
 
-Renderer * PostProcessEffect::renderer_ = nullptr;
-
-PostProcessing::PostProcessing(Renderer * renderer, GraphicsBase &graphics_base, TextureCache & texture_cache, 
-	ProgramCache & program_cache, 
-	SamplerCache & sampler_cache, 
-	BlendCache & blend_cache,
-	FrameBufferCache & frame_buffer_cache)
-	: renderer_(renderer),
-	graphics_base_(graphics_base),
-	texture_cache_(texture_cache),
-	program_cache_(program_cache),
-	sampler_cache_(sampler_cache),
-	blend_cache_(blend_cache),
-	frame_buffer_cache_(frame_buffer_cache)
+PostProcessing::PostProcessing(GraphicsBase &graphics_base)
+	: graphics_base_(graphics_base)
 {
-	PostProcessEffect::Init(graphics_base_, renderer_);
+	PostProcessEffect::Init(graphics_base_);
 } 
 
 PostProcessing::~PostProcessing()
@@ -31,16 +19,14 @@ PostProcessing::~PostProcessing()
 void PostProcessing::Add(std::unique_ptr<PostProcessEffect> effect)
 {
 	effects_.push_back(std::move(effect));
-	effects_.back()->Init(texture_cache_, program_cache_,
-		sampler_cache_, blend_cache_, frame_buffer_cache_);
+	effects_.back()->Init();
 }
 
 void PostProcessing::Process()
 {
 	for (auto &effect : effects_)
 	{
-		effect->Apply(texture_cache_, program_cache_, sampler_cache_, 
-			blend_cache_, frame_buffer_cache_);
+		effect->Apply();
 	}
 }
 
@@ -48,11 +34,10 @@ GLuint PostProcessEffect::vao_ = 0;
 GLuint PostProcessEffect::vbo_ = 0;
 GLuint PostProcessEffect::ebo_ = 0; 
 
-void PostProcessEffect::Init(const GraphicsBase &graphics_base, Renderer * renderer)
+void PostProcessEffect::Init(const GraphicsBase &graphics_base)
 {
 
 	graphics_base_ = &graphics_base;
-	renderer_ = renderer;
 
 	size_t num_vertices = graphics_base_->GetNumQuadVertices();
 	size_t num_indices = graphics_base_->GetNumQuadIndices();

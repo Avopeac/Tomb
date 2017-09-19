@@ -4,11 +4,7 @@
 
 #include "keymap.h"
 
-#include "shader.h"
 #include "graphics.h"
-#include "texture.h"
-#include "sampler.h"
-#include "blend_mode.h"
 #include "logger.h"
 #include "timing.h"
 #include "renderer.h"

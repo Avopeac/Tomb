@@ -2,7 +2,6 @@
 
 #include <functional>
 
-#include "SDL.h"
 #include "SDL_image.h"
 
 using namespace graphics;
@@ -130,36 +129,47 @@ Texture & TextureCache::GetFromHash(size_t hash)
 	return textures_[hash];
 }
 
-Texture &TextureCache::GetFromFile(size_t &hash, const std::string & path, bool mips)
+Texture &TextureCache::GetFromFile(const std::string & path, bool mips, size_t * hash)
 {
 
-	hash = std::hash<std::string>{}(path);
+	size_t path_hash = std::hash<std::string>{}(path);
 
-	if (textures_.find(hash) == textures_.end())
+	if (textures_.find(path_hash) == textures_.end())
 	{
 		Texture texture;
 		texture.Create(path, mips);
-		textures_.insert({ hash, std::move(texture) });
+		textures_.insert({ path_hash, std::move(texture) });
 	}
 
-	return textures_[hash];
+
+	if (hash)
+	{
+		*hash = path_hash;
+	}
+
+	return textures_[path_hash];
 
 }
 
-Texture &TextureCache::GetFromSurface(size_t &hash, SDL_Surface * surface, const std::string &name, bool mips)
+Texture &TextureCache::GetFromSurface(SDL_Surface * surface, const std::string &name, bool mips, size_t * hash)
 {
-	hash = std::hash<std::string>{}(name);
+	size_t path_hash = std::hash<std::string>{}(name);
 
-	if (textures_.find(hash) == textures_.end())
+	if (textures_.find(path_hash) == textures_.end())
 	{
 		Texture texture;
 		texture.Create(surface, mips);
-		textures_.insert({ hash, std::move(texture) });
+		textures_.insert({ path_hash, std::move(texture) });
 	}
 	else
 	{
 		SDL_assert(false); // We should never ever get the same hash based on name
 	}
 
-	return textures_[hash];
+	if (hash)
+	{
+		*hash = path_hash;
+	}
+
+	return textures_[path_hash];
 }

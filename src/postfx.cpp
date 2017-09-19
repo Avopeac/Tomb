@@ -14,14 +14,14 @@ PostFx::~PostFx()
 {
 }
 
-void PostFx::Init(TextureCache & texture_cache, ProgramCache & program_cache, 
-	SamplerCache & sampler_cache, BlendCache & blend_cache, 
-	FrameBufferCache & frame_buffer_cache)
+void PostFx::Init()
 {
-	size_t h;
 
-	vertex_shader_ = &program_cache.GetFromFile(v_name_, h, GL_VERTEX_SHADER, v_path_);
-	fragment_shader_ = &program_cache.GetFromFile(f_name_, h, GL_FRAGMENT_SHADER, f_path_);
+	auto &program_cache = ResourceManager::Get().GetProgramCache();
+	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
+
+	vertex_shader_ = &program_cache.GetFromFile(v_name_, GL_VERTEX_SHADER, v_path_);
+	fragment_shader_ = &program_cache.GetFromFile(f_name_, GL_FRAGMENT_SHADER, f_path_);
 
 	pipeline_.SetStages(*vertex_shader_);
 	pipeline_.SetStages(*fragment_shader_);
@@ -36,9 +36,7 @@ void PostFx::Init(TextureCache & texture_cache, ProgramCache & program_cache,
 	}
 }
 
-void PostFx::Apply(TextureCache & texture_cache, ProgramCache & program_cache, 
-	SamplerCache & sampler_cache, BlendCache & blend_cache, 
-	FrameBufferCache & frame_buffer_cache)
+void PostFx::Apply()
 {
 	
 	fbo0_->UnbindDraw();

@@ -1,7 +1,8 @@
 #include "gbuffer_comp.h"
 
-#include "renderer.h"
+#include "glm/glm.hpp"
 
+#include "renderer.h"
 #include "timing.h"
 
 using namespace graphics;
@@ -14,11 +15,12 @@ GbufferComp::~GbufferComp()
 {
 }
 
-void GbufferComp::Init(TextureCache & texture_cache, ProgramCache & program_cache, SamplerCache & sampler_cache, BlendCache & blend_cache, FrameBufferCache & frame_buffer_cache)
+void GbufferComp::Init()
 {
-	size_t h;
-	vertex_shader_ = &program_cache.GetFromFile(v_name_, h, GL_VERTEX_SHADER, v_path_);
-	fragment_shader_ = &program_cache.GetFromFile(f_name_, h, GL_FRAGMENT_SHADER, f_path_);
+	auto &program_cache = ResourceManager::Get().GetProgramCache();
+	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
+	vertex_shader_ = &program_cache.GetFromFile(v_name_, GL_VERTEX_SHADER, v_path_);
+	fragment_shader_ = &program_cache.GetFromFile(f_name_, GL_FRAGMENT_SHADER, f_path_);
 	pipeline_.SetStages(*vertex_shader_);
 	pipeline_.SetStages(*fragment_shader_);
 
@@ -35,7 +37,7 @@ void GbufferComp::Init(TextureCache & texture_cache, ProgramCache & program_cach
 	fragment_shader_->SetUniform("u_depth", (void*)&depth_index);
 }
 
-void GbufferComp::Apply(TextureCache & texture_cache, ProgramCache & program_cache, SamplerCache & sampler_cache, BlendCache & blend_cache, FrameBufferCache & frame_buffer_cache)
+void GbufferComp::Apply()
 {
 
 	gbuffer_->UnbindDraw();
@@ -51,11 +53,12 @@ void GbufferComp::Apply(TextureCache & texture_cache, ProgramCache & program_cac
 	gbuffer_->BindColorAttachment(normal_index, normal_index);
 	gbuffer_->BindDepthStencilAttachment(depth_index);
 
+	auto &camera = graphics_base_->GetCamera();
 	vertex_shader_->SetUniform("u_view",
-		(void *)glm::value_ptr(renderer_->GetMeshRenderer().GetCamera().GetView()));
+		(void *)glm::value_ptr(camera.GetView()));
 
 	fragment_shader_->SetUniform("u_view",
-		(void *)glm::value_ptr(renderer_->GetMeshRenderer().GetCamera().GetView()));
+		(void *)glm::value_ptr(camera.GetView()));
 
 	pipeline_.Bind(); 
 	this->Render();
