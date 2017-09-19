@@ -34,7 +34,7 @@ void DebugCamera::Update(float delta_time)
 	using namespace input;
 	auto &keymap = Keymap::Get();
 
-	float look_speed = 0.001f;
+	float look_speed = 0.05f;
 	if (keymap.KeyPressed(Key::KeyUp)) { euler_angles_.y += look_speed * delta_time; }
 	if (keymap.KeyPressed(Key::KeyDown)) { euler_angles_.y -= look_speed * delta_time; }
 	if (keymap.KeyPressed(Key::KeyLeft)) { euler_angles_.x -= look_speed * delta_time; }
@@ -72,6 +72,3 @@ void DebugCamera::Update(float delta_time)
 	inv_viewproj_ = glm::inverse(viewproj_);
 }
 
-void DebugCamera::Render()
-{
-}

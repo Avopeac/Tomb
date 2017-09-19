@@ -1,9 +1,28 @@
 #include "scene_manager.h"
 
-graphics::SceneManager::SceneManager()
+using namespace scene;
+
+SceneManager::SceneManager()
 {
+	root_ = new SceneNode("root");
 }
 
-graphics::SceneManager::~SceneManager()
+SceneManager::~SceneManager()
 {
+	delete root_;
+}
+
+void SceneManager::Update(float delta_time)
+{
+	root_->Update(delta_time);
+}
+
+SceneNode * SceneManager::GetNode(const std::string & name)
+{
+	return GetNode(std::hash<std::string>{}(name));
+}
+
+SceneNode * SceneManager::GetNode(size_t id)
+{
+	return root_->GetChild(id);
 }

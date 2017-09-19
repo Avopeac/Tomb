@@ -2,7 +2,7 @@
 
 #include "scene_node.h"
 
-namespace graphics
+namespace scene
 {
 	class SceneManager
 	{
@@ -15,7 +15,12 @@ namespace graphics
 
 		~SceneManager();
 
+		void Update(float delta_time);
+
 		SceneNode &GetRoot() { return *root_; }
 
+		SceneNode * GetNode(const std::string &name);
+
+		SceneNode * GetNode(size_t id);
 	};
 }

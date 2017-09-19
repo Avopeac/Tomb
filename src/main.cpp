@@ -13,6 +13,8 @@
 #include "mapmodel.h"
 #include "mapview.h"
 
+#include "scene_manager.h"
+
 Sint32 main(Sint32 argc, char * argv[])
 {
 	// Initialization
@@ -32,6 +34,12 @@ Sint32 main(Sint32 argc, char * argv[])
 	game::MapLogic logic;
 	game::MapModel model(4, 4, game::MapShapeType::FlatHexagon, logic);
 	game::MapView view(model, logic);
+
+	scene::SceneManager manager;
+
+	auto &root = manager.GetRoot();
+	root.AddChild(new scene::SceneNode("monkey"));
+	root.AddChild(new scene::SceneNode("spider"));
 	
 	// Main loop
 	bool running = true;

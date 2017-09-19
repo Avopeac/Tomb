@@ -26,7 +26,5 @@ namespace graphics
 
 		virtual void Update(float delta_time) override;
 
-		virtual void Render() override;
-
 	};
 }

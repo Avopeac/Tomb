@@ -42,8 +42,6 @@ namespace graphics
 
 		virtual void Update(float delta_time) = 0;
 
-		virtual void Render() = 0;
-
 		const glm::mat4 &GetView() const { return view_; }
 
 		const glm::mat4 &GetProj() const { return proj_; }
