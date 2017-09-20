@@ -59,8 +59,8 @@ namespace graphics
 
 		inline const glm::vec2 * const GetQuadVertices() const { return quad_vertices_; }
 
-		inline MainCamera &GetMainCamera() const { return *camera_.get(); }
+		inline AbstractCamera * GetMainCamera() const { return camera_.get(); }
 
-		inline ShadowCamera &GetShadowCamera() const { return *shadow_camera_.get(); }
+		inline AbstractCamera * GetShadowCamera() const { return shadow_camera_.get(); }
 	};
 }

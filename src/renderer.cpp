@@ -38,12 +38,12 @@ void Renderer::Invoke(float frame_time)
 	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
 
-	auto &camera = graphics_base_->GetMainCamera();
-	camera.Update(frame_time);
-	
-	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f);
+	auto * main_camera = graphics_base_->GetMainCamera();
+	auto * shadow_camera = graphics_base_->GetShadowCamera();
+
+	main_camera->Update(frame_time);
+	shadow_camera->Update(frame_time);
 	mesh_renderer_->Draw(frame_time);
-	gbuffer_->UnbindDraw();
 
 	glDisable(GL_DEPTH_TEST);
 	post_processing_->Process();
@@ -104,5 +104,15 @@ FrameBuffer * graphics::Renderer::MakeGbufferComposition()
 
 FrameBuffer * graphics::Renderer::MakeShadowMap()
 {
-	return nullptr;
+	std::vector<FrameBufferAttachmentDescriptor> descriptors;
+
+	FrameBufferAttachmentDescriptor depth;
+	depth.format = GL_DEPTH_COMPONENT;
+	depth.internal_format = GL_DEPTH_COMPONENT24;
+	depth.type = GL_FLOAT;
+
+	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
+	return &frame_buffer_cache.GetFromParameters(shadow_map_name,
+		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
+		0, descriptors, &depth);
 }

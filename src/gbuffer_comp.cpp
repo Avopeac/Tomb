@@ -53,12 +53,12 @@ void GbufferComp::Apply()
 	gbuffer_->BindColorAttachment(normal_index, normal_index);
 	gbuffer_->BindDepthStencilAttachment(depth_index);
 
-	auto &camera = graphics_base_->GetMainCamera();
+	auto * camera = graphics_base_->GetMainCamera();
 	vertex_shader_->SetUniform("u_view",
-		(void *)glm::value_ptr(camera.GetView()));
+		(void *)glm::value_ptr(camera->GetView()));
 
 	fragment_shader_->SetUniform("u_view",
-		(void *)glm::value_ptr(camera.GetView()));
+		(void *)glm::value_ptr(camera->GetView()));
 
 	pipeline_.Bind(); 
 	this->Render();

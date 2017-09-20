@@ -2,7 +2,6 @@
 
 #include <unordered_map>
 #include <string>
-
 #include "graphics.h"
 #include "resource_manager.h"
 
@@ -29,10 +28,6 @@ namespace graphics
 	class MeshRenderer
 	{
 		const size_t max_instances_ = 2048;
-
-		Program vertex_program_;
-
-		Program fragment_program_;
 
 		ProgramPipeline pipeline_;
 

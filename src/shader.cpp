@@ -21,6 +21,19 @@ ProgramCache::~ProgramCache()
 
 Program & ProgramCache::GetFromFile(const std::string & name, GLenum program_type, const std::string & path, size_t * hash)
 {
+	size_t name_hash = std::hash<std::string>{}(name);
+	
+	if (programs_.find(name_hash) != programs_.end())
+	{
+		if (hash)
+		{
+			*hash = name_hash;
+		}
+
+		return programs_[name_hash];
+	}
+
+
 	input::FileReader reader;
 	std::string source = reader.ReadTextFile(path);
 	const char * source_ptr = source.c_str();
@@ -90,7 +103,6 @@ Program & ProgramCache::GetFromFile(const std::string & name, GLenum program_typ
 		glDeleteShader(shader_id);
 	}
 
-	size_t name_hash = std::hash<std::string>{}(name);
 	programs_.insert({ name_hash, Program(name_hash, program_id, program_type) });
 
 	if (hash)

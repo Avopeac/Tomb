@@ -26,7 +26,7 @@ ShadowCamera::~ShadowCamera()
 void ShadowCamera::Update(float delta_time)
 {
 	proj_ = glm::ortho(0.0f, width_, 0.0f, height_, near_, far_);
-	view_ = glm::lookAt(glm::vec3(position_), glm::vec3(position_ + forward_), glm::vec3(up_));
+	view_ = glm::lookAt(glm::vec3(position_), glm::vec3(forward_), glm::vec3(up_));
 	view_proj_ = proj_ * view_;
 	inv_proj_ = glm::inverse(proj_);
 	inv_view_ = glm::inverse(view_);

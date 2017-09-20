@@ -123,7 +123,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
-    <ClCompile Include="..\src\debug_camera.cpp" />
+    <ClCompile Include="..\src\main_camera.cpp" />
     <ClCompile Include="..\src\file.cpp" />
     <ClCompile Include="..\src\frame_buffer.cpp" />
     <ClCompile Include="..\src\gbuffer_comp.cpp" />
@@ -143,6 +143,7 @@
     <ClCompile Include="..\src\scene_manager.cpp" />
     <ClCompile Include="..\src\scene_node.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
+    <ClCompile Include="..\src\shadow_camera.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
     <ClCompile Include="..\src\third_party\jsmn.c" />
   </ItemGroup>
@@ -150,7 +151,7 @@
     <ClInclude Include="..\src\blend_mode.h" />
     <ClInclude Include="..\src\abstract_camera.h" />
     <ClInclude Include="..\src\config.h" />
-    <ClInclude Include="..\src\debug_camera.h" />
+    <ClInclude Include="..\src\main_camera.h" />
     <ClInclude Include="..\src\disposable.h" />
     <ClInclude Include="..\src\frame_buffer.h" />
     <ClInclude Include="..\src\graphics.h" />
@@ -170,9 +171,12 @@
     <ClInclude Include="..\src\renderer.h" />
     <ClInclude Include="..\src\resource_manager.h" />
     <ClInclude Include="..\src\sampler.h" />
+    <ClInclude Include="..\src\scene_component.h" />
     <ClInclude Include="..\src\scene_manager.h" />
     <ClInclude Include="..\src\scene_node.h" />
+    <ClInclude Include="..\src\scene_object.h" />
     <ClInclude Include="..\src\shader.h" />
+    <ClInclude Include="..\src\shadow_camera.h" />
     <ClInclude Include="..\src\texture.h" />
     <ClInclude Include="..\src\third_party\jsmn.h" />
     <ClInclude Include="..\src\timing.h" />

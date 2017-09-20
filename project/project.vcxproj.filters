@@ -59,17 +59,20 @@
     <ClCompile Include="..\src\keymap.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\debug_camera.cpp">
-      <Filter>Source\Graphics.Camera</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\resource_manager.cpp">
       <Filter>Source\Graphics.Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\src\scene_node.cpp">
-      <Filter>Source\Graphics.Scene</Filter>
+      <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\src\scene_manager.cpp">
-      <Filter>Source\Graphics.Scene</Filter>
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shadow_camera.cpp">
+      <Filter>Source\Graphics.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main_camera.cpp">
+      <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,17 +151,26 @@
     <ClInclude Include="..\src\abstract_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\debug_camera.h">
-      <Filter>Source\Graphics.Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\resource_manager.h">
       <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\src\scene_manager.h">
-      <Filter>Source\Graphics.Scene</Filter>
+      <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\src\scene_node.h">
-      <Filter>Source\Graphics.Scene</Filter>
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scene_object.h">
+      <Filter>Source\Scene.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scene_component.h">
+      <Filter>Source\Scene.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shadow_camera.h">
+      <Filter>Source\Graphics.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\main_camera.h">
+      <Filter>Source\Graphics.Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -192,8 +204,11 @@
     <Filter Include="Source\Graphics.Camera">
       <UniqueIdentifier>{9efc4032-0f25-43b0-ab35-812b272626f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Graphics.Scene">
+    <Filter Include="Source\Scene">
       <UniqueIdentifier>{81aff054-673d-4d70-b4b4-edc32de5ec23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene.Object">
+      <UniqueIdentifier>{d0d83326-4188-48c9-b3b9-6e3982e6d617}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
