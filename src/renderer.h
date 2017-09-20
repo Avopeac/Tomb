@@ -16,11 +16,13 @@ namespace graphics
 		std::unique_ptr<MeshRenderer> mesh_renderer_;
 		std::unique_ptr<PostProcessing> post_processing_;
 
+		FrameBuffer * shadow_map_;
 		FrameBuffer * gbuffer_;
 		FrameBuffer * gbuffer_comp_;
 
 	public:
 
+		static const std::string shadow_map_name;
 		static const std::string gbuffer_name;
 		static const std::string gbuffer_composition_name;
 
@@ -39,5 +41,7 @@ namespace graphics
 		FrameBuffer * MakeGbuffer();
 		
 		FrameBuffer * MakeGbufferComposition();
+
+		FrameBuffer * MakeShadowMap();
 	};
 }

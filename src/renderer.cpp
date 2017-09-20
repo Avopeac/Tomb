@@ -5,6 +5,7 @@
 
 using namespace graphics;
 
+const std::string Renderer::shadow_map_name = "shadow_map";
 const std::string Renderer::gbuffer_name = "gbuffer";
 const std::string Renderer::gbuffer_composition_name = "gbuffer_comp";
 
@@ -15,6 +16,7 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_);
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_);
 
+	shadow_map_ = MakeShadowMap();
 	gbuffer_ = MakeGbuffer();
 	gbuffer_comp_ = MakeGbufferComposition();
 
@@ -36,7 +38,7 @@ void Renderer::Invoke(float frame_time)
 	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
 
-	auto &camera = graphics_base_->GetCamera();
+	auto &camera = graphics_base_->GetMainCamera();
 	camera.Update(frame_time);
 	
 	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f);
@@ -98,4 +100,9 @@ FrameBuffer * graphics::Renderer::MakeGbufferComposition()
 	return &frame_buffer_cache.GetFromParameters(gbuffer_composition_name, 
 		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
 		0, descriptors, nullptr);
+}
+
+FrameBuffer * graphics::Renderer::MakeShadowMap()
+{
+	return nullptr;
 }

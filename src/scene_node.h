@@ -4,6 +4,8 @@
 #include <limits>
 #include <unordered_map>
 
+#include "scene_object.h"
+
 namespace scene
 {
 	class SceneNode
@@ -13,6 +15,8 @@ namespace scene
 		SceneNode * parent_node_ = nullptr;
 
 		std::unordered_map<size_t, SceneNode *> child_nodes_;
+
+		std::vector<SceneObject> objects_;
 
 	public:
 

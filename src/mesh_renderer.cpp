@@ -38,7 +38,7 @@ void MeshRenderer::Draw(float delta_time)
 
 	pipeline_.Bind();
 		
-	auto &camera = graphics_base_.GetCamera();
+	auto &camera = graphics_base_.GetMainCamera();
 
 	for (int i = 0; i < meshes_.size(); ++i)
 	{

@@ -71,7 +71,7 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 	window_width_ = config.GetWindowWidth();
 	window_height_ = config.GetWindowHeight();
 
-	camera_ = std::make_unique<DebugCamera>("Debug camera", 
+	camera_ = std::make_unique<MainCamera>("Debug camera", 
 		(float)GetBackbufferWidth() / GetBackbufferHeight(),
 		glm::radians(60.0f),
 		0.01f,

@@ -9,7 +9,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "config.h"
-#include "debug_camera.h"
+#include "main_camera.h"
+#include "shadow_camera.h"
 
 namespace graphics
 {
@@ -35,7 +36,8 @@ namespace graphics
 			2, 1, 3
 		};
 
-		std::unique_ptr<DebugCamera> camera_;
+		std::unique_ptr<MainCamera> camera_;
+		std::unique_ptr<ShadowCamera> shadow_camera_;
 
 	public:
 
@@ -57,6 +59,8 @@ namespace graphics
 
 		inline const glm::vec2 * const GetQuadVertices() const { return quad_vertices_; }
 
-		inline DebugCamera &GetCamera() const { return *camera_.get(); }
+		inline MainCamera &GetMainCamera() const { return *camera_.get(); }
+
+		inline ShadowCamera &GetShadowCamera() const { return *shadow_camera_.get(); }
 	};
 }
