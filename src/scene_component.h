@@ -7,6 +7,8 @@ namespace scene {
 	class SceneComponent
 	{
 
+	protected:
+
 		SceneObject * object_ = nullptr;
 
 	public:
