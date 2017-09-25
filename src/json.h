@@ -3,7 +3,7 @@
 #include <string>
 
 #include "file.h"
-#include "third_party/jsmn.h"
+#include "third_party/jsmn/jsmn.h"
 
 namespace input
 {

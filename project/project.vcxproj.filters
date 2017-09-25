@@ -5,9 +5,6 @@
     <ClCompile Include="..\src\graphics.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\third_party\jsmn.c">
-      <Filter>Source\ThirdParty</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\config.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
@@ -74,13 +71,19 @@
     <ClCompile Include="..\src\main_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mesh_component.cpp">
+      <Filter>Source\Scene.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\light_component.cpp">
+      <Filter>Source\Scene.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\third_party\jsmn\jsmn.c">
+      <Filter>Source\ThirdParty\jsmn</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
       <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\third_party\jsmn.h">
-      <Filter>Source\ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="..\src\logger.h">
       <Filter>Source\Debug</Filter>
@@ -172,6 +175,18 @@
     <ClInclude Include="..\src\main_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\mesh_component.h">
+      <Filter>Source\Scene.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\light_component.h">
+      <Filter>Source\Scene.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\third_party\jsmn\jsmn.h">
+      <Filter>Source\ThirdParty\jsmn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lua_script.h">
+      <Filter>Source\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
@@ -209,6 +224,12 @@
     </Filter>
     <Filter Include="Source\Scene.Object">
       <UniqueIdentifier>{d0d83326-4188-48c9-b3b9-6e3982e6d617}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Script">
+      <UniqueIdentifier>{07cf40cc-acd5-496d-98c4-6a5bdff6eba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty\jsmn">
+      <UniqueIdentifier>{f95b3ae8-8644-4e16-bd3f-c8b2384e483e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

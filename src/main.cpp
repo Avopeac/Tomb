@@ -3,6 +3,7 @@
 #include "SDL_ttf.h"
 
 #include "keymap.h"
+#include "lua_script.h"
 
 #include "graphics.h"
 #include "logger.h"
@@ -41,6 +42,10 @@ Sint32 main(Sint32 argc, char * argv[])
 	root.AddChild(new scene::SceneNode("monkey"));
 	root.AddChild(new scene::SceneNode("spider"));
 	
+	script::LuaScript script("assets/scripts/test.lua");
+	auto w = script.getLua<float>("WindowWidth");
+
+
 	// Main loop
 	bool running = true;
 	double previous_time = util::GetSeconds();

@@ -8,27 +8,24 @@
 
 namespace scene {
 
-	struct Drawable
+	struct Mesh
 	{
-		bool flush;
 		size_t mesh;
 		glm::mat4 transform;
 	};
 
-	class DrawableComponent : public SceneComponent
+	class MeshComponent : public SceneComponent
 	{
 		
-		std::vector<Drawable> transient_drawables_;
-
-		std::vector<Drawable> constant_drawables_;
+		std::vector<Mesh> drawables_;
 
 	public:
 
-		DrawableComponent() {};
+		MeshComponent() {};
 
-		~DrawableComponent() {};
+		~MeshComponent() {};
 
-		void Push(Drawable && drawable);
+		void Push(Mesh && drawable);
 
 		// Inherited via SceneComponent
 		virtual void Initialize() override;

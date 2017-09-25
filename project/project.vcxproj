@@ -72,7 +72,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>tinyobjloader_deb.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>minilua.lib;lua51.lib;luajit.lib;tinyobjloader_deb.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)..\prebuild.bat"</Command>
@@ -106,7 +106,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>tinyobjloader_rel.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>minilua.lib;lua51.lib;luajit.lib;tinyobjloader_rel.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2test.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -123,6 +123,8 @@
   <ItemGroup>
     <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
+    <ClCompile Include="..\src\light_component.cpp" />
+    <ClCompile Include="..\src\mesh_component.cpp" />
     <ClCompile Include="..\src\main_camera.cpp" />
     <ClCompile Include="..\src\file.cpp" />
     <ClCompile Include="..\src\frame_buffer.cpp" />
@@ -145,12 +147,15 @@
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\shadow_camera.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
-    <ClCompile Include="..\src\third_party\jsmn.c" />
+    <ClCompile Include="..\src\third_party\jsmn\jsmn.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\blend_mode.h" />
     <ClInclude Include="..\src\abstract_camera.h" />
     <ClInclude Include="..\src\config.h" />
+    <ClInclude Include="..\src\light_component.h" />
+    <ClInclude Include="..\src\lua_script.h" />
+    <ClInclude Include="..\src\mesh_component.h" />
     <ClInclude Include="..\src\main_camera.h" />
     <ClInclude Include="..\src\disposable.h" />
     <ClInclude Include="..\src\frame_buffer.h" />
@@ -178,7 +183,7 @@
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\shadow_camera.h" />
     <ClInclude Include="..\src\texture.h" />
-    <ClInclude Include="..\src\third_party\jsmn.h" />
+    <ClInclude Include="..\src\third_party\jsmn\jsmn.h" />
     <ClInclude Include="..\src\timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
