@@ -45,5 +45,11 @@ namespace graphics
 
 		void Draw(float delta_time);
 
+	private:
+
+		void RenderShadows();
+
+		void RenderGeometry();
+
 	};
 }

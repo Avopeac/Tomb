@@ -17,11 +17,21 @@ in vec2 v_texcoord;
 uniform float u_time;
 uniform sampler2D u_texture0;
 uniform sampler2D u_texture1;
+uniform sampler2D u_shadow;
 
 void main()
 {
 	vec4 tex_col = texture(u_texture0, v_texcoord); 
-	//o_color.rgb = reinhardt_tonemap(tex_col.rgb);
-	//o_color.rgb = gamma_correction(o_color.rgb);
-	o_color.rgb = tex_col.rgb;
+	o_color.rgb = reinhardt_tonemap(tex_col.rgb);
+	o_color.rgb = gamma_correction(o_color.rgb);
+	//o_color.rgb = tex_col.rgb;
+
+	if (v_texcoord.x >= 0.5 && v_texcoord.y >= 0.5) {
+
+		float z = texture(u_shadow, 2.0 * v_texcoord - 1.0).r;
+		float n = 0.01;
+		float f = 100.0;
+		o_color.rgb = vec3(n * (z + 1.0) / (f + n - z * (f - n)));
+	}
+
 }

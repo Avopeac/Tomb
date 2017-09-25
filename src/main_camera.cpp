@@ -44,7 +44,7 @@ void MainCamera::Update(float delta_time)
 		glm::two_pi<float>() - glm::radians(1000.0f * euler_angles_.x),
 		glm::two_pi<float>() - glm::radians(1000.0f * euler_angles_.y),
 		glm::radians(euler_angles_.z));
-	 
+	
 	glm::vec4 velocity{};
 	glm::vec4 initial_right = glm::normalize(glm::vec4(glm::cross(glm::vec3(initial_forward_), 
 		glm::vec3(initial_up_)), 0)); 

@@ -45,7 +45,7 @@ void Renderer::Invoke(float frame_time)
 	shadow_camera->Update(frame_time);
 	mesh_renderer_->Draw(frame_time);
 
-	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST); 
 	post_processing_->Process();
 }
 
@@ -68,6 +68,11 @@ FrameBuffer * Renderer::MakeGbuffer()
 	normals.internal_format = GL_RGB16F;
 	normals.type = GL_FLOAT;
 
+	FrameBufferAttachmentDescriptor shadow;
+	shadow.format = GL_RED;
+	shadow.internal_format = GL_R8;
+	shadow.type = GL_UNSIGNED_INT;
+
 	FrameBufferAttachmentDescriptor depth;
 	depth.format = GL_DEPTH_COMPONENT;
 	depth.internal_format = GL_DEPTH_COMPONENT24;
@@ -76,7 +81,7 @@ FrameBuffer * Renderer::MakeGbuffer()
 	descriptors.push_back(albedo);
 	descriptors.push_back(position);
 	descriptors.push_back(normals);
-
+	descriptors.push_back(shadow);
 
 	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
 	return &frame_buffer_cache.GetFromParameters(gbuffer_name,
@@ -112,6 +117,7 @@ FrameBuffer * graphics::Renderer::MakeShadowMap()
 	depth.type = GL_FLOAT;
 
 	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
+	
 	return &frame_buffer_cache.GetFromParameters(shadow_map_name,
 		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
 		0, descriptors, &depth);

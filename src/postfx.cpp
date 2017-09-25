@@ -48,13 +48,20 @@ void PostFx::Apply()
 		fbo0_->BindColorAttachment(i, i); 
 	}
 
+
+	auto &fbo_resource = ResourceManager::Get().GetFrameBufferCache();
+	auto &shadow_map = fbo_resource.GetFromName(Renderer::shadow_map_name);
+
+	shadow_map.BindDepthStencilAttachment(num_attachments);
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);   
 	glDrawBuffer(GL_BACK); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);  
 	 
 	float time = (float)util::GetSeconds();
-	fragment_shader_->SetUniform("u_time", (void*)&time);
+	fragment_shader_->SetUniform("u_time", (void*)&time); 
+	fragment_shader_->SetUniform("u_shadow", (void *)&num_attachments);
 
 	pipeline_.Bind();  
 	this->Render();   

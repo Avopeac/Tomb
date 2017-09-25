@@ -83,7 +83,7 @@ GraphicsBase::GraphicsBase(const input::Config & config)
 	shadow_camera_ = std::make_unique<ShadowCamera>("Shadow camera",
 		(float)GetBackbufferWidth(), (float)GetBackbufferHeight(),
 		0.01f, 100.0f,
-		glm::vec4(0, 10, 10, 1),
+		glm::vec4(0, -1, 1, 1),
 		glm::vec4(0, 0, 0, 1),
 		glm::vec4(0, 1, 0, 0));
 }  

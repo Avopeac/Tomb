@@ -30,10 +30,12 @@ void GbufferComp::Init()
 	int32_t albedo_index = 0;
 	int32_t position_index = 1;
 	int32_t normal_index = 2;
-	int32_t depth_index = 3;
+	int32_t shadow_index = 3;
+	int32_t depth_index = 4;
 	fragment_shader_->SetUniform("u_albedo", (void *)&albedo_index);
 	fragment_shader_->SetUniform("u_position", (void *)&position_index);
 	fragment_shader_->SetUniform("u_normal", (void *)&normal_index);
+	fragment_shader_->SetUniform("u_shadow", (void *)&shadow_index);
 	fragment_shader_->SetUniform("u_depth", (void*)&depth_index);
 }
 
@@ -46,11 +48,13 @@ void GbufferComp::Apply()
 	int32_t albedo_index = 0;
 	int32_t position_index = 1;
 	int32_t normal_index = 2;
-	int32_t depth_index = 3;
+	int32_t shadow_index = 3;
+	int32_t depth_index = 4;
 
 	gbuffer_->BindColorAttachment(albedo_index, albedo_index);
 	gbuffer_->BindColorAttachment(position_index, position_index);
 	gbuffer_->BindColorAttachment(normal_index, normal_index);
+	gbuffer_->BindColorAttachment(shadow_index, shadow_index);
 	gbuffer_->BindDepthStencilAttachment(depth_index);
 
 	auto * camera = graphics_base_->GetMainCamera();
@@ -67,6 +71,7 @@ void GbufferComp::Apply()
 	gbuffer_->UnbindColorAttachment(albedo_index);
 	gbuffer_->UnbindColorAttachment(position_index);
 	gbuffer_->UnbindColorAttachment(normal_index);
+	gbuffer_->UnbindColorAttachment(shadow_index);
 	gbuffer_->UnbindDepthStencilAttachment();
 
 	gbuffer_comp_->UnbindDraw();
