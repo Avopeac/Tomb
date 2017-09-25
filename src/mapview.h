@@ -34,12 +34,6 @@ namespace game
 
 		~MapView() {}
 
-		void UpdateHexPillar(graphics::Program * vertex, graphics::Program * fragment)
-		{
-			glm::vec4 color{ 1 };
-			vertex->SetUniform("u_color", (void*)glm::value_ptr(color));
-		}
-
 		void Update(graphics::Renderer &renderer, float delta_time)
 		{
 
@@ -73,8 +67,7 @@ namespace game
 					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)) *
 					glm::scale(glm::mat4(1), glm::vec3(0.45f * glm::vec3(1.0f, 1.0f, 1.0f)));
 
-				renderer.GetMeshRenderer().Push(hex_mesh_hash_, hex_texture_hash_, model, 
-					std::bind(&MapView::UpdateHexPillar, this, std::placeholders::_1, std::placeholders::_2));
+				renderer.GetMeshRenderer().Push(hex_mesh_hash_, hex_texture_hash_, model);
 			}
 		}
 	};

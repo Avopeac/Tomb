@@ -14,7 +14,6 @@ namespace graphics
 		Mesh * mesh;
 		glm::mat4 model;
 		glm::vec4 color;
-		std::function<void(Program * vertex, Program * fragment)> update;
 
 		bool operator<(const MeshRenderInstance &other) const
 		{
@@ -31,6 +30,18 @@ namespace graphics
 
 		ProgramPipeline pipeline_;
 
+		Program * geometry_vertex_;
+		Program * geometry_fragment_;
+
+		Program * shadow_vertex_;
+		Program * shadow_fragment_;
+
+		FrameBuffer * shadow_map_;
+		FrameBuffer * gbuffer_;
+
+		AbstractCamera * shadow_camera_;
+		AbstractCamera * main_camera_;
+
 		GraphicsBase & graphics_base_;
 
 		std::vector<MeshRenderInstance> meshes_;
@@ -41,11 +52,11 @@ namespace graphics
 
 		~MeshRenderer();
 
-		void Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model, const std::function<void(Program *, Program *)> &update);
+		void Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model);
 
 		void Draw(float delta_time);
 
-	private:
+	private: 
 
 		void RenderShadows();
 

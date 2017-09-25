@@ -13,13 +13,13 @@ Renderer::Renderer(GraphicsBase *graphics_base) :
 	graphics_base_(graphics_base)
 {
 
-	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_);
-	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_);
-
 	shadow_map_ = MakeShadowMap();
 	gbuffer_ = MakeGbuffer();
 	gbuffer_comp_ = MakeGbufferComposition();
 
+	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_);
+
+	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_);
 	post_processing_->Add(std::move(std::make_unique<GbufferComp>()));
 	post_processing_->Add(std::move(std::make_unique<PostFx>())); 
 
