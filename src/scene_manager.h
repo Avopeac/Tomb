@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <unordered_map>
+
 #include "scene_node.h"
 
 namespace scene
@@ -7,7 +10,9 @@ namespace scene
 	class SceneManager
 	{
 
-		SceneNode * root_ = nullptr;
+		SceneNode * current_scene_;
+
+		std::unordered_map<std::string, std::unique_ptr<SceneNode>> scenes_;
 
 	public:
 
@@ -17,7 +22,11 @@ namespace scene
 
 		void Update(float delta_time);
 
-		SceneNode &GetRoot() { return *root_; }
+		SceneNode * Add(const std::string &name);
+
+		SceneNode * Switch(const std::string &name);
+
+		SceneNode * GetCurrent();
 
 		SceneNode * GetNode(const std::string &name);
 

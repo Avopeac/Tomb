@@ -4,6 +4,8 @@
 
 #include "renderer.h"
 
+#include "data_pipe_hub.h"
+
 using namespace graphics;
 
 MeshRenderer::MeshRenderer(GraphicsBase & graphics_base) :
@@ -43,6 +45,20 @@ void MeshRenderer::Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &
 
 void MeshRenderer::Draw(float delta_time)
 {
+	auto &mesh_data_hub = DataPipeHub::Get().GetMeshDataPipe();
+	auto &mesh_cache = ResourceManager::Get().GetMeshCache();
+	auto &texture_cache = ResourceManager::Get().GetTextureCache();
+
+	for (auto &it : mesh_data_hub.GetData())
+	{
+		MeshRenderInstance instance;
+		instance.mesh = &mesh_cache.GetFromHash(it.mesh_hash);
+		instance.texture = &texture_cache.GetFromHash(it.texture_hash);
+		instance.model = it.world_transform;
+		meshes_.push_back(instance);
+	}
+
+	mesh_data_hub.Flush();
 
 	std::sort(meshes_.begin(), meshes_.end());
 

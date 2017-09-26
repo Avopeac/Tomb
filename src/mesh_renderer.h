@@ -7,7 +7,6 @@
 
 namespace graphics
 {
-
 	struct MeshRenderInstance
 	{
 		Texture * texture;

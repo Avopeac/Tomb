@@ -4,33 +4,36 @@
 
 #include "scene_component.h"
 
-#include "mesh.h"
+#include "data_pipe_hub.h"
 
 namespace scene {
 
-	struct Mesh
-	{
-		size_t mesh;
-		glm::mat4 transform;
-	};
-
 	class MeshComponent : public SceneComponent
 	{
-		
-		std::vector<Mesh> drawables_;
+		std::string mesh_name_;
+
+		std::string mesh_file_path_;
+
+		size_t mesh_hash_;
+
+		std::string texture_file_path_;
+
+		size_t texture_hash_;
+
+		glm::mat4 local_transform_;
 
 	public:
 
-		MeshComponent() {};
+		MeshComponent(const std::string &mesh_name, const std::string &mesh_file_path, const std::string &texture_file_path);
 
-		~MeshComponent() {};
+		~MeshComponent();
 
-		void Push(Mesh && drawable);
-
-		// Inherited via SceneComponent
 		virtual void Initialize() override;
 
 		virtual void Update(float delta_time) override;
 
+		inline const glm::mat4 &GetLocalTransform() const { return local_transform_; }
+
+		inline void SetLocalTransform(const glm::mat4 &transform) { local_transform_ = transform; }
 	};
 }

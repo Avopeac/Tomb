@@ -38,13 +38,9 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	scene::SceneManager manager;
 
-	auto &root = manager.GetRoot();
-	root.AddChild(new scene::SceneNode("monkey"));
-	root.AddChild(new scene::SceneNode("spider"));
-	
-	script::LuaScript script("assets/scripts/test.lua");
-	auto w = script.getLua<float>("WindowWidth");
-
+	auto * game = manager.Add("game");
+	game->AddChild(new scene::SceneNode("monkey"));
+	game->AddChild(new scene::SceneNode("spider"));
 
 	// Main loop
 	bool running = true;
@@ -67,18 +63,6 @@ Sint32 main(Sint32 argc, char * argv[])
 		}
 
 		view.Update(renderer, (float)frame_time);
-
-		//std::string print = "Frame: ";
-		//print.append(std::to_string(frame_time));
-		//print.append(" ms");
-
-		//std::cout << print << std::endl;
-		//print.append("(");
-		//print.append(std::to_string(1.0 / frame_time));
-		//print.append(" FPS)");
-
-		//renderer.GetFontRenderer().Push(print, glm::ivec4(1, 1, 1, 1), 
-			//glm::vec2(20, graphics_base.GetBackbufferHeight() - 32), glm::vec2(32, 32));
 
 		renderer.Invoke((float)frame_time);
 

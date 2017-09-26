@@ -1,7 +1,6 @@
 Config = {
-	
-	WindowWidth = 1024,
-	WindowHeight = 768,
+	WindowWidth = 1024.0,
+	WindowHeight = 768.0,
 	WindowMode = "Fullscreen",
-	WindowTitle = "Tomb",
+	WindowTitle = "Tomb"	
 }

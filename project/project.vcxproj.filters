@@ -11,9 +11,6 @@
     <ClCompile Include="..\src\file.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\json.cpp">
-      <Filter>Source\Input</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\post_processing.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
@@ -68,9 +65,6 @@
     <ClCompile Include="..\src\shadow_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\main_camera.cpp">
-      <Filter>Source\Graphics.Camera</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mesh_component.cpp">
       <Filter>Source\Scene.Object</Filter>
     </ClCompile>
@@ -79,6 +73,12 @@
     </ClCompile>
     <ClCompile Include="..\src\third_party\jsmn\jsmn.c">
       <Filter>Source\ThirdParty\jsmn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\json.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main_camera.cpp">
+      <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,9 +172,6 @@
     <ClInclude Include="..\src\shadow_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\main_camera.h">
-      <Filter>Source\Graphics.Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mesh_component.h">
       <Filter>Source\Scene.Object</Filter>
     </ClInclude>
@@ -186,6 +183,18 @@
     </ClInclude>
     <ClInclude Include="..\src\lua_script.h">
       <Filter>Source\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\main_camera.h">
+      <Filter>Source\Graphics.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\data_pipe_hub.h">
+      <Filter>Source\Graphics.Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mesh_data_pipe.h">
+      <Filter>Source\Graphics.Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\light_data_pipe.h">
+      <Filter>Source\Graphics.Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +239,9 @@
     </Filter>
     <Filter Include="Source\ThirdParty\jsmn">
       <UniqueIdentifier>{f95b3ae8-8644-4e16-bd3f-c8b2384e483e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics.Data">
+      <UniqueIdentifier>{4ac3510e-e37d-452c-951e-68f0f53de0c9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

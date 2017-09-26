@@ -20,9 +20,9 @@ namespace scene {
 
 		~SceneObject() {};
 
-		void SetTransform(const glm::mat4 &transform) { transform_ = transform;	}
+		inline void SetTransform(const glm::mat4 &transform) { transform_ = transform;	}
 
-		const glm::mat4 &GetTransform() const { return transform_; }
+		inline const glm::mat4 &GetTransform() const { return transform_; }
 
 	};
 }
