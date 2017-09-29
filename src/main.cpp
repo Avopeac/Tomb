@@ -2,6 +2,8 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 
+#include "glm/glm.hpp"
+
 #include "keymap.h"
 #include "lua_script.h"
 
@@ -14,7 +16,9 @@
 #include "mapmodel.h"
 #include "mapview.h"
 
-#include "scene_manager.h"
+#include "entity_manager.h"
+#include "mesh_component.h"
+#include "mesh_render_system.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -36,11 +40,10 @@ Sint32 main(Sint32 argc, char * argv[])
 	game::MapModel model(4, 4, game::MapShapeType::FlatHexagon, logic);
 	game::MapView view(model, logic);
 
-	scene::SceneManager manager;
-
-	auto * game = manager.Add("game");
-	game->AddChild(new scene::SceneNode("monkey"));
-	game->AddChild(new scene::SceneNode("spider"));
+	auto &entity_manager = entity::EntityManager::Get();
+	entity_manager.AddSystem(new entity::MeshRenderSystem());
+	auto * entity = entity_manager.Create("GO0");
+	entity->AddComponent<entity::MeshComponent>("hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
 
 	// Main loop
 	bool running = true;

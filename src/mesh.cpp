@@ -25,6 +25,11 @@ Mesh & MeshCache::GetFromFile(const std::string &name, const std::string & file_
 	size_t name_hash = std::hash<std::string>{}(name);
 	if (meshes_.find(name_hash) != meshes_.end())
 	{
+		if (hash)
+		{
+			*hash = name_hash;
+		}
+
 		return meshes_[name_hash];
 	}
 
