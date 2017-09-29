@@ -56,20 +56,8 @@
     <ClCompile Include="..\src\resource_manager.cpp">
       <Filter>Source\Graphics.Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\scene_node.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\scene_manager.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shadow_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mesh_component.cpp">
-      <Filter>Source\Scene.Object</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\light_component.cpp">
-      <Filter>Source\Scene.Object</Filter>
     </ClCompile>
     <ClCompile Include="..\src\third_party\jsmn\jsmn.c">
       <Filter>Source\ThirdParty\jsmn</Filter>
@@ -79,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="..\src\main_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mesh_render_system.cpp">
+      <Filter>Source\Entity.System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,26 +148,8 @@
     <ClInclude Include="..\src\resource_manager.h">
       <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\scene_manager.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\scene_node.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\scene_object.h">
-      <Filter>Source\Scene.Object</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\scene_component.h">
-      <Filter>Source\Scene.Object</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shadow_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\mesh_component.h">
-      <Filter>Source\Scene.Object</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\light_component.h">
-      <Filter>Source\Scene.Object</Filter>
     </ClInclude>
     <ClInclude Include="..\src\third_party\jsmn\jsmn.h">
       <Filter>Source\ThirdParty\jsmn</Filter>
@@ -195,6 +168,27 @@
     </ClInclude>
     <ClInclude Include="..\src\light_data_pipe.h">
       <Filter>Source\Graphics.Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\entity.h">
+      <Filter>Source\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\component.h">
+      <Filter>Source\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\abstract_system.h">
+      <Filter>Source\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system.h">
+      <Filter>Source\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mesh_render_system.h">
+      <Filter>Source\Entity.System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mesh_component.h">
+      <Filter>Source\Entity.Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\entity_manager.h">
+      <Filter>Source\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -228,12 +222,6 @@
     <Filter Include="Source\Graphics.Camera">
       <UniqueIdentifier>{9efc4032-0f25-43b0-ab35-812b272626f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene">
-      <UniqueIdentifier>{81aff054-673d-4d70-b4b4-edc32de5ec23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Scene.Object">
-      <UniqueIdentifier>{d0d83326-4188-48c9-b3b9-6e3982e6d617}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Script">
       <UniqueIdentifier>{07cf40cc-acd5-496d-98c4-6a5bdff6eba4}</UniqueIdentifier>
     </Filter>
@@ -242,6 +230,15 @@
     </Filter>
     <Filter Include="Source\Graphics.Data">
       <UniqueIdentifier>{4ac3510e-e37d-452c-951e-68f0f53de0c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Entity">
+      <UniqueIdentifier>{991ef1e4-7430-4347-bf50-2d66d6200838}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Entity.Component">
+      <UniqueIdentifier>{f5f254f5-96e6-4ac8-8c90-052eb166d5a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Entity.System">
+      <UniqueIdentifier>{bedb95dd-53c1-4c3c-a410-aea4ff0aca6c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
