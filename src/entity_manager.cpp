@@ -2,7 +2,7 @@
 
 using namespace entity;
 
-EntityManager::EntityManager() {}
+EntityManager::EntityManager() : entity_unique_id_counter_(0), systems_counter_(0) {}
 
 EntityManager::~EntityManager()
 {
@@ -10,8 +10,53 @@ EntityManager::~EntityManager()
 	{
 		if (entities_[i])
 		{
+			for (size_t j = 0; j < MAX_COMPONENTS; ++j)
+			{
+				if (entity_components_[i][j])
+				{
+					delete entity_components_[i][j];
+				}
+			}
+
 			delete entities_[i];
 		}
+	}
+
+	for (size_t i = 0; i < MAX_SYSTEMS; ++i)
+	{
+		if (component_systems_[i])
+		{
+			delete component_systems_[i];
+		}
+	}
+}
+
+void EntityManager::Update(float delta_time)
+{
+	for (auto * system : component_systems_)
+	{
+		if (system)
+		{
+			for (size_t i = 0; i < MAX_ENTITIES; ++i)
+			{
+				if (entities_[i])
+				{
+					system->TryUpdate(entities_[i]);
+				}
+			}
+		}
+	}
+}
+
+void EntityManager::AddSystem(AbstractSystem * system)
+{
+	if (systems_counter_ + 1 < MAX_SYSTEMS)
+	{
+		component_systems_[systems_counter_++] = system;
+	}
+	else
+	{
+		SDL_assert(false && "Added too many component systems.");
 	}
 }
 

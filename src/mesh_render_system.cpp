@@ -49,5 +49,5 @@ void MeshRenderSystem::Update(Entity * entity)
 
 void MeshRenderSystem::Clean(Entity * entity)
 {
-	// TODO: Implement
+	// No need to clean anything for this system / component 
 }

@@ -23,6 +23,8 @@ namespace entity {
 
 		EntityComponentArrays entity_components_;
 
+		size_t systems_counter_;
+
 		ComponentSystemsArray component_systems_;
 
 	public:
@@ -34,6 +36,8 @@ namespace entity {
 		}
 
 		~EntityManager();
+
+		void Update(float delta_time);
 
 		/// ENTITY
 
@@ -57,6 +61,10 @@ namespace entity {
 
 		template <typename T> T * GetEntityComponent(EntityId id);
 
+		/// SYSTEMS
+
+		void AddSystem(AbstractSystem * system);
+
 	private:
 
 		EntityManager();
@@ -67,12 +75,21 @@ namespace entity {
 		static_assert(std::is_base_of<Component, T>::value, "Derived class must be of base type Component.");
 		RemoveEntityComponent<T>(id);
 		
-		if (id < MAX_ENTITIES && entities_[id])
+		if (id < MAX_ENTITIES && entities_[id]) 
 		{
 			EntityComponentKey key{ Component::GetId<T>() };
 			T * component = new T(std::forward<Args>(args)...);
 			entities_[id]->component_key |= key;
 			entity_components_[id][key.to_ullong() - 1] = component;
+
+			for (auto * system : component_systems_)
+			{
+				if (system)
+				{
+					system->TryInitialize(entities_[id]);
+				}
+			}
+
 			return component;
 		}
 
@@ -85,6 +102,15 @@ namespace entity {
 		if (EntityHasComponent<T>(id))
 		{
 			EntityComponentKey key{ Component::GetId<T>() };
+
+			for (auto * system : component_systems_)
+			{
+				if (system)
+				{
+					system->TryClean(entities_[id]);
+				}
+			}
+
 			delete entity_components_[id][key.to_ullong() - 1];
 			entity_components_[id][key.to_ullong() - 1] = nullptr;
 			entities_[id]->component_key &= key.flip();

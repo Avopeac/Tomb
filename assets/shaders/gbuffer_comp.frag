@@ -50,6 +50,6 @@ void main()
 
   vec3 ambient = 0.1 * albedo;
 
-	o_color = ambient + shadow * (albedo * ndotl + vec3(specularity));
+	o_color = ambient + clamp(shadow, 0.5, 1.0) * (albedo * ndotl + vec3(specularity));
 
 }

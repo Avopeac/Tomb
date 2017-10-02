@@ -18,6 +18,7 @@
 
 #include "entity_manager.h"
 #include "mesh_component.h"
+#include "mesh_render_system.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -41,14 +42,10 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	auto &entity_manager = entity::EntityManager::Get();
 	auto * entity0 = entity_manager.CreateEntity("First");
-	bool drawable = entity_manager.EntityHasComponent<entity::MeshComponent>(entity0->id);
+	entity_manager.AddSystem(new entity::MeshRenderSystem());
 	entity_manager.AddEntityComponent<entity::MeshComponent>(entity0->id, 
 		"hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
-	drawable = entity_manager.EntityHasComponent<entity::MeshComponent>(entity0->id);
-	entity_manager.RemoveEntityComponent<entity::MeshComponent>(entity0->id);
-	drawable = entity_manager.EntityHasComponent<entity::MeshComponent>(entity0->id);
-
-
+	
 
 	// Main loop
 	bool running = true;
@@ -71,6 +68,8 @@ Sint32 main(Sint32 argc, char * argv[])
 		}
 
 		view.Update(renderer, (float)frame_time);
+
+		entity_manager.Update(frame_time);
 
 		renderer.Invoke((float)frame_time);
 
