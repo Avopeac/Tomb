@@ -1,8 +1,9 @@
 #pragma once
 
+#include "entity_types.h"
+
 namespace entity 
 {
-	class Entity;
 
 	class AbstractSystem
 	{

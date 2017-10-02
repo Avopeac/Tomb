@@ -6,7 +6,6 @@
 
 namespace entity 
 {
-	class Entity;
 
 	class MeshRenderSystem : public System<MeshRenderSystem, MeshComponent>  
 	{
@@ -16,11 +15,13 @@ namespace entity
 		MeshRenderSystem() {}
 
 		virtual ~MeshRenderSystem() {}
+		
+		// Inherited via System
+		virtual void Initialize(Entity * entity) override;
 
-		void Initialize(Entity * entity);
+		virtual void Update(Entity * entity) override;
 
-		void Update(Entity * entity);
+		virtual void Clean(Entity * entity) override;
 
-		void Clean(Entity * entity);
 	};
 }

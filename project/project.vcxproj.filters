@@ -71,6 +71,9 @@
     <ClCompile Include="..\src\mesh_render_system.cpp">
       <Filter>Source\Entity.System</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\entity_manager.cpp">
+      <Filter>Source\Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics.h">
@@ -169,9 +172,6 @@
     <ClInclude Include="..\src\light_data_pipe.h">
       <Filter>Source\Graphics.Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\entity.h">
-      <Filter>Source\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\component.h">
       <Filter>Source\Entity</Filter>
     </ClInclude>
@@ -188,6 +188,9 @@
       <Filter>Source\Entity.Component</Filter>
     </ClInclude>
     <ClInclude Include="..\src\entity_manager.h">
+      <Filter>Source\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\entity_types.h">
       <Filter>Source\Entity</Filter>
     </ClInclude>
   </ItemGroup>

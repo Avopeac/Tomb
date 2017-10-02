@@ -1,33 +1,29 @@
 #pragma once
 
-#include <string>
-#include <array>
-#include <memory>
-#include <vector>
-#include <queue>
-#include <unordered_map>
-
 #include "SDL_assert.h"
 
-#include "entity.h"
+#include "entity_types.h"
+
+#include "component.h"
+
 #include "system.h"
 
 namespace entity {
 
-	constexpr size_t max_entities = 10000;
-
 	class EntityManager
 	{
 
-		size_t uid_counter_;
+		EntityArray entities_;
 
-		std::queue<size_t> free_uids_;
+		EntityId entity_unique_id_counter_;
 
-		std::unordered_map<size_t, std::string> entity_name_map_;
+		std::queue<EntityId> entity_unique_id_counter_queue_;
 
-		std::array<Entity *, max_entities> entities_;
+		std::unordered_map<EntityId, std::string> entity_name_map_;
 
-		std::vector<std::unique_ptr<AbstractSystem>> systems_;
+		EntityComponentArrays entity_components_;
+
+		ComponentSystemsArray component_systems_;
 
 	public:
 
@@ -37,83 +33,75 @@ namespace entity {
 			return instance;
 		}
 
-		~EntityManager()
-		{
-			for (size_t i = 0; i < max_entities; ++i)
-			{
-				if (entities_[i])
-				{
-					delete entities_[i];
-				}
-			}
-		}
+		~EntityManager();
 
-		Entity * Create(const std::string &name)
-		{
+		/// ENTITY
 
-			SDL_assert(!(uid_counter_ >= max_entities && free_uids_.empty()));
-		
-			Entity * obj = nullptr;
+		const Entity * const CreateEntity(const std::string &name);
 
-			size_t uid;
+		void DeleteEntity(EntityId id);
 
-			if (!free_uids_.empty())
-			{
-				uid = free_uids_.front();
-				free_uids_.pop();
-			}
-			else
-			{
-				uid = uid_counter_++;
-			}
+		const Entity * const GetEntityByName(const std::string &name) const;
 
-			obj = new Entity(uid);
-			entities_[uid] = obj;
-			entity_name_map_[uid] = name;
-			return obj;
-		}
+		const Entity * const GetEntityById(EntityId id) const;
 
-		const std::string * const GetNameByUid(size_t uid) const
-		{
-			
-			return entity_name_map_.find(uid) != entity_name_map_.cend() ?
-				&entity_name_map_.at(uid) : nullptr;
-		}
+		const std::string * const GetEntityNameById(EntityId id) const;
 
-		Entity * FindFirstByName(const std::string &name)
-		{
-			for (auto &it = entity_name_map_.cbegin(); it != entity_name_map_.cend(); ++it)
-			{
-				if (it->second == name)
-				{
-					return entities_[it->first];
-				}
-			}
-		}
+		/// COMPONENTS
 
-		size_t Delete(size_t uid)
-		{
-			for (size_t i = 0; i < uid; ++i)
-			{
-				if (entities_[i])
-				{
-					delete entities_[i];
+		template <typename T, typename... Args> T * AddEntityComponent(EntityId id, Args&&... args);
 
-					entity_name_map_.erase(i);
+		template <typename T> void RemoveEntityComponent(EntityId id);
 
-					free_uids_.push(uid);
-				}
-			}
-		}
+		template <typename T> bool EntityHasComponent(EntityId id);
 
-		AbstractSystem * AddSystem(AbstractSystem * system)
-		{
-			systems_.push_back(std::move(std::unique_ptr<AbstractSystem>{system}));
-			return systems_.back().get();
-		}
+		template <typename T> T * GetEntityComponent(EntityId id);
 
 	private:
 
-		EntityManager() {}
+		EntityManager();
 	};
+
+	template <typename T, typename... Args> T * EntityManager::AddEntityComponent(EntityId id, Args&&... args)
+	{
+		static_assert(std::is_base_of<Component, T>::value, "Derived class must be of base type Component.");
+		RemoveEntityComponent<T>(id);
+		
+		if (id < MAX_ENTITIES && entities_[id])
+		{
+			EntityComponentKey key{ Component::GetId<T>() };
+			T * component = new T(std::forward<Args>(args)...);
+			entities_[id]->component_key |= key;
+			entity_components_[id][key.to_ullong() - 1] = component;
+			return component;
+		}
+
+		return nullptr;
+	}
+
+	template <typename T> void EntityManager::RemoveEntityComponent(EntityId id)
+	{
+		static_assert(std::is_base_of<Component, T>::value, "Derived class must be of base type Component.");
+		if (EntityHasComponent<T>(id))
+		{
+			EntityComponentKey key{ Component::GetId<T>() };
+			delete entity_components_[id][key.to_ullong() - 1];
+			entity_components_[id][key.to_ullong() - 1] = nullptr;
+			entities_[id]->component_key &= key.flip();
+		}
+	}
+
+	template <typename T> bool EntityManager::EntityHasComponent(EntityId id)
+	{
+		static_assert(std::is_base_of<Component, T>::value, "Derived class must be of base type Component.");
+		EntityComponentKey key{ Component::GetId<T>() };
+		return id < MAX_ENTITIES && entities_[id] ? (key & entities_[id]->component_key) == key : false;
+	}
+
+	template <typename T> T * EntityManager::GetEntityComponent(EntityId id)
+	{
+		static_assert(std::is_base_of<Component, T>::value, "Derived class must be of base type Component.");
+		EntityComponentKey key{ Component::GetId<T>() };
+		return id < MAX_ENTITIES && entities_[id] ? static_cast<T*>(entity_components_[id][key.to_ullong() - 1]) : nullptr;
+	}
 }

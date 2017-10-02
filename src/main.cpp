@@ -18,7 +18,6 @@
 
 #include "entity_manager.h"
 #include "mesh_component.h"
-#include "mesh_render_system.h"
 
 Sint32 main(Sint32 argc, char * argv[])
 {
@@ -41,9 +40,15 @@ Sint32 main(Sint32 argc, char * argv[])
 	game::MapView view(model, logic);
 
 	auto &entity_manager = entity::EntityManager::Get();
-	entity_manager.AddSystem(new entity::MeshRenderSystem());
-	auto * entity = entity_manager.Create("GO0");
-	entity->AddComponent<entity::MeshComponent>("hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
+	auto * entity0 = entity_manager.CreateEntity("First");
+	bool drawable = entity_manager.EntityHasComponent<entity::MeshComponent>(entity0->id);
+	entity_manager.AddEntityComponent<entity::MeshComponent>(entity0->id, 
+		"hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
+	drawable = entity_manager.EntityHasComponent<entity::MeshComponent>(entity0->id);
+	entity_manager.RemoveEntityComponent<entity::MeshComponent>(entity0->id);
+	drawable = entity_manager.EntityHasComponent<entity::MeshComponent>(entity0->id);
+
+
 
 	// Main loop
 	bool running = true;

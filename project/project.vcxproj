@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\blend_mode.cpp" />
     <ClCompile Include="..\src\config.cpp" />
+    <ClCompile Include="..\src\entity_manager.cpp" />
     <ClCompile Include="..\src\main_camera.cpp" />
     <ClCompile Include="..\src\file.cpp" />
     <ClCompile Include="..\src\frame_buffer.cpp" />
@@ -151,9 +152,9 @@
     <ClInclude Include="..\src\abstract_camera.h" />
     <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\data_pipe_hub.h" />
-    <ClInclude Include="..\src\entity.h" />
     <ClInclude Include="..\src\component.h" />
     <ClInclude Include="..\src\entity_manager.h" />
+    <ClInclude Include="..\src\entity_types.h" />
     <ClInclude Include="..\src\light_data_pipe.h" />
     <ClInclude Include="..\src\lua_script.h" />
     <ClInclude Include="..\src\main_camera.h" />

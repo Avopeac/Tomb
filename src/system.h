@@ -1,30 +1,26 @@
 #pragma once
 
-#include <bitset>
-
 #include "abstract_system.h"
 
-#include "entity.h"
-
-namespace entity 
+namespace entity
 {
 	template <typename T, typename... Components> class System : public AbstractSystem
 	{
-		template <typename S, typename... Cs> std::bitset<max_defined_components> GetRequiredComponentKey() const
+		template <typename S, typename... Cs> EntityComponentKey GetRequiredComponentKey() const
 		{
-			const std::initializer_list<size_t> component_ids{ Component::GetTypeId<Cs>()... };
+			const std::initializer_list<size_t> component_ids{ Component::GetId<Cs>()... };
 
-			std::bitset<max_defined_components> required_component_key = 0;
+			EntityComponentKey required_component_key = 0;
 
 			for (auto &id : component_ids)
 			{
-				required_component_key |= std::bitset<max_defined_components>{ id };
+				required_component_key |= EntityComponentKey{ id };
 			}
 
 			return required_component_key;
 		}
 
-		std::bitset<max_defined_components> required_component_keys_ = GetRequiredComponentKey<T, Components...>();
+		EntityComponentKey required_component_keys_ = GetRequiredComponentKey<T, Components...>();
 
 	public:
 
@@ -32,7 +28,7 @@ namespace entity
 
 		virtual void TryInitialize(Entity * entity) override
 		{
-			if ((entity->GetComponentKey() & required_component_keys_) == required_component_keys_)
+			if ((entity->component_key & required_component_keys_) == required_component_keys_)
 			{
 				static_cast<T*>(this)->Initialize(entity);
 			}
@@ -40,7 +36,7 @@ namespace entity
 
 		virtual void TryClean(Entity * entity) override
 		{
-			if ((entity->GetComponentKey() & required_component_keys_) == required_component_keys_)
+			if ((entity->component_key & required_component_keys_) == required_component_keys_)
 			{
 				static_cast<T*>(this)->Clean(entity);
 			}
@@ -48,11 +44,17 @@ namespace entity
 
 		virtual void TryUpdate(Entity * entity) override
 		{
-			if ((entity->GetComponentKey() & required_component_keys_) == required_component_keys_)
+			if ((entity->component_key & required_component_keys_) == required_component_keys_)
 			{
 				static_cast<T*>(this)->Update(entity);
 			}
 		}
+
+		virtual void Initialize(Entity * entity) = 0;
+
+		virtual void Update(Entity * entity) = 0;
+
+		virtual void Clean(Entity * entity) = 0;
 
 	protected:
 
