@@ -35,17 +35,12 @@ Sint32 main(Sint32 argc, char * argv[])
 	graphics::GraphicsBase graphics_base(config);
 	graphics::Renderer renderer(&graphics_base);
 
-	// TESTING: Map shapes
-	game::MapLogic logic;
-	game::MapModel model(4, 4, game::MapShapeType::FlatHexagon, logic);
-	game::MapView view(model, logic);
-
 	auto &entity_manager = entity::EntityManager::Get();
-	auto * entity0 = entity_manager.CreateEntity("First");
 	entity_manager.AddSystem(new entity::MeshRenderSystem());
-	entity_manager.AddEntityComponent<entity::MeshComponent>(entity0->id, 
-		"hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
 	
+	game::MapLogic logic;
+	game::MapModel model(8, logic);
+	game::MapView view(model, logic);
 
 	// Main loop
 	bool running = true;
@@ -67,9 +62,9 @@ Sint32 main(Sint32 argc, char * argv[])
 			input::Keymap::Get().UpdateCurrentInput(event);
 		}
 
-		view.Update(renderer, (float)frame_time);
+		view.Update((float)frame_time);
 
-		entity_manager.Update(frame_time);
+		entity_manager.Update((float)frame_time);
 
 		renderer.Invoke((float)frame_time);
 

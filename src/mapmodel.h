@@ -20,33 +20,18 @@ namespace game
 		Mercenaries,
 	};
 
-	enum class MapShapeType
-	{
-		Triangle,
-		Rhombus,
-		Rectangle,
-		SharpHexagon,
-		FlatHexagon,
-	};
-
 	class MapModel
 	{
 		const MapLogic &logic_;
 
-		uint32_t convex_hull_width_;
-
-		uint32_t convex_hull_height_;
-
-		MapShapeType shape_type_;
+		uint32_t map_size_;
 
 		std::unordered_map<HexCoordinate, MapTileType, HexCoordinateHash> tiles_;
 
 	public:
 
-		MapModel(uint32_t convex_hull_width, uint32_t convex_hull_height, MapShapeType shape_type, MapLogic logic) :
-			convex_hull_width_(convex_hull_width),
-			convex_hull_height_(convex_hull_height),
-			shape_type_(shape_type),
+		MapModel(uint32_t map_size, MapLogic logic) :
+			map_size_(map_size),
 			logic_(logic)
 		{
 			Build();
@@ -61,14 +46,6 @@ namespace game
 	private:
 
 		void Build();
-
-		void BuildTriangleMap();
-
-		void BuildRectangleMap();
-
-		void BuildRhombusMap();
-
-		void BuildSharpHexagonMap();
 
 		void BuildFlatHexagonMap();
 	};

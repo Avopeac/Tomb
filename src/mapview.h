@@ -1,74 +1,55 @@
 #pragma once
 
-#include <functional>
-#include <iomanip>
 #include "mapmodel.h"
 #include "maplogic.h"
-#include "renderer.h"
-#include "resource_manager.h"
-
-#include "grid.h"
+#include "entity_manager.h"
+#include "mesh_component.h"
 
 namespace game
 {
 	class MapView
 	{
-
 		const MapModel &model_;
-
 		const MapLogic &logic_;
 
-		size_t hex_texture_hash_;
-		size_t hex_mesh_hash_;
+		const std::string mesh_name_ = "hex";
+		const std::string mesh_path_ = "assets/models/hex_1.obj";
+		const std::string texture_path_ = "assets/textures/white_dot.png";
 
 	public:
 
 		MapView(const MapModel &model, const MapLogic &logic) :
 			model_(model), 
-			logic_(logic), 
-			hex_texture_hash_(0),
-			hex_mesh_hash_(0)
+			logic_(logic)
 		{ 
 
+			glm::mat4 transform = glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(0, 0, 1)) *
+				glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)) *
+				glm::scale(glm::mat4(1), glm::vec3(0.45f * glm::vec3(1.0f, 1.0f, 1.0f)));
+
+			auto &entity_manager = entity::EntityManager::Get();
+
+			size_t tile_counter = 0;
+			for (auto &it = model.GetTileBeginIterator(); it != model.GetTileEndIterator(); ++it) 
+			{
+				auto * entity = entity_manager.CreateEntity("Tile" + std::to_string(tile_counter));
+				auto * component = entity_manager.AddEntityComponent<entity::MeshComponent>(entity->id, mesh_name_,
+					mesh_path_, texture_path_);
+				
+				HexCoordinate hex = it->first;
+				glm::vec2 hex_position = logic_.AxialToCartesian(hex, 0.5f);
+
+				glm::mat4 world_transform =	glm::translate(glm::mat4(1), glm::vec3(hex_position, -10.0f)) * transform;
+
+				component->SetTransform(world_transform);
+			}
 		}
 
 		~MapView() {}
 
-		void Update(graphics::Renderer &renderer, float delta_time)
+		void Update(float delta_time)
 		{
 
-			static float angle = 0.0f;
-			angle += 500.0f * delta_time;
-
-			if (hex_texture_hash_ == 0 && hex_mesh_hash_ == 0) 
-			{
-				auto &mesh_cache = graphics::ResourceManager::Get().GetMeshCache();
-				auto &texture_cache = graphics::ResourceManager::Get().GetTextureCache();
-				mesh_cache.GetFromFile("hex", "assets/models/hex_1.obj", &hex_mesh_hash_);
-				texture_cache.GetFromFile("assets/textures/white_dot.png", true, &hex_texture_hash_);
-			}
-			
-			glm::mat4 model =
-				glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, -15.0f)) *
-				glm::scale(glm::mat4(1), glm::vec3(20.0f));  
-			 
-			glm::mat4 rot_island = glm::rotate(glm::mat4(1), glm::mod((float)util::GetSeconds(), glm::two_pi<float>()), glm::vec3(0, 0, 1));
-
-			for (auto hex_it = model_.GetTileBeginIterator(); hex_it != model_.GetTileEndIterator(); ++hex_it)
-			{
-				
-				HexCoordinate hex = hex_it->first;
-				glm::vec2 pos = logic_.AxialToCartesian(hex, 0.5f);
-
-				glm::mat4 model =
-					rot_island * 
-					glm::translate(glm::mat4(1), glm::vec3(pos, -10.0f + (0.5f + 0.5f * (float)glm::sin(util::GetSeconds() + pos.x)))) *
-					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(0, 0, 1)) *
-					glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)) *
-					glm::scale(glm::mat4(1), glm::vec3(0.45f * glm::vec3(1.0f, 1.0f, 1.0f)));
-
-				renderer.GetMeshRenderer().Push(hex_mesh_hash_, hex_texture_hash_, model);
-			}
 		}
 	};
 }

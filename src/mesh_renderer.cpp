@@ -31,18 +31,6 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-void MeshRenderer::Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model)
-{
-	auto &mesh_cache = ResourceManager::Get().GetMeshCache();
-	auto &texture_cache = ResourceManager::Get().GetTextureCache();
-
-	MeshRenderInstance instance;
-	instance.mesh = &mesh_cache.GetFromHash(mesh_hash);
-	instance.texture = &texture_cache.GetFromHash(texture_hash);
-	instance.model = model;
-	meshes_.push_back(instance);
-}
-
 void MeshRenderer::Draw(float delta_time)
 {
 	auto &mesh_data_hub = DataPipeHub::Get().GetMeshDataPipe();

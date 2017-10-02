@@ -6,41 +6,20 @@ void MapModel::Build()
 {
 	tiles_.clear();
 
-	switch (shape_type_)
-	{
-		case MapShapeType::Triangle: { BuildTriangleMap(); } break;
-		case MapShapeType::Rectangle: { BuildRectangleMap(); } break;
-		case MapShapeType::Rhombus: { BuildRhombusMap(); } break;
-		case MapShapeType::FlatHexagon: { BuildFlatHexagonMap(); } break;
-		case MapShapeType::SharpHexagon: { BuildSharpHexagonMap(); } break;
-	}
-}
-
-void MapModel::BuildTriangleMap()
-{
-}
-
-void MapModel::BuildRectangleMap()
-{ 
-}
-
-void MapModel::BuildRhombusMap()
-{
-}
-
-void MapModel::BuildSharpHexagonMap()
-{
+	BuildFlatHexagonMap();
 }
 
 void MapModel::BuildFlatHexagonMap()
 {
 	HexCubeCoordinate cube;
 
-	for (int i = -3; i <= 3; ++i)
+	int half_size = (int)map_size_ / 2;
+
+	for (int i = -half_size; i <= half_size; ++i)
 	{
-		for (int j = -3; j <= 3; ++j)
+		for (int j = -half_size; j <= half_size; ++j)
 		{
-			for (int k = -3; k <= 3; ++k)
+			for (int k = -half_size; k <= half_size; ++k)
 			{
 				cube.x = k;
 				cube.y = j;

@@ -51,8 +51,6 @@ namespace graphics
 
 		~MeshRenderer();
 
-		void Push(size_t mesh_hash, size_t texture_hash, const glm::mat4 &model);
-
 		void Draw(float delta_time);
 
 	private: 

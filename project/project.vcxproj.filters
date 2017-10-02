@@ -225,9 +225,6 @@
     <Filter Include="Source\Graphics.Camera">
       <UniqueIdentifier>{9efc4032-0f25-43b0-ab35-812b272626f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Script">
-      <UniqueIdentifier>{07cf40cc-acd5-496d-98c4-6a5bdff6eba4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\ThirdParty\jsmn">
       <UniqueIdentifier>{f95b3ae8-8644-4e16-bd3f-c8b2384e483e}</UniqueIdentifier>
     </Filter>
@@ -242,6 +239,9 @@
     </Filter>
     <Filter Include="Source\Entity.System">
       <UniqueIdentifier>{bedb95dd-53c1-4c3c-a410-aea4ff0aca6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Script">
+      <UniqueIdentifier>{07cf40cc-acd5-496d-98c4-6a5bdff6eba4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
