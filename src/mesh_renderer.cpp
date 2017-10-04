@@ -33,22 +33,7 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Draw(float delta_time)
 {
-	auto &mesh_data_hub = DataPipeHub::Get().GetMeshDataPipe();
-	auto &mesh_cache = ResourceManager::Get().GetMeshCache();
-	auto &texture_cache = ResourceManager::Get().GetTextureCache();
-
-	for (auto &it : mesh_data_hub.GetData())
-	{
-		MeshRenderInstance instance;
-		instance.mesh = &mesh_cache.GetFromHash(it.mesh_hash);
-		instance.texture = &texture_cache.GetFromHash(it.texture_hash);
-		instance.model = it.world_transform;
-		meshes_.push_back(instance);
-	}
-
-	mesh_data_hub.Flush();
-
-	std::sort(meshes_.begin(), meshes_.end());
+	PreProcessGeometry();
 
 	pipeline_.Bind();
 
@@ -60,30 +45,30 @@ void MeshRenderer::Draw(float delta_time)
 
 	glBindVertexArray(0);
 	
+	for (auto &it : meshes_)
+	{
+		glDeleteBuffers(1, &it.second.world_transform_buffer);
+	}
+
 	meshes_.clear();
 }
 
 void MeshRenderer::RenderShadows()
 {
-	
 	pipeline_.SetStages(*shadow_vertex_);
 	pipeline_.SetStages(*shadow_fragment_);
 	shadow_map_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0, 0, 0, 1);
 
-	for (int i = 0; i < meshes_.size(); ++i)
+	if (meshes_.size() > 0)
 	{
-		auto &instance = meshes_[i];
-
-		// Use shadow view / proj matrix and do a depth only pass
-		glm::mat4 mvp = shadow_camera_->GetViewProj() * instance.model;
-		shadow_vertex_->SetUniform("u_mvp", (void*)glm::value_ptr(mvp));
-
-		glBindVertexArray(instance.mesh->vao);
-		size_t index_offset = 0;
-		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)
+		shadow_vertex_->SetUniform("u_vp", (void*)glm::value_ptr(shadow_camera_->GetViewProj()));
+		for (auto &it : meshes_) 
 		{
-			glDrawElements(GL_TRIANGLES, (GLsizei)instance.mesh->num_indices[j], GL_UNSIGNED_INT, (void*)index_offset);
-			index_offset += instance.mesh->num_indices[j] * sizeof(Uint32);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, it.second.world_transform_buffer);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, it.second.world_transform_buffer);
+			glBindVertexArray(it.second.mesh->vao);
+			glDrawElementsInstanced(GL_TRIANGLES, it.second.mesh->num_indices[0], GL_UNSIGNED_INT, (void*)0, it.second.world_transforms.size());
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 	}
 
@@ -102,25 +87,15 @@ void MeshRenderer::RenderGeometry()
 
 	pipeline_.SetStages(*geometry_vertex_);
 	pipeline_.SetStages(*geometry_fragment_);
-	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f);
+	gbuffer_->BindDraw(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 1.0f); 
 
-	for (int i = 0; i < meshes_.size(); ++i)
+	if (meshes_.size() > 0)
 	{
-		auto &instance = meshes_[i];
-		
-		glm::mat4 mvp = main_camera_->GetViewProj() * instance.model;
-		glm::mat4 shadow_mvp = shadow_bias * shadow_camera_->GetViewProj() * instance.model;
-		glm::mat4 mv = main_camera_->GetView() * instance.model;
-		glm::mat4 normal_matrix = glm::inverse(glm::transpose(main_camera_->GetView() * instance.model));
-
+		glm::mat4 shadow_vp = shadow_bias * shadow_camera_->GetViewProj();
 		geometry_vertex_->SetUniform("u_proj", (void*)glm::value_ptr(main_camera_->GetProj()));
 		geometry_vertex_->SetUniform("u_view", (void*)glm::value_ptr(main_camera_->GetView()));
 		geometry_vertex_->SetUniform("u_vp", (void*)glm::value_ptr(main_camera_->GetViewProj()));
-		geometry_vertex_->SetUniform("u_mv", (void *)glm::value_ptr(mv));
-		geometry_vertex_->SetUniform("u_mvp", (void*)glm::value_ptr(mvp));
-		geometry_vertex_->SetUniform("u_model", (void*)glm::value_ptr(instance.model));
-		geometry_vertex_->SetUniform("u_shadow_mvp", (void*)glm::value_ptr(shadow_mvp));
-		geometry_vertex_->SetUniform("u_normal", (void*)glm::value_ptr(normal_matrix));
+		geometry_vertex_->SetUniform("u_shadow_vp", (void*)glm::value_ptr(shadow_vp));
 
 		int albedo_tex = 0;
 		int shadow_tex = 1;
@@ -129,19 +104,57 @@ void MeshRenderer::RenderGeometry()
 
 		sampler.Bind(albedo_tex);
 		sampler.Bind(shadow_tex);
-		instance.texture->Bind(albedo_tex);
 		shadow_map_->BindDepthStencilAttachment(shadow_tex);
 
-		glBindVertexArray(instance.mesh->vao);
-		size_t index_offset = 0;
-		for (Uint32 j = 0; j < instance.mesh->num_meshes; ++j)
+		for (auto &it : meshes_)
 		{
-			glDrawElements(GL_TRIANGLES, (GLsizei)instance.mesh->num_indices[j], GL_UNSIGNED_INT, (void*)index_offset);
-			index_offset += instance.mesh->num_indices[j] * sizeof(Uint32);
+			it.second.texture->Bind(albedo_tex);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, it.second.world_transform_buffer);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, it.second.world_transform_buffer);
+			glBindVertexArray(it.second.mesh->vao);
+			glDrawElementsInstanced(GL_TRIANGLES, it.second.mesh->num_indices[0], GL_UNSIGNED_INT, (void*)0,
+				it.second.world_transforms.size());
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 	}
 
 	gbuffer_->UnbindDraw();
 
 	pipeline_.Unbind();
+}
+
+void MeshRenderer::PreProcessGeometry()
+{
+	auto &mesh_data_hub = DataPipeHub::Get().GetMeshDataPipe();
+	auto &mesh_cache = ResourceManager::Get().GetMeshCache();
+	auto &texture_cache = ResourceManager::Get().GetTextureCache();
+
+	for (auto &it : mesh_data_hub.GetData())
+	{
+		MeshRenderInstance * instance = nullptr;
+		if (meshes_.find(it.mesh_hash) == meshes_.end())
+		{
+			meshes_[it.mesh_hash] = MeshRenderInstance();
+			instance = &meshes_[it.mesh_hash];
+			instance->mesh = &mesh_cache.GetFromHash(it.mesh_hash);
+			instance->texture = &texture_cache.GetFromHash(it.texture_hash);
+		}
+		else
+		{
+			instance = &meshes_[it.mesh_hash];
+		}
+
+		instance->world_transforms.push_back(it.world_transform);
+	}
+
+	mesh_data_hub.Flush();
+
+	for (auto &it : meshes_)
+	{
+		glGenBuffers(1, &it.second.world_transform_buffer);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, it.second.world_transform_buffer);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, it.second.world_transforms.size() * sizeof(glm::mat4),
+			it.second.world_transforms.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
 }

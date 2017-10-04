@@ -7,6 +7,7 @@
 #include <fstream>
 
 using namespace graphics;
+
 MeshCache::MeshCache()
 {
 }
@@ -148,7 +149,7 @@ Mesh & MeshCache::GetFromHash(size_t hash)
 		assert(false);
 	}
 
-	return meshes_[hash];
+	return meshes_[hash]; 
 }
 
 Mesh & MeshCache::GetFromName(const std::string & name)

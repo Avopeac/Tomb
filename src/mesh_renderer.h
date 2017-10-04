@@ -9,10 +9,10 @@ namespace graphics
 {
 	struct MeshRenderInstance
 	{
-		Texture * texture;
 		Mesh * mesh;
-		glm::mat4 model;
-		glm::vec4 color;
+		Texture * texture;
+		GLuint world_transform_buffer;
+		std::vector<glm::mat4> world_transforms;
 
 		bool operator<(const MeshRenderInstance &other) const
 		{
@@ -43,7 +43,7 @@ namespace graphics
 
 		GraphicsBase & graphics_base_;
 
-		std::vector<MeshRenderInstance> meshes_;
+		std::unordered_map<size_t, MeshRenderInstance> meshes_;
 
 	public:
 
@@ -58,6 +58,8 @@ namespace graphics
 		void RenderShadows();
 
 		void RenderGeometry();
+
+		void PreProcessGeometry();
 
 	};
 }

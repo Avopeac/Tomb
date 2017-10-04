@@ -15,6 +15,8 @@
 
 namespace graphics
 {
+	constexpr size_t MAX_INSTANCES_PER_MESH = 2000;
+
 	struct MeshVertex
 	{
 		glm::vec3 position;

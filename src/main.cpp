@@ -39,7 +39,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	entity_manager.AddSystem(new entity::MeshRenderSystem());
 	
 	game::MapLogic logic;
-	game::MapModel model(8, logic);
+	game::MapModel model(32, logic);
 	game::MapView view(model, logic);
 
 	// Main loop
