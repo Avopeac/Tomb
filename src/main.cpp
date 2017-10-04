@@ -37,7 +37,11 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	auto &entity_manager = entity::EntityManager::Get();
 	entity_manager.AddSystem(new entity::MeshRenderSystem());
-	
+	auto * e0 = entity_manager.CreateEntity("test");
+	auto * c0 = entity_manager.AddEntityComponent<entity::MeshComponent>(e0->id,
+		"hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
+	c0->SetTransform(glm::translate(glm::mat4(1), glm::vec3(0, 0, -7)));
+
 	game::MapLogic logic;
 	game::MapModel model(32, logic);
 	game::MapView view(model, logic);

@@ -25,8 +25,6 @@ namespace graphics
 
 	class MeshRenderer
 	{
-		const size_t max_instances_ = 2048;
-
 		ProgramPipeline pipeline_;
 
 		Program * geometry_vertex_;
