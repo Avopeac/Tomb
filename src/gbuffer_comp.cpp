@@ -32,11 +32,46 @@ void GbufferComp::Init()
 	int32_t normal_index = 2;
 	int32_t shadow_index = 3;
 	int32_t depth_index = 4;
+	int32_t skybox_index = 5;
+
 	fragment_shader_->SetUniform("u_albedo", (void *)&albedo_index);
 	fragment_shader_->SetUniform("u_position", (void *)&position_index);
 	fragment_shader_->SetUniform("u_normal", (void *)&normal_index);
 	fragment_shader_->SetUniform("u_shadow", (void *)&shadow_index);
 	fragment_shader_->SetUniform("u_depth", (void*)&depth_index);
+	fragment_shader_->SetUniform("u_skybox", (void*)&skybox_index);
+	
+	auto &texture_cache = ResourceManager::Get().GetTextureCache();
+	auto &texture = texture_cache.GetFromFile("assets/textures/violentdays_large.png", 0); 
+
+	uint8_t * pos_x_data = texture.GetSubresourceData(2048, 1024, 1024, 1024);
+	uint8_t * neg_x_data = texture.GetSubresourceData(0, 1024, 1024, 1024);
+	uint8_t * pos_y_data = texture.GetSubresourceData(1024, 0, 1024, 1024);
+	uint8_t * neg_y_data = texture.GetSubresourceData(1024, 2048, 1024, 1024);
+	uint8_t * pos_z_data = texture.GetSubresourceData(1024, 1024, 1024, 1024);
+	uint8_t * neg_z_data = texture.GetSubresourceData(3072, 1024, 1024, 1024);
+
+	glGenTextures(1, &skybox_);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void *)pos_x_data);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void *)neg_x_data);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void *)pos_y_data);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void *)neg_y_data);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void *)pos_z_data);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void *)neg_z_data);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	delete pos_x_data;
+	delete neg_x_data;
+	delete pos_y_data;
+	delete neg_y_data;
+	delete pos_z_data;
+	delete neg_z_data;
 }
 
 void GbufferComp::Apply()
@@ -50,6 +85,7 @@ void GbufferComp::Apply()
 	int32_t normal_index = 2;
 	int32_t shadow_index = 3;
 	int32_t depth_index = 4;
+	int32_t skybox_index = 5;
 
 	gbuffer_->BindColorAttachment(albedo_index, albedo_index);
 	gbuffer_->BindColorAttachment(position_index, position_index);
@@ -57,13 +93,19 @@ void GbufferComp::Apply()
 	gbuffer_->BindColorAttachment(shadow_index, shadow_index);
 	gbuffer_->BindDepthStencilAttachment(depth_index);
 
+	glActiveTexture(GL_TEXTURE0 + skybox_index);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_); 
+
 	auto * camera = graphics_base_->GetMainCamera();
 	vertex_shader_->SetUniform("u_view",
 		(void *)glm::value_ptr(camera->GetView()));
-
 	fragment_shader_->SetUniform("u_view",
 		(void *)glm::value_ptr(camera->GetView()));
-
+	fragment_shader_->SetUniform("u_inv_view",
+		(void *)glm::value_ptr(camera->GetInvView()));
+	fragment_shader_->SetUniform("u_inv_proj",
+		(void *)glm::value_ptr(camera->GetInvProj()));
+	 
 	pipeline_.Bind(); 
 	this->Render();
 	pipeline_.Unbind();
@@ -73,6 +115,9 @@ void GbufferComp::Apply()
 	gbuffer_->UnbindColorAttachment(normal_index);
 	gbuffer_->UnbindColorAttachment(shadow_index);
 	gbuffer_->UnbindDepthStencilAttachment();
+
+	glActiveTexture(GL_TEXTURE0 + skybox_index);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	gbuffer_comp_->UnbindDraw();
 }

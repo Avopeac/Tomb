@@ -18,6 +18,8 @@ namespace graphics
 		FrameBuffer * gbuffer_;
 		FrameBuffer * gbuffer_comp_;
 
+		GLuint skybox_;
+
 	public:
 
 		GbufferComp();

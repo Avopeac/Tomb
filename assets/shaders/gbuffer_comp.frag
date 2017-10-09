@@ -12,8 +12,21 @@ uniform sampler2D u_position;
 uniform sampler2D u_normal;
 uniform sampler2D u_shadow;
 uniform sampler2D u_depth;
+uniform samplerCube u_skybox;
 
 uniform mat4 u_view;
+uniform mat4 u_inv_proj;
+uniform mat4 u_inv_view;
+
+vec3 getWorldDirection(vec2 texcoord) {
+
+  vec2 ndc = 2.0 * texcoord - 1.0;
+  vec4 view = u_inv_proj * vec4(ndc, 1, 1);
+  view /= view.w;
+  vec4 world = u_inv_view * view;
+  world /= world.w;
+  return normalize(vec4(world.xyz, 0.0));
+}
 
 float eyeZ(float z, float n, float f) {
   return (2 * n * f) / (f + n - z * (f - n));
@@ -50,6 +63,8 @@ void main()
 
   vec3 ambient = 0.1 * albedo;
 
-	o_color = ambient + clamp(shadow, 0.5, 1.0) * (albedo * ndotl + vec3(specularity));
-
+	o_color = texture(u_skybox, getWorldDirection(v_texcoord)).rgb;
+  if (depth <= 0.9999) {
+    o_color = ambient + clamp(shadow, 0.5, 1.0) * (albedo * ndotl + vec3(specularity));
+  }
 }

@@ -13,6 +13,7 @@ Texture::Texture()
 
 Texture::~Texture()
 {
+
 }
 
 Texture::Texture(Texture &&other)
@@ -20,9 +21,18 @@ Texture::Texture(Texture &&other)
 	if (&other != this)
 	{
 		id_ = other.id_;
+		format_ = other.format_;
 		unit_ = other.unit_;
+		width_ = other.width_;
+		height_ = other.height_;
+		data_ = other.data_;
+
 		other.id_ = 0;
+		other.format_ = 0;
 		other.unit_ = 0;
+		other.width_ = 0;
+		other.height_ = 0;
+		other.data_ = 0;
 	}
 }
 
@@ -46,9 +56,9 @@ void Texture::Create(const std::string & path, bool mips)
 
 	SDL_assert(rw);
 
-	SDL_Surface * surface = IMG_LoadPNG_RW(rw);
+	SDL_Surface * surface_ = IMG_LoadPNG_RW(rw);
 
-	Create(surface, mips);
+	Create(surface_, mips);
 
 	SDL_FreeRW(rw);
 }
@@ -87,9 +97,8 @@ void Texture::Create(SDL_Surface * surface, bool mips)
 	SDL_Surface * converted_surface = SDL_ConvertSurface(surface, &pixel_format, 0);
 
 	glBindTexture(GL_TEXTURE_2D, id_);
-	glTexStorage2D(GL_TEXTURE_2D, 1, internal_format, converted_surface->w, converted_surface->h);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, converted_surface->w, converted_surface->h, 
-		GL_RGBA, GL_UNSIGNED_BYTE, converted_surface->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 1, internal_format, converted_surface->w, converted_surface->h,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, converted_surface->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -102,12 +111,76 @@ void Texture::Create(SDL_Surface * surface, bool mips)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	width_ = (size_t)surface->w;
+	height_ = (size_t)surface->h;
+	format_ = internal_format;
+
+	// Copy pixel data
+	size_t data_size = surface->w * surface->h * surface->format->BytesPerPixel;
+	data_ = new uint8_t[data_size];
+
+	if (surface->format->BytesPerPixel == 4)
+	{
+		SDL_memcpy4(data_, surface->pixels, surface->w * surface->h);
+	}
+	else
+	{
+		SDL_memcpy(data_, surface->pixels, data_size);
+	}
+
 	SDL_FreeSurface(surface);
 }
 
 void Texture::Free()
 {
+	if (data_)
+	{
+		delete data_;
+	}
+
 	glDeleteTextures(1, &id_);
+}
+
+uint8_t * Texture::GetSubresourceData(size_t x, size_t y, size_t w, size_t h)
+{
+	SDL_assert((x + w) <= width_ && (y + h) <= height_);
+
+	uint8_t * data = nullptr; 
+
+	if (format_ == GL_RGBA8)
+	{
+		size_t pixel_size = 4 * sizeof(uint8_t);
+		data = new uint8_t[pixel_size * w * h];
+		size_t offset_src = 0;
+		size_t offset_dst = 0;
+		for (size_t row = y; row < y + h; ++row)
+		{
+			SDL_memcpy4(
+				(void*)(data + offset_dst), 
+				(void*)(data_ + offset_src), w);
+
+			offset_dst += w * pixel_size;
+			offset_src = (x + row * width_) * pixel_size;
+		}
+	}
+	else if (format_ == GL_RGB8)
+	{
+		size_t pixel_size = 3 * sizeof(uint8_t);
+		data = new uint8_t[pixel_size * w * h];
+		size_t offset_src = 0;
+		size_t offset_dst = 0;
+		for (size_t row = y; row < y + h; ++row)
+		{
+			SDL_memcpy(
+				(void*)(data + offset_dst),
+				(void*)(data_ + offset_src), w);
+
+			offset_dst += w * pixel_size;
+			offset_src = (x + row * width_) * pixel_size;
+		}
+	}
+	
+	return data;
 }
 
 TextureCache::TextureCache()
