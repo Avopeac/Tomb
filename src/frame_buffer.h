@@ -127,15 +127,15 @@ namespace graphics
 
 		~FrameBufferCache();
 
-		FrameBuffer &GetFromParameters(const std::string &name,
+		FrameBuffer * GetFromParameters(const std::string &name,
 			Uint32 width, Uint32 height, Uint32 num_samples,
 			const std::vector<FrameBufferAttachmentDescriptor> &descriptors,
 			const FrameBufferAttachmentDescriptor * const depth_stencil_descriptor, 
 			size_t * hash = nullptr);
 
-		FrameBuffer &GetFromName(const std::string &name);
+		FrameBuffer * GetFromName(const std::string &name);
 
-		FrameBuffer &GetFromHash(size_t hash);
+		FrameBuffer * GetFromHash(size_t hash);
 
 		inline bool ExistInCache(const std::string &name) const
 		{

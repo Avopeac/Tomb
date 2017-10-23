@@ -86,9 +86,9 @@ namespace graphics
 
 		~SamplerCache();
 
-		Sampler &GetFromParameters(MagnificationFiltering magnification,
+		Sampler * GetFromParameters(MagnificationFiltering magnification,
 			MinificationFiltering minification, Wrapping s, Wrapping t, size_t * hash = nullptr);
 
-		Sampler &GetFromHash(size_t hash);
+		Sampler * GetFromHash(size_t hash);
 	};
 }

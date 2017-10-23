@@ -84,7 +84,7 @@ FrameBuffer * Renderer::MakeGbuffer()
 	descriptors.push_back(shadow);
 
 	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	return &frame_buffer_cache.GetFromParameters(gbuffer_name,
+	return frame_buffer_cache.GetFromParameters(gbuffer_name,
 		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
 		0, descriptors, &depth);
 
@@ -102,7 +102,7 @@ FrameBuffer * graphics::Renderer::MakeGbufferComposition()
 	descriptors.push_back(composition);
 
 	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	return &frame_buffer_cache.GetFromParameters(gbuffer_composition_name, 
+	return frame_buffer_cache.GetFromParameters(gbuffer_composition_name, 
 		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
 		0, descriptors, nullptr);
 }
@@ -118,7 +118,7 @@ FrameBuffer * graphics::Renderer::MakeShadowMap()
 
 	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
 	
-	return &frame_buffer_cache.GetFromParameters(shadow_map_name,
+	return frame_buffer_cache.GetFromParameters(shadow_map_name,
 		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
 		0, descriptors, &depth);
 }

@@ -2,6 +2,8 @@
 
 #include "SDL.h"
 
+#include "logger.h"
+
 using namespace graphics;
 
 Blend::Blend(BlendMode src_blend, BlendMode dst_blend)
@@ -51,7 +53,7 @@ BlendCache::~BlendCache()
 {
 }
 
-Blend &BlendCache::GetFromParameters(BlendMode src_color_blend, BlendMode src_alpha_blend, 
+Blend * BlendCache::GetFromParameters(BlendMode src_color_blend, BlendMode src_alpha_blend, 
 	BlendMode dst_color_blend, BlendMode dst_alpha_blend, size_t * hash)
 {
 	size_t name_hash = static_cast<GLenum>(src_color_blend) | static_cast<GLenum>(dst_color_blend);
@@ -71,17 +73,21 @@ Blend &BlendCache::GetFromParameters(BlendMode src_color_blend, BlendMode src_al
 		*hash = name_hash;
 	}
 
-	return blends_[name_hash];
+	return &blends_[name_hash];
 }
 
-Blend & BlendCache::GetFromParameters(BlendMode src_blend, BlendMode dst_blend, size_t * hash)
+Blend * BlendCache::GetFromParameters(BlendMode src_blend, BlendMode dst_blend, size_t * hash)
 {
 	return GetFromParameters(src_blend, src_blend, dst_blend, dst_blend, hash);
 }
 
-Blend & BlendCache::GetFromHash(size_t hash)
+Blend * BlendCache::GetFromHash(size_t hash)
 {
-	SDL_assert(blends_.find(hash) != blends_.end());
+	if (blends_.find(hash) != blends_.end())
+	{
+		return &blends_[hash];
+	}
 
-	return blends_[hash];
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Blend state is null.");
+	return nullptr;
 }

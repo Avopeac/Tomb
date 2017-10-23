@@ -51,13 +51,13 @@ namespace graphics
 
 		~MeshCache();
 
-		Mesh &GetFromFile(const std::string &name, const std::string &file_path, size_t * hash = nullptr);
+		Mesh * GetFromFile(const std::string &name, const std::string &file_path, size_t * hash = nullptr);
 
-		Mesh &GetFromHash(size_t hash);
+		Mesh * GetFromHash(size_t hash);
 
-		Mesh &GetFromName(const std::string &name);
+		Mesh * GetFromName(const std::string &name);
 
-		Mesh &GetFromData(size_t &hash, const std::string &name, 
+		Mesh * GetFromData(size_t &hash, const std::string &name, 
 			const std::vector<Uint32> &indices, const std::vector<MeshVertex> &vertices);
 	};
 }

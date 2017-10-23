@@ -4,6 +4,8 @@
 
 #include "SDL_image.h"
 
+#include "logger.h"
+
 using namespace graphics;
 
 Texture::Texture()
@@ -87,11 +89,11 @@ void Texture::Create(SDL_Surface * surface, bool mips)
 	GLint internal_format;
 	if (pixel_format.BytesPerPixel == 3)
 	{
-		internal_format = GL_RGB8;
+		internal_format = GL_RGB;
 	}
 	else if (pixel_format.BytesPerPixel == 4)
 	{
-		internal_format = GL_RGBA8;
+		internal_format = GL_RGBA;
 	}
 
 	SDL_Surface * converted_surface = SDL_ConvertSurface(surface, &pixel_format, 0);
@@ -147,10 +149,11 @@ uint8_t * Texture::GetSubresourceData(size_t x, size_t y, size_t w, size_t h)
 
 	uint8_t * data = nullptr; 
 
-	if (format_ == GL_RGBA8)
+	if (format_ == GL_RGBA)
 	{
 		size_t pixel_size = 4 * sizeof(uint8_t);
 		data = new uint8_t[pixel_size * w * h];
+
 		size_t offset_src = 0;
 		size_t offset_dst = 0;
 		for (size_t row = y; row < y + h; ++row)
@@ -163,7 +166,7 @@ uint8_t * Texture::GetSubresourceData(size_t x, size_t y, size_t w, size_t h)
 			offset_src = (x + row * width_) * pixel_size;
 		}
 	}
-	else if (format_ == GL_RGB8)
+	else if (format_ == GL_RGB)
 	{
 		size_t pixel_size = 3 * sizeof(uint8_t);
 		data = new uint8_t[pixel_size * w * h];
@@ -195,14 +198,18 @@ TextureCache::~TextureCache()
 	}
 }
 
-Texture & TextureCache::GetFromHash(size_t hash)
+Texture * TextureCache::GetFromHash(size_t hash)
 {
-	SDL_assert(textures_.find(hash) != textures_.end());
-
-	return textures_[hash];
+	if (textures_.find(hash) != textures_.end())
+	{
+		return &textures_[hash];
+	}
+	
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Requested texture was null.");
+	return nullptr;
 }
 
-Texture &TextureCache::GetFromFile(const std::string & path, bool mips, size_t * hash)
+Texture * TextureCache::GetFromFile(const std::string & path, bool mips, size_t * hash)
 {
 
 	size_t path_hash = std::hash<std::string>{}(path);
@@ -214,18 +221,18 @@ Texture &TextureCache::GetFromFile(const std::string & path, bool mips, size_t *
 		textures_.insert({ path_hash, std::move(texture) });
 	}
 
-
 	if (hash)
 	{
 		*hash = path_hash;
 	}
 
-	return textures_[path_hash];
-
+	return &textures_[path_hash];
 }
 
-Texture &TextureCache::GetFromSurface(SDL_Surface * surface, const std::string &name, bool mips, size_t * hash)
+Texture * TextureCache::GetFromSurface(SDL_Surface * surface, const std::string &name, bool mips, size_t * hash)
 {
+	SDL_assert(surface);
+
 	size_t path_hash = std::hash<std::string>{}(name);
 
 	if (textures_.find(path_hash) == textures_.end())
@@ -244,5 +251,5 @@ Texture &TextureCache::GetFromSurface(SDL_Surface * surface, const std::string &
 		*hash = path_hash;
 	}
 
-	return textures_[path_hash];
+	return &textures_[path_hash];
 }

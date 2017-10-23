@@ -113,11 +113,11 @@ namespace graphics
 
 		~ProgramCache(); 
 
-		Program &GetFromFile(const std::string &name, GLenum program_type, const std::string &path, size_t * hash = nullptr);
+		Program * GetFromFile(const std::string &name, GLenum program_type, const std::string &path, size_t * hash = nullptr);
 
-		Program &GetFromName(const std::string &name);
+		Program * GetFromName(const std::string &name);
 
-		Program &GetFromHash(size_t hash);
+		Program * GetFromHash(size_t hash);
 
 	};
 

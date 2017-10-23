@@ -193,6 +193,9 @@
     <ClInclude Include="..\src\entity_types.h">
       <Filter>Source\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\halton.h">
+      <Filter>Source\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

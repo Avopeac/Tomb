@@ -19,7 +19,7 @@ ProgramCache::~ProgramCache()
 	}
 }
 
-Program & ProgramCache::GetFromFile(const std::string & name, GLenum program_type, const std::string & path, size_t * hash)
+Program * ProgramCache::GetFromFile(const std::string & name, GLenum program_type, const std::string & path, size_t * hash)
 {
 	size_t name_hash = std::hash<std::string>{}(name);
 	
@@ -30,9 +30,8 @@ Program & ProgramCache::GetFromFile(const std::string & name, GLenum program_typ
 			*hash = name_hash;
 		}
 
-		return programs_[name_hash];
+		return &programs_[name_hash];
 	}
-
 
 	input::FileReader reader;
 	std::string source = reader.ReadTextFile(path);
@@ -110,17 +109,30 @@ Program & ProgramCache::GetFromFile(const std::string & name, GLenum program_typ
 		*hash = name_hash;
 	}
 
-	return programs_[name_hash];
+	return &programs_[name_hash];
 }
 
-Program & ProgramCache::GetFromName(const std::string & name)
+Program * ProgramCache::GetFromName(const std::string & name)
 {
-	return programs_[std::hash<std::string>{}(name)];
+	auto hash = std::hash<std::string>{}(name);
+	if (programs_.find(hash) != programs_.end())
+	{
+		return &programs_[hash];
+	}
+	
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Shader was null.");
+	return nullptr;
 }
 
-Program & ProgramCache::GetFromHash(size_t hash)
+Program * ProgramCache::GetFromHash(size_t hash)
 {
-	return programs_[hash];
+	if (programs_.find(hash) != programs_.end())
+	{
+		return &programs_[hash];
+	}
+
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Shader was null.");
+	return nullptr;
 }
 
 ProgramPipeline::ProgramPipeline()

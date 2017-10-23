@@ -16,14 +16,14 @@ MeshRenderer::MeshRenderer(GraphicsBase & graphics_base) :
 	shadow_camera_ = graphics_base.GetShadowCamera();
 
 	auto &framebuffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	shadow_map_ = &framebuffer_cache.GetFromName(Renderer::shadow_map_name);
-	gbuffer_ = &framebuffer_cache.GetFromName(Renderer::gbuffer_name);
+	shadow_map_ = framebuffer_cache.GetFromName(Renderer::shadow_map_name);
+	gbuffer_ = framebuffer_cache.GetFromName(Renderer::gbuffer_name);
 
 	auto &program_cache = ResourceManager::Get().GetProgramCache();
-	geometry_vertex_ = &program_cache.GetFromFile("deferred.vert", GL_VERTEX_SHADER, "assets/shaders/deferred.vert");
-	geometry_fragment_ = &program_cache.GetFromFile("deferred.frag", GL_FRAGMENT_SHADER, "assets/shaders/deferred.frag");
-	shadow_vertex_ = &program_cache.GetFromFile("shadow.vert", GL_VERTEX_SHADER, "assets/shaders/shadow.vert");
-	shadow_fragment_ = &program_cache.GetFromFile("shadow.frag", GL_FRAGMENT_SHADER, "assets/shaders/shadow.frag");
+	geometry_vertex_ = program_cache.GetFromFile("deferred.vert", GL_VERTEX_SHADER, "assets/shaders/deferred.vert");
+	geometry_fragment_ = program_cache.GetFromFile("deferred.frag", GL_FRAGMENT_SHADER, "assets/shaders/deferred.frag");
+	shadow_vertex_ = program_cache.GetFromFile("shadow.vert", GL_VERTEX_SHADER, "assets/shaders/shadow.vert");
+	shadow_fragment_ = program_cache.GetFromFile("shadow.frag", GL_FRAGMENT_SHADER, "assets/shaders/shadow.frag");
 
 }
 
@@ -78,12 +78,14 @@ void MeshRenderer::RenderShadows()
 void MeshRenderer::RenderGeometry()
 {
 	auto &sampler_cache = ResourceManager::Get().GetSamplerCache();
-	auto &sampler = sampler_cache.GetFromParameters(MagnificationFiltering::Linear,
+	auto * sampler = sampler_cache.GetFromParameters(MagnificationFiltering::Linear,
 		MinificationFiltering::LinearMipmapLinear,
 		Wrapping::ClampToEdge, Wrapping::ClampToEdge);
 
 	glm::mat4 shadow_bias = glm::translate(glm::mat4(1), glm::vec3(0.5f));
 	shadow_bias *= glm::scale(glm::mat4(1), glm::vec3(0.5f));
+
+	glm::vec3 color = glm::vec3(1.0f);
 
 	pipeline_.SetStages(*geometry_vertex_);
 	pipeline_.SetStages(*geometry_fragment_);
@@ -91,24 +93,26 @@ void MeshRenderer::RenderGeometry()
 
 	if (meshes_.size() > 0)
 	{
+		MainCamera * camera = (MainCamera *)main_camera_;
 		glm::mat4 shadow_vp = shadow_bias * shadow_camera_->GetViewProj();
-		geometry_vertex_->SetUniform("u_proj", (void*)glm::value_ptr(main_camera_->GetProj()));
-		geometry_vertex_->SetUniform("u_view", (void*)glm::value_ptr(main_camera_->GetView()));
-		geometry_vertex_->SetUniform("u_vp", (void*)glm::value_ptr(main_camera_->GetViewProj()));
+		geometry_vertex_->SetUniform("u_proj", (void*)glm::value_ptr(camera->GetProj()));
+		geometry_vertex_->SetUniform("u_view", (void*)glm::value_ptr(camera->GetView()));
+		geometry_vertex_->SetUniform("u_vp", (void*)glm::value_ptr(camera->GetViewProj()));
 		geometry_vertex_->SetUniform("u_shadow_vp", (void*)glm::value_ptr(shadow_vp));
+		geometry_vertex_->SetUniform("u_color", (void*)glm::value_ptr(color));
 
 		int albedo_tex = 0;
 		int shadow_tex = 1;
 		geometry_fragment_->SetUniform("u_texture", (void*)&albedo_tex);
 		geometry_fragment_->SetUniform("u_shadow", (void *)&shadow_tex);
 
-		sampler.Bind(albedo_tex);
-		sampler.Bind(shadow_tex);
+		sampler->Bind(albedo_tex);
+		sampler->Bind(shadow_tex);
 		shadow_map_->BindDepthStencilAttachment(shadow_tex);
 
 		for (auto &it : meshes_)
 		{
-			it.second.texture->Bind(albedo_tex);
+			it.second.texture->Bind(albedo_tex); 
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, it.second.world_transform_buffer);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, it.second.world_transform_buffer);
 			glBindVertexArray(it.second.mesh->vao);
@@ -122,7 +126,7 @@ void MeshRenderer::RenderGeometry()
 
 	pipeline_.Unbind();
 }
-
+ 
 void MeshRenderer::PreProcessGeometry()
 {
 	auto &mesh_data_hub = DataPipeHub::Get().GetMeshDataPipe();
@@ -136,8 +140,8 @@ void MeshRenderer::PreProcessGeometry()
 		{
 			meshes_[it.mesh_hash] = MeshRenderInstance();
 			instance = &meshes_[it.mesh_hash];
-			instance->mesh = &mesh_cache.GetFromHash(it.mesh_hash);
-			instance->texture = &texture_cache.GetFromHash(it.texture_hash);
+			instance->mesh = mesh_cache.GetFromHash(it.mesh_hash);
+			instance->texture = texture_cache.GetFromHash(it.texture_hash);
 		}
 		else
 		{

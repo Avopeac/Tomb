@@ -1,5 +1,7 @@
 #include "sampler.h"
 
+#include "logger.h"
+
 using namespace graphics;
 
 Sampler::Sampler() :
@@ -59,7 +61,7 @@ SamplerCache::~SamplerCache()
 	}
 }
 
-Sampler &SamplerCache::GetFromParameters(MagnificationFiltering mag,
+Sampler * SamplerCache::GetFromParameters(MagnificationFiltering mag,
 	MinificationFiltering min, Wrapping s, Wrapping t, size_t * hash)
 {
 	size_t parameter_hash = static_cast<GLint>(mag) | static_cast<GLint>(min);
@@ -78,12 +80,17 @@ Sampler &SamplerCache::GetFromParameters(MagnificationFiltering mag,
 		*hash = parameter_hash;
 	}
 
-	return samplers_[parameter_hash];
+	return &samplers_[parameter_hash];
 }
 
-Sampler & graphics::SamplerCache::GetFromHash(size_t hash)
+Sampler * graphics::SamplerCache::GetFromHash(size_t hash)
 {
 	SDL_assert(samplers_.find(hash) != samplers_.end());
+	if (samplers_.find(hash) != samplers_.end())
+	{
+		return &samplers_[hash];
+	}
 
-	return samplers_[hash];
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Sampler was null.");
+	return nullptr;
 }

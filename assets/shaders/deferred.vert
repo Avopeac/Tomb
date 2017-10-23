@@ -31,10 +31,14 @@ void main()
 	mat4 mv = u_view * world_transforms[gl_InstanceID];
 	mat3 normal = inverse(transpose(mat3(mv)));
 
-	gl_Position = u_vp * world_transforms[gl_InstanceID] * vec4(i_position, 1);
-	v_shadowcoord = u_shadow_vp * world_transforms[gl_InstanceID] * vec4(i_position, 1);
+	vec4 world_pos = world_transforms[gl_InstanceID] * vec4(i_position, 1);
+	vec4 clip_pos = u_vp * world_pos;
+
+	v_shadowcoord = u_shadow_vp * world_pos;
 	v_position = (mv * vec4(i_position, 1)).xyz;
 	v_normal = normalize(normal * i_normal);
 	v_texcoord = vec2(i_texcoord.x, 1 - i_texcoord.y);
 	v_color = u_color;
+
+	gl_Position = clip_pos;
 }

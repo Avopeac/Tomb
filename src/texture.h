@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "SDL.h"
-
 #include "GL/glew.h"
 
 #include "disposable.h"
@@ -96,11 +95,11 @@ namespace graphics
 
 		~TextureCache();
 
-		Texture &GetFromFile(const std::string &path, bool mips, size_t * hash = nullptr);
+		Texture * GetFromFile(const std::string &path, bool mips, size_t * hash = nullptr);
 
-		Texture &GetFromHash(size_t hash);
+		Texture * GetFromHash(size_t hash);
 
-		Texture &GetFromSurface(SDL_Surface * surface, const std::string &name, bool mips, size_t * hash = nullptr);
+		Texture * GetFromSurface(SDL_Surface * surface, const std::string &name, bool mips, size_t * hash = nullptr);
 
 	};
 }

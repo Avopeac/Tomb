@@ -2,6 +2,8 @@
 
 #include "abstract_camera.h"
 
+#include "halton.h"
+
 namespace graphics
 {
 	class MainCamera : public AbstractCamera
@@ -10,6 +12,7 @@ namespace graphics
 		glm::vec4 initial_position;
 		glm::vec4 initial_forward_;
 		glm::vec4 initial_up_;
+		glm::vec2 window_size_;
 		float aspect_ratio_;
 		float fov_;
 		float near_, far_;

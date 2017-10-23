@@ -200,7 +200,7 @@ FrameBufferCache::~FrameBufferCache()
 	}
 }
 
-FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name,
+FrameBuffer * FrameBufferCache::GetFromParameters(const std::string & name,
 	Uint32 width, Uint32 height, Uint32 num_samples, 
 	const std::vector<FrameBufferAttachmentDescriptor>& descriptors, 
 	const FrameBufferAttachmentDescriptor * const depth_stencil_descriptor,
@@ -212,7 +212,7 @@ FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name,
 
 	if (buffers_.find(name_hash) != buffers_.end()) 
 	{
-		return *buffers_[name_hash]; 
+		return buffers_[name_hash].get(); 
 	} 
 
 	buffers_[name_hash] = std::make_unique<FrameBuffer>(width, height, num_samples,
@@ -223,16 +223,28 @@ FrameBuffer & FrameBufferCache::GetFromParameters(const std::string & name,
 		*hash = name_hash;
 	}
 
-	return *buffers_[name_hash];
+	return buffers_[name_hash].get();
 }
 
-FrameBuffer & FrameBufferCache::GetFromName(const std::string & name)
+FrameBuffer * FrameBufferCache::GetFromName(const std::string & name)
 {
 	size_t hash = std::hash<std::string>{}(name);
-	return *buffers_[hash];
+	if (buffers_.find(hash) != buffers_.end())
+	{
+		return buffers_[hash].get();
+	}
+
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Framebuffer is null.");
+	return nullptr;
 }
 
-FrameBuffer & FrameBufferCache::GetFromHash(size_t hash)
+FrameBuffer * FrameBufferCache::GetFromHash(size_t hash)
 {
-	return *buffers_[hash];
+	if (buffers_.find(hash) != buffers_.end())
+	{
+		return buffers_[hash].get();
+	}
+	
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Framebuffer is null.");
+	return nullptr;
 }

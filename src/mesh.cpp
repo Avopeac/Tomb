@@ -16,7 +16,7 @@ MeshCache::~MeshCache()
 {
 }
 
-Mesh & MeshCache::GetFromFile(const std::string &name, const std::string & file_path, size_t * hash)
+Mesh * MeshCache::GetFromFile(const std::string &name, const std::string & file_path, size_t * hash)
 {
 	std::string error;
 	tinyobj::attrib_t attrib;
@@ -31,7 +31,7 @@ Mesh & MeshCache::GetFromFile(const std::string &name, const std::string & file_
 			*hash = name_hash;
 		}
 
-		return meshes_[name_hash];
+		return &meshes_[name_hash];
 	}
 
 	if (tinyobj::LoadObj(&attrib, &shapes, &materials, &error, file_path.c_str()))
@@ -139,37 +139,39 @@ Mesh & MeshCache::GetFromFile(const std::string &name, const std::string & file_
 		*hash = name_hash;
 	}
 
-	return meshes_[name_hash];
+	return &meshes_[name_hash];
 }
 
-Mesh & MeshCache::GetFromHash(size_t hash)
+Mesh * MeshCache::GetFromHash(size_t hash)
 {
-	if (meshes_.find(hash) == meshes_.end())
+	if (meshes_.find(hash) != meshes_.end())
 	{
-		assert(false);
+		return &meshes_[hash];
 	}
 
-	return meshes_[hash]; 
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Mesh was null.");
+	return nullptr; 
 }
 
-Mesh & MeshCache::GetFromName(const std::string & name)
+Mesh * MeshCache::GetFromName(const std::string & name)
 {
 	auto hash = std::hash<std::string>{}(name);
 	if (meshes_.find(hash) != meshes_.end())
 	{
-		return meshes_[hash];
+		return &meshes_[hash];
 	}
 
-	assert(false);
+	debug::Log(SDL_LOG_PRIORITY_CRITICAL, SDL_LOG_CATEGORY_RENDER, "Mesh was null.");
+	return nullptr;
 }
 
-Mesh & MeshCache::GetFromData(size_t &hash, const std::string &name,
+Mesh * MeshCache::GetFromData(size_t &hash, const std::string &name,
 	const std::vector<Uint32> &indices, const std::vector<MeshVertex> &vertices)
 {
 	hash = std::hash<std::string>{}(name);
 	if (meshes_.find(hash) != meshes_.end())
 	{
-		return meshes_[hash];
+		return &meshes_[hash];
 	}
 
 	meshes_.insert({ hash, Mesh() });
@@ -220,5 +222,5 @@ Mesh & MeshCache::GetFromData(size_t &hash, const std::string &name,
 
 	glBindVertexArray(0);
 
-	return meshes_[hash];
+	return &meshes_[hash];
 }

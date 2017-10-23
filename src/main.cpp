@@ -40,7 +40,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	auto * e0 = entity_manager.CreateEntity("test");
 	auto * c0 = entity_manager.AddEntityComponent<entity::MeshComponent>(e0->id,
 		"hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
-	c0->SetTransform(glm::translate(glm::mat4(1), glm::vec3(0, 0, -7)));
+	c0->SetTransform(glm::translate(glm::mat4(1), glm::vec3(0, 3.0, 0.0)));
 
 	game::MapLogic logic;
 	game::MapModel model(32, logic);

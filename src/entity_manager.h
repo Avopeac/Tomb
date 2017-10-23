@@ -18,7 +18,7 @@ namespace entity {
 		EntityId entity_unique_id_counter_;
 
 		std::queue<EntityId> entity_unique_id_counter_queue_;
-
+		 
 		std::unordered_map<EntityId, std::string> entity_name_map_;
 
 		EntityComponentArrays entity_components_;

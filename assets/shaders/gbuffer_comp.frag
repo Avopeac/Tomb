@@ -25,7 +25,7 @@ vec3 getWorldDirection(vec2 texcoord) {
   view /= view.w;
   vec4 world = u_inv_view * view;
   world /= world.w;
-  return normalize(vec4(world.xyz, 0.0));
+  return normalize(vec3(world.xyz));
 }
 
 float eyeZ(float z, float n, float f) {
@@ -59,7 +59,7 @@ void main()
   vec3 direction = -normalize(position);
   vec3 half_vec = normalize(direction + sun);
   float ndoth = max(0.0, dot(normal, half_vec));
-  float specularity = pow(ndoth, 16.0);
+  float specularity = pow(ndoth, 90.0);
 
   vec3 ambient = 0.1 * albedo;
 

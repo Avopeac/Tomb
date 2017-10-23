@@ -39,8 +39,9 @@ namespace game
 				HexCoordinate hex = it->first;
 				glm::vec2 hex_position = logic_.AxialToCartesian(hex, 0.5f);
 
-				glm::mat4 world_transform =	glm::translate(glm::mat4(1), glm::vec3(hex_position, -10.0f)) * transform;
-
+				glm::mat4 world_transform = glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(1, 0, 0)) * 
+					glm::translate(glm::mat4(1), glm::vec3(hex_position, 0.0f)) * transform;
+				 
 				component->SetTransform(world_transform);
 			}
 		}

@@ -155,6 +155,7 @@
     <ClInclude Include="..\src\component.h" />
     <ClInclude Include="..\src\entity_manager.h" />
     <ClInclude Include="..\src\entity_types.h" />
+    <ClInclude Include="..\src\halton.h" />
     <ClInclude Include="..\src\light_data_pipe.h" />
     <ClInclude Include="..\src\lua_script.h" />
     <ClInclude Include="..\src\main_camera.h" />
