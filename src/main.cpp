@@ -5,7 +5,6 @@
 #include "glm/glm.hpp"
 
 #include "keymap.h"
-#include "lua_script.h"
 
 #include "graphics.h"
 #include "logger.h"
@@ -29,7 +28,7 @@ Sint32 main(Sint32 argc, char * argv[])
 
 	// Load config
 	input::Config config;
-	config.Load("assets/config.json");
+	config.Load("assets/scripts/config.chai");
 
 	// Create window and initialize graphics
 	graphics::GraphicsBase graphics_base(config);
@@ -40,7 +39,7 @@ Sint32 main(Sint32 argc, char * argv[])
 	auto * e0 = entity_manager.CreateEntity("test");
 	auto * c0 = entity_manager.AddEntityComponent<entity::MeshComponent>(e0->id,
 		"hex", "assets/models/hex_1.obj", "assets/textures/white_dot.png");
-	c0->SetTransform(glm::translate(glm::mat4(1), glm::vec3(0, 3.0, 0.0)));
+	c0->SetTransform(glm::translate(glm::mat4(1), glm::vec3(0, 1.0, 0.0)));
 
 	game::MapLogic logic;
 	game::MapModel model(32, logic);

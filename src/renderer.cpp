@@ -1,26 +1,16 @@
 #include "renderer.h"
 #include "resource_manager.h"
-#include "gbuffer_comp.h"
 #include "postfx.h"
 
 using namespace graphics;
-
-const std::string Renderer::shadow_map_name = "shadow_map";
-const std::string Renderer::gbuffer_name = "gbuffer";
-const std::string Renderer::gbuffer_composition_name = "gbuffer_comp";
 
 Renderer::Renderer(GraphicsBase *graphics_base) :
 	graphics_base_(graphics_base)
 {
 
-	shadow_map_ = MakeShadowMap();
-	gbuffer_ = MakeGbuffer();
-	gbuffer_comp_ = MakeGbufferComposition();
-
 	mesh_renderer_ = std::make_unique<MeshRenderer>(*graphics_base_);
 
 	post_processing_ = std::make_unique<PostProcessing>(*graphics_base_);
-	post_processing_->Add(std::move(std::make_unique<GbufferComp>()));
 	post_processing_->Add(std::move(std::make_unique<PostFx>())); 
 
 	glEnable(GL_CULL_FACE);
@@ -47,78 +37,4 @@ void Renderer::Invoke(float frame_time)
 
 	glDisable(GL_DEPTH_TEST); 
 	post_processing_->Process();
-}
-
-FrameBuffer * Renderer::MakeGbuffer()
-{
-	std::vector<FrameBufferAttachmentDescriptor> descriptors;
-
-	FrameBufferAttachmentDescriptor albedo;
-	albedo.format = GL_RGB;
-	albedo.internal_format = GL_RGB16F;
-	albedo.type = GL_FLOAT;
-
-	FrameBufferAttachmentDescriptor position;
-	position.format = GL_RGB;
-	position.internal_format = GL_RGB16F;
-	position.type = GL_FLOAT;
-
-	FrameBufferAttachmentDescriptor normals;
-	normals.format = GL_RGB;
-	normals.internal_format = GL_RGB16F;
-	normals.type = GL_FLOAT;
-
-	FrameBufferAttachmentDescriptor shadow;
-	shadow.format = GL_RED;
-	shadow.internal_format = GL_R8;
-	shadow.type = GL_UNSIGNED_INT;
-
-	FrameBufferAttachmentDescriptor depth;
-	depth.format = GL_DEPTH_COMPONENT;
-	depth.internal_format = GL_DEPTH_COMPONENT24;
-	depth.type = GL_FLOAT;
-
-	descriptors.push_back(albedo);
-	descriptors.push_back(position);
-	descriptors.push_back(normals);
-	descriptors.push_back(shadow);
-
-	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	return frame_buffer_cache.GetFromParameters(gbuffer_name,
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
-		0, descriptors, &depth);
-
-}
-
-FrameBuffer * graphics::Renderer::MakeGbufferComposition()
-{
-	std::vector<FrameBufferAttachmentDescriptor> descriptors;
-
-	FrameBufferAttachmentDescriptor composition;
-	composition.format = GL_RGB;
-	composition.internal_format = GL_RGB16F;
-	composition.type = GL_FLOAT;
-
-	descriptors.push_back(composition);
-
-	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	return frame_buffer_cache.GetFromParameters(gbuffer_composition_name, 
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(), 
-		0, descriptors, nullptr);
-}
-
-FrameBuffer * graphics::Renderer::MakeShadowMap()
-{
-	std::vector<FrameBufferAttachmentDescriptor> descriptors;
-
-	FrameBufferAttachmentDescriptor depth;
-	depth.format = GL_DEPTH_COMPONENT;
-	depth.internal_format = GL_DEPTH_COMPONENT24;
-	depth.type = GL_FLOAT;
-
-	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	
-	return frame_buffer_cache.GetFromParameters(shadow_map_name,
-		graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight(),
-		0, descriptors, &depth);
 }

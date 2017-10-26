@@ -20,10 +20,26 @@ float computeVisibility() {
 	return texture(u_shadow, v_shadowcoord.xy).r < v_shadowcoord.z - z_bias ? 0.0 : 1.0; 
 }
 
+float chebyshevShadowProbability() {
+
+	vec2 moments = texture(u_shadow, v_shadowcoord.xy).rg;
+	if (v_shadowcoord.z < moments.x) {
+		return 1.0;
+	}
+
+	float variance = max(0.00002, moments.y - (moments.x * moments.x));
+	
+	float d = v_shadowcoord.z - moments.x;
+	float p_max = variance / (variance + d * d);
+
+	return p_max;
+}
+
+
 void main()
 {
 	o_albedo = v_color;
 	o_position = v_position;
 	o_normal = normalize(v_normal);
-	o_shadow = computeVisibility();
+	o_shadow = chebyshevShadowProbability(); //computeVisibility();
 }

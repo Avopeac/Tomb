@@ -38,16 +38,10 @@
     <ClCompile Include="..\src\mapmodel.cpp">
       <Filter>Source\Map</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\postfx.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mesh.cpp">
       <Filter>Source\Graphics.Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mesh_renderer.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\gbuffer_comp.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\keymap.cpp">
@@ -59,12 +53,6 @@
     <ClCompile Include="..\src\shadow_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\third_party\jsmn\jsmn.c">
-      <Filter>Source\ThirdParty\jsmn</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\json.cpp">
-      <Filter>Source\Input</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\main_camera.cpp">
       <Filter>Source\Graphics.Camera</Filter>
     </ClCompile>
@@ -73,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="..\src\entity_manager.cpp">
       <Filter>Source\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\postfx.cpp">
+      <Filter>Source\Graphics.Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +83,6 @@
       <Filter>Source\Input</Filter>
     </ClInclude>
     <ClInclude Include="..\src\file.h">
-      <Filter>Source\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\json.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
     <ClInclude Include="..\src\post_processing.h">
@@ -127,9 +115,6 @@
     <ClInclude Include="..\src\mapview.h">
       <Filter>Source\Map</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\postfx.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\blend_mode.h">
       <Filter>Source\Graphics.Resources</Filter>
     </ClInclude>
@@ -138,9 +123,6 @@
     </ClInclude>
     <ClInclude Include="..\src\mesh.h">
       <Filter>Source\Graphics.Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\gbuffer_comp.h">
-      <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keymap.h">
       <Filter>Source\Input</Filter>
@@ -153,12 +135,6 @@
     </ClInclude>
     <ClInclude Include="..\src\shadow_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\third_party\jsmn\jsmn.h">
-      <Filter>Source\ThirdParty\jsmn</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\lua_script.h">
-      <Filter>Source\Script</Filter>
     </ClInclude>
     <ClInclude Include="..\src\main_camera.h">
       <Filter>Source\Graphics.Camera</Filter>
@@ -196,13 +172,16 @@
     <ClInclude Include="..\src\halton.h">
       <Filter>Source\Util</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\fullscreen_quad.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\postfx.h">
+      <Filter>Source\Graphics.Effects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
       <UniqueIdentifier>{4c5b273e-b907-4e3a-ae00-b2b4fbdf1ce5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\ThirdParty">
-      <UniqueIdentifier>{482cdddc-f69c-4b89-90a4-7ef6391eaad4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Graphics">
       <UniqueIdentifier>{b02f3524-5cd6-4c4e-a37d-5e89feb964a8}</UniqueIdentifier>
@@ -228,9 +207,6 @@
     <Filter Include="Source\Graphics.Camera">
       <UniqueIdentifier>{9efc4032-0f25-43b0-ab35-812b272626f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\ThirdParty\jsmn">
-      <UniqueIdentifier>{f95b3ae8-8644-4e16-bd3f-c8b2384e483e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Graphics.Data">
       <UniqueIdentifier>{4ac3510e-e37d-452c-951e-68f0f53de0c9}</UniqueIdentifier>
     </Filter>
@@ -245,6 +221,9 @@
     </Filter>
     <Filter Include="Source\Script">
       <UniqueIdentifier>{07cf40cc-acd5-496d-98c4-6a5bdff6eba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics.Effects">
+      <UniqueIdentifier>{d110f301-960a-4b07-81bf-a20c6ea1971e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

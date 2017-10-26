@@ -13,7 +13,6 @@ namespace graphics
 {
 	class PostProcessEffect
 	{
-		static GLuint vao_, vbo_, ebo_;
 
 	public:
 

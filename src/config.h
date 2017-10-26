@@ -33,5 +33,15 @@ namespace input
 
 		inline const std::string &GetWindowTitle() const { return window_title_; }
 
+	private:
+
+		void SetVerticalSync(Sint8 vsync);
+
+		void SetWindowWidth(Uint16 width);
+
+		void SetWindowHeight(Uint16 height);
+
+		void SetWindowTitle(const std::string &title);
+
 	};
 }

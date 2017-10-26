@@ -33,8 +33,21 @@ namespace graphics
 		Program * shadow_vertex_;
 		Program * shadow_fragment_;
 
+		Program * gbuffer_composition_vertex_;
+		Program * gbuffer_composition_fragment_;
+
+		Program * vsm_shadow_map_copy_vertex_;
+		Program * vsm_shadow_map_copy_fragment_;
+
+		Program * vsm_shadow_map_blur_vertex_;
+		Program * vsm_shadow_map_blur_fragment_;
+
 		FrameBuffer * shadow_map_;
+		FrameBuffer * vsm_shadow_map_;
 		FrameBuffer * gbuffer_;
+		FrameBuffer * gbuffer_composition_;
+		FrameBuffer * vsm_shadow_map_vertical_;
+		FrameBuffer * vsm_shadow_map_horizontal_;
 
 		AbstractCamera * shadow_camera_;
 		AbstractCamera * main_camera_;
@@ -44,6 +57,12 @@ namespace graphics
 		std::unordered_map<size_t, MeshRenderInstance> meshes_;
 
 	public:
+
+		static const std::string shadow_map_name;
+		static const std::string gbuffer_name;
+		static const std::string gbuffer_composition_name;
+		static const std::string vsm_shadow_map_vertical_name;
+		static const std::string vsm_shadow_map_horizontal_name;
 
 		MeshRenderer(GraphicsBase & graphics_base);
 
@@ -55,9 +74,20 @@ namespace graphics
 
 		void RenderShadows();
 
+		void RenderVsmShadows();
+
 		void RenderGeometry();
+
+		void RenderComposition();
 
 		void PreProcessGeometry();
 
+		FrameBuffer * MakeGbuffer();
+
+		FrameBuffer * MakeGbufferComposition();
+
+		FrameBuffer * MakeShadowMap();
+
+		FrameBuffer * MakeVsmShadowMap();
 	};
 }

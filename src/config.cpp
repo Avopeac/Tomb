@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include "json.h"
+#include "chaiscript/chaiscript.hpp"
 
 using namespace input;
 
@@ -14,35 +14,31 @@ Config::~Config()
 
 void Config::Load(const std::string & path)
 {
+	chaiscript::ChaiScript chai;
+	chai.add(chaiscript::fun(&Config::SetVerticalSync, this), "SetVerticalSync");
+	chai.add(chaiscript::fun(&Config::SetWindowWidth, this), "SetWindowWidth");
+	chai.add(chaiscript::fun(&Config::SetWindowHeight, this), "SetWindowHeight");
+	chai.add(chaiscript::fun(&Config::SetWindowTitle, this), "SetWindowTitle");
 
-	JsonReader reader;
-	reader.ReadJsonFile(path);
-	while (reader.NextToken())
-	{
-		if (reader.GetTokenType() == JsonTokenType::String)
-		{
-			std::string value = reader.GetString();
+	chai.eval_file(path);
+}
 
-			if (value == "vsync")
-			{
-				reader.NextToken();
-				vertical_sync_ = (Sint8)reader.GetNumber();
-			}
-			else if (value == "width")
-			{
-				reader.NextToken();
-				window_width_ = (Uint16)reader.GetNumber();
-			}
-			else if (value == "height")
-			{
-				reader.NextToken();
-				window_height_ = (Uint16)reader.GetNumber();
-			}
-			else if (value == "title")
-			{
-				reader.NextToken();
-				window_title_ = reader.GetString();
-			}
-		}
-	}
+void Config::SetVerticalSync(Sint8 vsync)
+{
+	vertical_sync_ = vsync;
+}
+
+void Config::SetWindowWidth(Uint16 width)
+{
+	window_width_ = width;
+}
+
+void Config::SetWindowHeight(Uint16 height)
+{
+	window_height_ = height;
+}
+
+void Config::SetWindowTitle(const std::string & title)
+{
+	window_title_ = title;
 }

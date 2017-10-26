@@ -26,7 +26,7 @@ void PostFx::Init()
 	pipeline_.SetStages(*vertex_shader_);
 	pipeline_.SetStages(*fragment_shader_);
 
-	fbo0_ = frame_buffer_cache.GetFromName(Renderer::gbuffer_composition_name);
+	fbo0_ = frame_buffer_cache.GetFromName(MeshRenderer::gbuffer_composition_name);
 
 	size_t num_attachments = fbo0_->GetColorAttachmentCount();
 
@@ -50,7 +50,7 @@ void PostFx::Apply()
 
 
 	auto &fbo_resource = ResourceManager::Get().GetFrameBufferCache();
-	auto * shadow_map = fbo_resource.GetFromName(Renderer::shadow_map_name);
+	auto * shadow_map = fbo_resource.GetFromName(MeshRenderer::shadow_map_name);
 
 	shadow_map->BindDepthStencilAttachment(num_attachments);
 
