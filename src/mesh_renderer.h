@@ -88,6 +88,6 @@ namespace graphics
 
 		FrameBuffer * MakeShadowMap();
 
-		FrameBuffer * MakeVsmShadowMap();
+		FrameBuffer * MakeVsmShadowMap(const std::string &name);
 	};
 }

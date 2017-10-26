@@ -60,7 +60,7 @@ void PostFx::Apply()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);  
 	 
 	float time = (float)util::GetSeconds();
-
+	 
 	glm::vec2 texel_size{ graphics_base_->GetBackbufferWidth(), graphics_base_->GetBackbufferHeight() };
 	texel_size = 1.0f / texel_size;
 

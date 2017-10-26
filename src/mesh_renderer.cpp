@@ -24,9 +24,9 @@ MeshRenderer::MeshRenderer(GraphicsBase & graphics_base) :
 	shadow_camera_ = graphics_base_.GetShadowCamera();
 
 	shadow_map_ = MakeShadowMap();
-	vsm_shadow_map_horizontal_ = MakeVsmShadowMap();
-	vsm_shadow_map_vertical_ = MakeVsmShadowMap();
-	gbuffer_ = MakeGbuffer();
+	vsm_shadow_map_horizontal_ = MakeVsmShadowMap(vsm_shadow_map_horizontal_name);
+	vsm_shadow_map_vertical_ = MakeVsmShadowMap(vsm_shadow_map_vertical_name);
+	gbuffer_ = MakeGbuffer(); 
 	gbuffer_composition_ = MakeGbufferComposition();
 
 	auto &program_cache = ResourceManager::Get().GetProgramCache();
@@ -421,7 +421,7 @@ FrameBuffer * MeshRenderer::MakeShadowMap()
 		0, descriptors, &depth);
 }
 
-FrameBuffer * MeshRenderer::MakeVsmShadowMap()
+FrameBuffer * MeshRenderer::MakeVsmShadowMap(const std::string &name)
 {
 	std::vector<FrameBufferAttachmentDescriptor> descriptors;
 
@@ -433,7 +433,7 @@ FrameBuffer * MeshRenderer::MakeVsmShadowMap()
 	descriptors.push_back(vsm_shadow);
 
 	auto &frame_buffer_cache = ResourceManager::Get().GetFrameBufferCache();
-	return frame_buffer_cache.GetFromParameters(gbuffer_composition_name,
+	return frame_buffer_cache.GetFromParameters(name,
 		graphics_base_.GetBackbufferWidth(), graphics_base_.GetBackbufferHeight(),
 		0, descriptors, nullptr);
 }
